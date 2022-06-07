@@ -1,0 +1,10 @@
+/**
+ * CSS styles for the page CRM_Fpptaqb_Page_StepthruInvSync.
+ */
+
+.crm-container a.button.fpptaqb-sync-button {
+  display: none;
+}
+.crm-container a.button.fpptaqb-sync-button#fpptaqb-button-begin {
+  display: block;
+}

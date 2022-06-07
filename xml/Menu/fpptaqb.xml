@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<menu>
+  <item>
+    <path>civicrm/fpptaqb/stepthru/inv</path>
+    <page_callback>CRM_Fpptaqb_Page_StepthruInvSync</page_callback>
+    <title>Step-thru QuickBooks sync: Invoices</title>
+    <access_arguments>fpptaqb: sync to quickbooks</access_arguments>
+  </item>
+</menu>

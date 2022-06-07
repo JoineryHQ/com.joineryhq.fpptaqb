@@ -6,6 +6,23 @@ use CRM_Fpptaqb_ExtensionUtil as E;
 // phpcs:enable
 
 /**
+ * Implements hook_civicrm_permission().
+ *
+ * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_permission/
+ */
+function fpptaqb_civicrm_permission(&$permissions) {
+  $permissions['fpptaqb: administer quickbooks configuration'] = [
+    ts('FPPTA QuickBooks: administer configuration'),                     // label
+    null,  // description
+  ];  
+  $permissions['fpptaqb: sync to quickbooks'] = [
+    ts('FPPTA QuickBooks: sync data to QuickBooks'),                     // label
+    null,  // description
+  ];  
+  _fpptaqb_civix_civicrm_config($config);
+}
+
+/**
  * Implements hook_civicrm_config().
  *
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_config/
