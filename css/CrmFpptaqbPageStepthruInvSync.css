@@ -8,3 +8,7 @@
 .crm-container a.button.fpptaqb-sync-button#fpptaqb-button-begin {
   display: block;
 }
+
+.crm-container i#fpptaqb-sync-log-loading {
+  visibility: hidden;
+}
