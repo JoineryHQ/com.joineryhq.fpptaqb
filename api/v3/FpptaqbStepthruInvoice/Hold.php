@@ -30,7 +30,6 @@ function _civicrm_api3_fpptaqb_stepthru_invoice_Hold_spec(&$spec) {
  * @throws API_Exception
  */
 function civicrm_api3_fpptaqb_stepthru_invoice_Hold($params) {
-  sleep(1);
   $id = CRM_Fpptaqb_Util::validateInvId($params['id']);
 
   if ($id === FALSE) {

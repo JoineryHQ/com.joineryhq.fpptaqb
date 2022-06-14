@@ -28,10 +28,8 @@ function _civicrm_api3_fpptaqb_stepthru_invoice_Load_spec(&$spec) {
  * @throws API_Exception
  */
 function civicrm_api3_fpptaqb_stepthru_invoice_Load($params) {
-  sleep(1);
   $id = ($params['id'] ?? CRM_Fpptaqb_Util::getInvToSyncIdNext());
-//  $id = -2;
-  
+
   $extraParams = [
     'id' => $id,
   ];

@@ -5,12 +5,11 @@
 /*global CRM, ts */
 CRM.$(function ($) {
 
-  var buttonFadeTime = 500;
   var isLoading = false;
   var lastResult = {};
 
   /**
-   * If console logging is enabled, print a message to the console.
+   * If civicrm debug is enabled, print a message to the console.
    */
   var logDebug = function logDebug() {
     if (CRM.vars.fpptaqb.debug_enabled * 1) {
