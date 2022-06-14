@@ -9,6 +9,6 @@
   display: block;
 }
 
-.crm-container i#fpptaqb-sync-log-loading {
+.crm-container div#fpptaqb-sync-log-loading-wrapper {
   visibility: hidden;
 }

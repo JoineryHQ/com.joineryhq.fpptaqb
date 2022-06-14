@@ -60,4 +60,36 @@ class CRM_Fpptaqb_Util {
     // FIXME: STUB.
     return [3,4];
   }
+  
+  /**
+   * For a given contribution id, check that the contribution exists.
+   * 
+   * @param int $id
+   * 
+   * @return boolean|int FALSE if not valid; otherwise the given $id.
+   */
+  public static function validateInvId($id) {
+    // FIXME: STUB.
+    if ($id == -1) {
+      return FALSE;
+    }
+    else {
+      return $id;
+    }
+  }
+  
+  /**
+   * For a given contribution id, mark it on hold.
+   * 
+   * @param int $id
+   * 
+   * @return void
+   */
+  public static function holdInv($id) {
+    // FIXME: STUB.
+    if ($id == -200) {
+      throw new CRM_Fpptaqb_Exception('Unknown error');
+    }
+    // FIXME: actually mark this on hold.
+  }
 }

@@ -3,34 +3,34 @@
  */
 
 /*global CRM, ts */
-CRM.$(function($) {
-  
+CRM.$(function ($) {
+
   var buttonFadeTime = 500;
   var isLoading = false;
-  var apiParams = {};
-  
+  var lastResult = {};
+
   var setLoading = function setLoading(buttonId) {
     if (isLoading) {
       console.log('loading, please wait.');
       return false;
     }
     isLoading = true;
-    $('i#fpptaqb-sync-log-loading').css('visibility', 'visible');
-    $('a.button.fpptaqb-sync-button').fadeOut(buttonFadeTime);
+    $('div#fpptaqb-sync-log-loading-wrapper').css('visibility', 'visible');
+    $('a.button.fpptaqb-sync-button').hide();
     return true;
   }
-  
+
   var unsetLoading = function unsetLoading() {
     console.log('unsetLoading');
     isLoading = false;
-    $('i#fpptaqb-sync-log-loading').css('visibility', 'hidden');
+    $('div#fpptaqb-sync-log-loading-wrapper').css('visibility', 'hidden');
   }
-  
+
   var showButtons = function showButtons(result, action) {
     console.log('showButtons', 'result', result, 'action', action);
     // First hide all buttons.
     $('a.button.fpptaqb-sync-button').hide();
-    
+
     var showButtonIds = ['fpptaqb-button-exit'];
     // Show correct buttons based on action and result
     switch (action) {
@@ -45,9 +45,8 @@ CRM.$(function($) {
               showButtonIds.push('fpptaqb-button-reload');
               break;
           }
-        }
-        else {
-          showButtonIds.push('fpptaqb-button-sync');          
+        } else {
+          showButtonIds.push('fpptaqb-button-sync');
         }
         break;
       case 'sync':
@@ -64,23 +63,18 @@ CRM.$(function($) {
               showButtonIds.push('fpptaqb-button-hold');
               showButtonIds.push('fpptaqb-button-reload');
               break;
+            default:
+              showButtonIds.push('fpptaqb-button-hold');
+              showButtonIds.push('fpptaqb-button-reload');
+              break;
           }
-        }
-        else {
-          showButtonIds.push('fpptaqb-button-next');                    
+        } else {
+          showButtonIds.push('fpptaqb-button-next');
         }
         break;
       case 'hold':
         if (result.is_error) {
-          switch (result.error_code) {
-            case 'fpptaqb-400':
-            case 'fpptaqb-404':
-              showButtonIds.push('fpptaqb-button-next');
-              break;
-          }
-        }
-        else {
-          showButtons(result, 'load');
+          showButtonIds.push('fpptaqb-button-next');
         }
         break;
     }
@@ -88,50 +82,111 @@ CRM.$(function($) {
       console.log('show button', '#' + showButtonIds[i]);
       $('#' + showButtonIds[i]).show();
     }
-    
+
   }
-  
+
   var processResult = function processResult(result, action) {
     console.log('processResult', 'result', result, 'action', action);
-    
-    // remove "isLoading" lock, but wait a little to ensure button has time to fadeout
-    // (lazy way to prevent button double-click even on super-fast ajax returns.
-    setTimeout(unsetLoading, buttonFadeTime);
-    setTimeout(showButtons, buttonFadeTime, result, action);
+
+    // store received data for reference in next button click.
+    lastResult = result;
     
     var text;
     if (result.is_error) {
       text = ts('Error') + ': ' + result.error_message;
-    }
-    else {
+    } else {
       text = result.values.text;
     }
-    $('i#fpptaqb-sync-log-loading').before('<div>' + text + '</div>');
+    appendToSyncLog('<div>action: ' + action + '; response: ' + text + '</div>');
+
+    // remove "isLoading" lock and show appropriate buttons
+    unsetLoading();
+    showButtons(result, action);
+    
+    if (!result.is_error) {
+      switch (action) {
+        case 'hold':
+        case 'sync':
+          // we're handling a 'hold' or 'sync' response, and there's no error;
+          // so click the "load next" button.
+          console.log('hold/sync response received, now clicking "next".');
+          $('a.button.fpptaqb-sync-button#fpptaqb-button-next').click();
+          break;
+      }
+    }
   }
-  
+
   var handleActionButtonClick = function handleActionButtonClick(e) {
+    appendToSyncLog('previous result: ' + JSON.stringify(lastResult));
     var action = $(e.currentTarget).prop('action');
+    var lastResultApiParams = $(e.currentTarget).prop('lastResultApiParams');
+    var apiParams = {};
+    
+    if (lastResultApiParams != undefined) {
+      for (i in lastResultApiParams) {
+        apiParams[i] = lastResult[lastResultApiParams[i]];
+      }
+    }
+    console.log('clicked action', action)
     if (!action) {
       // no action; use default behavior.
+      console.log('still loading previous action; skip');
       return true;
     }
-    
+
     if (!setLoading()) {
+      // We're still in the midst of loading something, so just silently do nothing
+      // (i.e., avoid double-click)
       return false;
     }
-    CRM.api3('FpptaqbStepthruInvoice', action, apiParams).then(function(result) {
+    
+    console.log('calling api', action, 'params', apiParams);
+    CRM.api3('FpptaqbStepthruInvoice', action, apiParams).then(function (result) {
       processResult(result, action);
-    }, function(error) {
+    }, function (error) {
       processResult(error, action);
     });
+
+
+    // In the end, ignore default click action.
+    return false;
   }
-  
+
+  var appendToSyncLog = function appendToSyncLog(text) {    
+    $('div#fpptaqb-sync-log-loading-wrapper').before('<hr>' + text );
+    // Scroll buttons to bottom of viewport.
+    $('html').animate({
+      scrollTop: $('div.action-link').offset().top
+        + $('div.action-link').height()
+        - $(window).height()
+    }, 50);
+  }
+
+  // Assign click handler to all action buttons
   $('a.button.fpptaqb-sync-button').click(handleActionButtonClick);
-  $('a.button.fpptaqb-sync-button#fpptaqb-button-begin').prop('action', 'load');
-  $('a.button.fpptaqb-sync-button#fpptaqb-button-reload').prop('action', 'load');
-  $('a.button.fpptaqb-sync-button#fpptaqb-button-hold').prop('action', 'hold');
-  $('a.button.fpptaqb-sync-button#fpptaqb-button-sync').prop('action', 'sync');
-  $('a.button.fpptaqb-sync-button#fpptaqb-button-sync-retry').prop('action', 'sync');
-  $('a.button.fpptaqb-sync-button#fpptaqb-button-next').prop('action', 'load');
   
+  // Define action and apiParam properties for each button.
+  $('a.button.fpptaqb-sync-button#fpptaqb-button-begin').prop({
+    action: 'load'
+  });
+  $('a.button.fpptaqb-sync-button#fpptaqb-button-reload').prop({
+    action: 'load',
+    lastResultApiParams: {id: 'id'}
+  });
+  $('a.button.fpptaqb-sync-button#fpptaqb-button-hold').prop({
+    action: 'hold',
+    lastResultApiParams: {id: 'id'}
+  });
+  $('a.button.fpptaqb-sync-button#fpptaqb-button-sync').prop({
+    action: 'sync',
+    lastResultApiParams: {id: 'id', hash: 'hash'}
+  });
+  $('a.button.fpptaqb-sync-button#fpptaqb-button-sync-retry').prop({
+    action: 'sync',
+    lastResultApiParams: {id: 'id', hash: 'hash'}
+  });
+  $('a.button.fpptaqb-sync-button#fpptaqb-button-next').prop({
+    action: 'load'
+  });
+
 });
