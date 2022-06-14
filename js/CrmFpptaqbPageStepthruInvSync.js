@@ -9,9 +9,18 @@ CRM.$(function ($) {
   var isLoading = false;
   var lastResult = {};
 
+  /**
+   * If console logging is enabled, print a message to the console.
+   */
+  var logDebug = function logDebug() {
+    if (CRM.vars.fpptaqb.debug_enabled * 1) {
+      console.log.apply(console, arguments);
+    }
+  }
+
   var setLoading = function setLoading(buttonId) {
     if (isLoading) {
-      console.log('loading, please wait.');
+      logDebug('loading, please wait.');
       return false;
     }
     isLoading = true;
@@ -21,13 +30,13 @@ CRM.$(function ($) {
   }
 
   var unsetLoading = function unsetLoading() {
-    console.log('unsetLoading');
+    logDebug('unsetLoading');
     isLoading = false;
     $('div#fpptaqb-sync-log-loading-wrapper').css('visibility', 'hidden');
   }
 
   var showButtons = function showButtons(result, action) {
-    console.log('showButtons', 'result', result, 'action', action);
+    logDebug('showButtons', 'result', result, 'action', action);
     // First hide all buttons.
     $('a.button.fpptaqb-sync-button').hide();
 
@@ -79,18 +88,18 @@ CRM.$(function ($) {
         break;
     }
     for (i in showButtonIds) {
-      console.log('show button', '#' + showButtonIds[i]);
+      logDebug('show button', '#' + showButtonIds[i]);
       $('#' + showButtonIds[i]).show();
     }
 
   }
 
   var processResult = function processResult(result, action) {
-    console.log('processResult', 'result', result, 'action', action);
+    logDebug('processResult', 'result', result, 'action', action);
 
     // store received data for reference in next button click.
     lastResult = result;
-    
+
     var text;
     if (result.is_error) {
       text = ts('Error') + ': ' + result.error_message;
@@ -102,14 +111,14 @@ CRM.$(function ($) {
     // remove "isLoading" lock and show appropriate buttons
     unsetLoading();
     showButtons(result, action);
-    
+
     if (!result.is_error) {
       switch (action) {
         case 'hold':
         case 'sync':
           // we're handling a 'hold' or 'sync' response, and there's no error;
           // so click the "load next" button.
-          console.log('hold/sync response received, now clicking "next".');
+          logDebug('hold/sync response received, now clicking "next".');
           $('a.button.fpptaqb-sync-button#fpptaqb-button-next').click();
           break;
       }
@@ -121,16 +130,16 @@ CRM.$(function ($) {
     var action = $(e.currentTarget).prop('action');
     var lastResultApiParams = $(e.currentTarget).prop('lastResultApiParams');
     var apiParams = {};
-    
+
     if (lastResultApiParams != undefined) {
       for (i in lastResultApiParams) {
         apiParams[i] = lastResult[lastResultApiParams[i]];
       }
     }
-    console.log('clicked action', action)
+    logDebug('clicked action', action)
     if (!action) {
       // no action; use default behavior.
-      console.log('still loading previous action; skip');
+      logDebug('still loading previous action; skip');
       return true;
     }
 
@@ -139,8 +148,8 @@ CRM.$(function ($) {
       // (i.e., avoid double-click)
       return false;
     }
-    
-    console.log('calling api', action, 'params', apiParams);
+
+    logDebug('calling api', action, 'params', apiParams);
     CRM.api3('FpptaqbStepthruInvoice', action, apiParams).then(function (result) {
       processResult(result, action);
     }, function (error) {
@@ -152,8 +161,8 @@ CRM.$(function ($) {
     return false;
   }
 
-  var appendToSyncLog = function appendToSyncLog(text) {    
-    $('div#fpptaqb-sync-log-loading-wrapper').before('<hr>' + text );
+  var appendToSyncLog = function appendToSyncLog(text) {
+    $('div#fpptaqb-sync-log-loading-wrapper').before('<hr>' + text);
     // Scroll buttons to bottom of viewport.
     $('html').animate({
       scrollTop: $('div.action-link').offset().top
@@ -164,7 +173,7 @@ CRM.$(function ($) {
 
   // Assign click handler to all action buttons
   $('a.button.fpptaqb-sync-button').click(handleActionButtonClick);
-  
+
   // Define action and apiParam properties for each button.
   $('a.button.fpptaqb-sync-button#fpptaqb-button-begin').prop({
     action: 'load'
