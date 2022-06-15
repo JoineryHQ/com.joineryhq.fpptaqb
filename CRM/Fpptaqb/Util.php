@@ -23,7 +23,6 @@ class CRM_Fpptaqb_Util {
         WHERE
           ctrb.receive_date >= %1
           AND fci.id IS NULL
-          AND ctrb.contribution_status_id = 1 -- completed
         ORDER BY
           ctrb.receive_date, ctrb.id
       ";
@@ -90,6 +89,7 @@ class CRM_Fpptaqb_Util {
         ]),
         'qbCustomerName' => $qbCustomerDetails['name'],
         'qbCustomerId' => $qbCustomerId,
+        'qbInvNumber' => preg_replace('/^' . Civi::settings()->get('invoice_prefix') . '/', '', $contribution['invoice_number']), 
         'lineItems' => $lineItems,
         'qbNote' => self::composeInvQbNote($contributionId),
       ];

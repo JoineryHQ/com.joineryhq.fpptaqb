@@ -58,6 +58,7 @@ CRM.$(function ($) {
           // statusCode 204 ("No Content") means there are no more items
           // to process, so we can leave all buttons hidden.
           if (result.values.statusCode != 204) {
+            showButtonIds.push('fpptaqb-button-hold');
             showButtonIds.push('fpptaqb-button-reload');
             showButtonIds.push('fpptaqb-button-sync');
           }
@@ -76,6 +77,7 @@ CRM.$(function ($) {
             case 'fpptaqb-503':
               showButtonIds.push('fpptaqb-button-hold');
               showButtonIds.push('fpptaqb-button-reload');
+              showButtonIds.push('fpptaqb-button-sync-retry');
               break;
             default:
               showButtonIds.push('fpptaqb-button-hold');
