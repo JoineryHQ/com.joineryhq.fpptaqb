@@ -46,23 +46,26 @@ function civicrm_api3_fpptaqb_stepthru_invoice_Sync($params) {
   }
   
   try {
-    CRM_Fpptaqb_Util::holdInv($id);
+    $qbInvId = CRM_Fpptaqb_Util::syncInv($id);
   }
   catch (CRM_Core_Exception $e) {
+    $extraParams = ['values' => $params];
     if ($e->getErrorCode()) {
-      throw new API_Exception($e->getMessage(), 'fpptaqb-'. $e->getErrorCode());
+      throw new API_Exception($e->getMessage(), 'fpptaqb-'. $e->getErrorCode(), $extraParams);
     }
     else {
-      throw new API_Exception("Unknown error: ". $e->getMessage(), 'fpptaqb-500');
+      throw new API_Exception("Unknown error: ". $e->getMessage(), 'fpptaqb-500', $extraParams);
     }
   }
 
   $returnValues = array(
     // OK, return several data rows
     'id' => $id,
-    'text' => 'FIXME: STUB - sync',
+    'text' => "Created QuickBooks invoice id=$qbInvId",
+    'statusCode' => 201,
+    'statistics' => CRM_Fpptaqb_Util::getStepthruStatistics(),
   );
 
   // Spec: civicrm_api3_create_success($values = 1, $params = [], $entity = NULL, $action = NULL)
-  return civicrm_api3_create_success($returnValues, $params, 'FpptaqbStepthruInvoice', 'Load');
+  return civicrm_api3_create_success($returnValues, $params, 'FpptaqbStepthruInvoice', 'Sync');
 }

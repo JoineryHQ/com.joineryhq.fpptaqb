@@ -7,12 +7,13 @@ CRM.$(function ($) {
 
   var isLoading = false;
   var lastResult = {};
+  var debugEnabled = (CRM.vars.fpptaqb.debug_enabled * 1);
 
   /**
    * If civicrm debug is enabled, print a message to the console.
    */
   var logDebug = function logDebug() {
-    if (CRM.vars.fpptaqb.debug_enabled * 1) {
+    if (debugEnabled) {
       console.log.apply(console, arguments);
     }
   }
@@ -54,8 +55,12 @@ CRM.$(function ($) {
               break;
           }
         } else {
-          showButtonIds.push('fpptaqb-button-reload');
-          showButtonIds.push('fpptaqb-button-sync');
+          // statusCode 204 ("No Content") means there are no more items
+          // to process, so we can leave all buttons hidden.
+          if (result.values.statusCode != 204) {
+            showButtonIds.push('fpptaqb-button-reload');
+            showButtonIds.push('fpptaqb-button-sync');
+          }
         }
         break;
       case 'sync':
@@ -93,26 +98,63 @@ CRM.$(function ($) {
     }
 
   }
+  
+  var updateStatistics = function updateStatistics(result) {
+    if (result.values.statistics) {
+      if (result.values.statistics.countReady != undefined) {
+        $('#fpptaqb-statistics-countItemsToSync').html(result.values.statistics.countReady);
+      }
+      if (result.values.statistics.countHeld != undefined) {
+        $('#fpptaqb-statistics-countItemsHeld').html(result.values.statistics.countHeld);
+      }
+      
+      if (result.values.statistics.isMock != undefined) {
+        if (result.values.statistics.isMock) {
+          $('#fpptaqb-mock-warning').show();
+        }
+        else {
+          $('#fpptaqb-mock-warning').hide();
+        }
+      }
+    }
+  }
 
   var processResult = function processResult(result, action) {
     logDebug('processResult', 'result', result, 'action', action);
 
+    var text;
+    var textClass = '';
+    if (result.status == 500) {
+      appendToSyncLog('Fatal error: ' + result.responseText, 'crm-error', true);
+      appendToSyncLog("Fatal error in CiviCRM. Reload page to continue.", 'crm-error');
+      $('a.button.fpptaqb-sync-button').hide();
+      unsetLoading();
+      return;     
+    }
+    
     // store received data for reference in next button click.
     lastResult = result;
-
-    var text;
+    
     if (result.is_error) {
+      textClass = 'crm-error';
       text = ts('Error') + ': ' + result.error_message;
-    } else {
+    } 
+    else {
       if(result.values && result.values.text) {
         text = result.values.text;
       }
+      if(result.values && result.values.statusCode == 201) {
+        textClass = 'status';
+      }
     }
-    appendToSyncLog('<div>' + text + '</div>');
+    appendToSyncLog(text, textClass);
 
     // remove "isLoading" lock and show appropriate buttons
     unsetLoading();
     showButtons(result, action);
+    
+    // Update statistics if possible.
+    updateStatistics(result);
 
     if (!result.is_error) {
       switch (action) {
@@ -163,8 +205,13 @@ CRM.$(function ($) {
     return false;
   }
 
-  var appendToSyncLog = function appendToSyncLog(text) {
-    $('div#fpptaqb-sync-log-loading-wrapper').before('<hr>' + text);
+  var appendToSyncLog = function appendToSyncLog(text, textClass, isDebug) {
+    // If this is a debug message, and debugging is not enabled, just do nothing and return.
+    if (isDebug && (! debugEnabled )) {
+      return;
+    }
+    // Append the message with the given CSS class.
+    $('div#fpptaqb-sync-log-loading-wrapper').before('<hr><div class="' + textClass + '">' + text + '</div>');
     // Scroll buttons to bottom of viewport.
     $('html').animate({
       scrollTop: $('div.action-link').offset().top

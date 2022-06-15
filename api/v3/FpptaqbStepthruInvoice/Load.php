@@ -29,31 +29,40 @@ function _civicrm_api3_fpptaqb_stepthru_invoice_Load_spec(&$spec) {
  */
 function civicrm_api3_fpptaqb_stepthru_invoice_Load($params) {
   $id = ($params['id'] ?? CRM_Fpptaqb_Util::getInvToSyncIdNext());
-
-  $extraParams = [
-    'id' => $id,
-  ];
-  try {
-    $contribution = CRM_Fpptaqb_Util::getInvToSync($id);
+  if (!$id) {
+    // No "next" contribution id was found; there must be none ready.
+    // This is not an error; just inform the user.
+    $text = 'There are no more items ready to be synced.';
+    $statusCode = 204;
   }
-  catch (CRM_Core_Exception $e) {
-    if ($e->getErrorCode()) {
-      throw new API_Exception($e->getMessage(), 'fpptaqb-'. $e->getErrorCode(), $extraParams);
+  else {
+    try {
+      $contribution = CRM_Fpptaqb_Util::getInvToSync($id);
     }
-    else {
-      throw new API_Exception("Unknown error: ". $e->getMessage(), 'fpptaqb-500', $extraParams);
+    catch (CRM_Core_Exception $e) {
+      $extraParams = ['values' => $params];
+      if ($e->getErrorCode()) {
+        throw new API_Exception($e->getMessage(), 'fpptaqb-'. $e->getErrorCode(), $extraParams);
+      }
+      else {
+        throw new API_Exception("Unknown error: ". $e->getMessage(), 'fpptaqb-500', $extraParams);
+      }
     }
-  }
 
-  $smarty = CRM_Core_Smarty::singleton();
-  
-  $smarty->assign('contribution', $contribution);
-  $text = CRM_Core_Smarty::singleton()->fetch('CRM/Fpptaqb/Snippet/FpptaqbStepthruInvoice/load.tpl');
+    $smarty = CRM_Core_Smarty::singleton();
+
+    $smarty->assign('contribution', $contribution);
+    $text = CRM_Core_Smarty::singleton()->fetch('CRM/Fpptaqb/Snippet/FpptaqbStepthruInvoice/load.tpl');
+    $hash = CRM_Fpptaqb_Util::getContributionHash($id);
+    $statusCode = 200;
+  }
   $returnValues = array(
     // OK, return several data rows
     'id' => $id,
     'text' => $text,
-    'hash' => CRM_Fpptaqb_Util::getContributionHash($id),
+    'hash' => $hash,
+    'statusCode' => $statusCode,
+    'statistics' => CRM_Fpptaqb_Util::getStepthruStatistics(),
   );
 
   // Spec: civicrm_api3_create_success($values = 1, $params = [], $entity = NULL, $action = NULL)

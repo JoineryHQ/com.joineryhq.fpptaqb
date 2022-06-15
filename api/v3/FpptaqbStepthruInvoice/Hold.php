@@ -51,9 +51,10 @@ function civicrm_api3_fpptaqb_stepthru_invoice_Hold($params) {
   $returnValues = array(
     // OK, return several data rows
     'id' => $id,
-    'text' => 'FIXME: STUB - hold',
+    'text' => "Contribution id=$id has been placed on hold.",
+    'statistics' => CRM_Fpptaqb_Util::getStepthruStatistics(),
   );
 
   // Spec: civicrm_api3_create_success($values = 1, $params = [], $entity = NULL, $action = NULL)
-  return civicrm_api3_create_success($returnValues, $params, 'FpptaqbStepthruInvoice', 'Load');
+  return civicrm_api3_create_success($returnValues, $params, 'FpptaqbStepthruInvoice', 'Hold');
 }
