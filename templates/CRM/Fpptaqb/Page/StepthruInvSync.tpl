@@ -1,5 +1,3 @@
-<p>Ready to sync: <span id="fpptaqb-statistics-countItemsToSync">{$countItemsToSync}</span></p>
-<p>Held: <span id="fpptaqb-statistics-countItemsHeld">{$countItemsHeld}</span> [FIXME: <a href="#">VIEW HELD]</a></p>
 
 <div id="fpptaqb-sync-log">
   <div id="fpptaqb-sync-log-loading-wrapper">
@@ -11,6 +9,10 @@
 <div id="fpptaqb-mock-warning" class="crm-error" {if !$isMock}style="display: none"{/if}>
   ALERT: The system is configured to use a placeholder sync and is not syncing with a live QuickBooks account.
 </div>
+<div class="fpptaqb-statistics"><span class="fpptaqb-label">Ready to sync:</span> <span id="fpptaqb-statistics-countItemsToSync">{$countItemsToSync}</span></div>
+<div class="fpptaqb-statistics"><span class="fpptaqb-label">Held:</span> <span id="fpptaqb-statistics-countItemsHeld">{$countItemsHeld}</span> [FIXME: <a href="#">VIEW HELD]</a></div>
+
+<div class="clear"></div>
 
 <div class="action-link">
   {crmButton class="fpptaqb-sync-button" href="#" id="fpptaqb-button-begin" title="Begin step-thru sync process" icon="fa-rocket"}Begin{/crmButton}

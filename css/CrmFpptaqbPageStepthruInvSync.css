@@ -16,3 +16,11 @@
 .crm-container div#fpptaqb-sync-log-loading-wrapper {
   visibility: hidden;
 }
+
+.crm-container div.fpptaqb-statistics {
+  float: left;
+  padding: 1em;
+  background: #ffffcc;
+  border-radius: 0.5em;
+  margin: 0.5em 0.5em 0.5em 0;
+}

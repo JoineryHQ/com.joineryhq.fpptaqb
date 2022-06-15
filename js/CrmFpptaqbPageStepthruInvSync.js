@@ -217,7 +217,7 @@ CRM.$(function ($) {
     // Scroll buttons to bottom of viewport.
     $('html').animate({
       scrollTop: $('div.action-link').offset().top
-        + $('div.action-link').height()
+        + ($('div.action-link').height() * 2)
         - $(window).height()
     }, 50);
   }
