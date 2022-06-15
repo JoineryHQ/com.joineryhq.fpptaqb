@@ -45,13 +45,16 @@ function civicrm_api3_fpptaqb_stepthru_invoice_Load($params) {
     }
   }
 
+  $smarty = CRM_Core_Smarty::singleton();
+  
+  $smarty->assign('contribution', $contribution);
+  $text = CRM_Core_Smarty::singleton()->fetch('CRM/Fpptaqb/Snippet/FpptaqbStepthruInvoice/load.tpl');
   $returnValues = array(
     // OK, return several data rows
     'id' => $id,
-    'text' => 'FIXME: STUB - load',
+    'text' => $text,
+    'hash' => CRM_Fpptaqb_Util::getContributionHash($id),
   );
-  // ALTERNATIVE: $returnValues = []; // OK, success
-  // ALTERNATIVE: $returnValues = ["Some value"]; // OK, return a single value
 
   // Spec: civicrm_api3_create_success($values = 1, $params = [], $entity = NULL, $action = NULL)
   return civicrm_api3_create_success($returnValues, $params, 'FpptaqbStepthruInvoice', 'Load');

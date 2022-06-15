@@ -306,5 +306,21 @@ function _fpptaqb_civix_fixNavigationMenuItems(&$nodes, &$maxNavID, $parentID) {
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_entityTypes
  */
 function _fpptaqb_civix_civicrm_entityTypes(&$entityTypes) {
-  $entityTypes = array_merge($entityTypes, []);
+  $entityTypes = array_merge($entityTypes, [
+    'CRM_Fpptaqb_DAO_FpptaquickbooksAccountItem' => [
+      'name' => 'FpptaquickbooksAccountItem',
+      'class' => 'CRM_Fpptaqb_DAO_FpptaquickbooksAccountItem',
+      'table' => 'civicrm_fpptaquickbooks_account_item',
+    ],
+    'CRM_Fpptaqb_DAO_FpptaquickbooksContactCustomer' => [
+      'name' => 'FpptaquickbooksContactCustomer',
+      'class' => 'CRM_Fpptaqb_DAO_FpptaquickbooksContactCustomer',
+      'table' => 'civicrm_fpptaquickbooks_contact_customer',
+    ],
+    'CRM_Fpptaqb_DAO_FpptaquickbooksContributionInvoice' => [
+      'name' => 'FpptaquickbooksContributionInvoice',
+      'class' => 'CRM_Fpptaqb_DAO_FpptaquickbooksContributionInvoice',
+      'table' => 'civicrm_fpptaquickbooks_contribution_invoice',
+    ],
+  ]);
 }

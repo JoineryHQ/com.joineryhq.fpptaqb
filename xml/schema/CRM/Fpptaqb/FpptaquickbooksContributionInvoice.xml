@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+
+<table>
+  <base>CRM/Fpptaqb</base>
+  <class>FpptaquickbooksContributionInvoice</class>
+  <name>civicrm_fpptaquickbooks_contribution_invoice</name>
+  <comment>Link civicrm contributions to quickbooks invoices</comment>
+  <log>true</log>
+
+  <field>
+    <name>id</name>
+    <type>int unsigned</type>
+    <required>true</required>
+    <comment>Unique FpptaquickbooksContributionInvoice ID</comment>
+    <html>
+      <type>Number</type>
+    </html>
+  </field>
+  <primaryKey>
+    <name>id</name>
+    <autoincrement>true</autoincrement>
+  </primaryKey>
+
+  <field>
+    <name>contribution_id</name>
+    <type>int unsigned</type>
+    <comment>FK to Contribution</comment>
+  </field>
+  <foreignKey>
+    <name>contribution_id</name>
+    <table>civicrm_contribution</table>
+    <key>id</key>
+    <onDelete>CASCADE</onDelete>
+  </foreignKey>
+
+  <field>
+    <name>quickbooks_id</name>
+    <type>int unsigned</type>
+    <comment>Quickbooks invoice ID</comment>
+  </field>
+
+</table>

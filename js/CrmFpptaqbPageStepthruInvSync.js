@@ -54,6 +54,7 @@ CRM.$(function ($) {
               break;
           }
         } else {
+          showButtonIds.push('fpptaqb-button-reload');
           showButtonIds.push('fpptaqb-button-sync');
         }
         break;
@@ -103,9 +104,11 @@ CRM.$(function ($) {
     if (result.is_error) {
       text = ts('Error') + ': ' + result.error_message;
     } else {
-      text = result.values.text;
+      if(result.values && result.values.text) {
+        text = result.values.text;
+      }
     }
-    appendToSyncLog('<div>action: ' + action + '; response: ' + text + '</div>');
+    appendToSyncLog('<div>' + text + '</div>');
 
     // remove "isLoading" lock and show appropriate buttons
     unsetLoading();
@@ -125,14 +128,14 @@ CRM.$(function ($) {
   }
 
   var handleActionButtonClick = function handleActionButtonClick(e) {
-    appendToSyncLog('previous result: ' + JSON.stringify(lastResult));
+    logDebug('previous result: ', lastResult);
     var action = $(e.currentTarget).prop('action');
     var lastResultApiParams = $(e.currentTarget).prop('lastResultApiParams');
     var apiParams = {};
 
     if (lastResultApiParams != undefined) {
       for (i in lastResultApiParams) {
-        apiParams[i] = lastResult[lastResultApiParams[i]];
+        apiParams[i] = lastResult['values'][lastResultApiParams[i]];
       }
     }
     logDebug('clicked action', action)

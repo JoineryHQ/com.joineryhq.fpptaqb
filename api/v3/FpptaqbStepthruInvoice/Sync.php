@@ -20,7 +20,6 @@ function _civicrm_api3_fpptaqb_stepthru_invoice_Sync_spec(&$spec) {
     'type' => CRM_Utils_Type::T_STRING,
     'api.required' => true,
   ];
-
 }
 
 /**
@@ -36,11 +35,14 @@ function _civicrm_api3_fpptaqb_stepthru_invoice_Sync_spec(&$spec) {
  * @throws API_Exception
  */
 function civicrm_api3_fpptaqb_stepthru_invoice_Sync($params) {
-  sleep(1);
   $id = CRM_Fpptaqb_Util::validateInvId($params['id']);
 
   if ($id === FALSE) {
     throw new API_Exception('Could not find contribution with id '. $params['id'], 'fpptaqb-404');
+  }
+
+  if ($params['hash'] != CRM_Fpptaqb_Util::getContributionHash($id)) {
+    throw new API_Exception('This contribution has changed since you viewed it. Please reload it before continuing.', 'fpptaqb-409');
   }
   
   try {

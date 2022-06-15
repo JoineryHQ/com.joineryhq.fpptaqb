@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+
+<table>
+  <base>CRM/Fpptaqb</base>
+  <class>FpptaquickbooksContactCustomer</class>
+  <name>civicrm_fpptaquickbooks_contact_customer</name>
+  <comment>Link civicrm contact to quickbooks customer</comment>
+  <log>true</log>
+
+  <field>
+    <name>id</name>
+    <type>int unsigned</type>
+    <required>true</required>
+    <comment>Unique FpptaquickbooksContactCustomer ID</comment>
+    <html>
+      <type>Number</type>
+    </html>
+  </field>
+
+  <field>
+    <name>contact_id</name>
+    <type>int unsigned</type>
+    <comment>FK to Contact</comment>
+  </field>
+
+  <field>
+    <name>quickbooks_id</name>
+    <type>int unsigned</type>
+    <comment>Quickbooks customer ID</comment>
+  </field>
+
+  <primaryKey>
+    <name>id</name>
+    <autoincrement>true</autoincrement>
+  </primaryKey>
+
+  <foreignKey>
+    <name>contact_id</name>
+    <table>civicrm_contact</table>
+    <key>id</key>
+    <onDelete>CASCADE</onDelete>
+  </foreignKey>
+
+</table>
