@@ -1,6 +1,7 @@
 <?php
 
 class CRM_Fpptaqb_Utils_Invoice {
+
   /**
    * Get a list of IDs for contributions which are ready to be synced.
    *
@@ -30,6 +31,7 @@ class CRM_Fpptaqb_Utils_Invoice {
     }
     return $ids;
   }
+
   /**
    * For all contributions which are ready to be synced, get the first available one.
    *
@@ -92,6 +94,7 @@ class CRM_Fpptaqb_Utils_Invoice {
     }
     return $cache[$contributionId];
   }
+
   /**
    * Get a list of IDs for all contributions marked to be held out from syncing.
    *
@@ -164,6 +167,7 @@ FIXME:CONTACT-NAMES
     $contribution = self::getReadyToSync($id);
     return sha1(json_encode($contribution));
   }
+
   public static function getContactId($contributionId) {
     // FIXME: STUB
     return 184; // Bay Health School
@@ -189,4 +193,5 @@ FIXME:CONTACT-NAMES
       'countHeld' => count(self::getHeldIds()),
     ];
   }
+
 }

@@ -2,7 +2,7 @@
 
 class CRM_Fpptaqb_Utils_Quickbooks {
 
-    public static function getItemDetails(int $financialTypeId) {
+  public static function getItemDetails(int $financialTypeId) {
     // FIXME: STUB
     return [
       'code' => "FIXME:qb{$financialTypeId}",
@@ -33,4 +33,5 @@ class CRM_Fpptaqb_Utils_Quickbooks {
     $sync = CRM_Fpptaqb_Util::getSyncObject();
     return $sync->fetchCustomerDetails($customerId);
   }
+
 }
