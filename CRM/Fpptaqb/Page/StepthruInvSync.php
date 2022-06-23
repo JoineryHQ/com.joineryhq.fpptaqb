@@ -5,7 +5,7 @@ class CRM_Fpptaqb_Page_StepthruInvSync extends CRM_Core_Page {
 
   public function run() {
     // Example: Assign a variable for use in a template
-    $statistics = CRM_Fpptaqb_Util::getStepthruStatistics();
+    $statistics = CRM_Fpptaqb_Utils_Invoice::getStepthruStatistics();
     
     $this->assign('countItemsToSync', $statistics['countReady']);
     $this->assign('countItemsHeld', $statistics['countHeld']);

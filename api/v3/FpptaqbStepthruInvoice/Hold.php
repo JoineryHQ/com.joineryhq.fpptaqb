@@ -30,14 +30,14 @@ function _civicrm_api3_fpptaqb_stepthru_invoice_Hold_spec(&$spec) {
  * @throws API_Exception
  */
 function civicrm_api3_fpptaqb_stepthru_invoice_Hold($params) {
-  $id = CRM_Fpptaqb_Util::validateInvId($params['id']);
+  $id = CRM_Fpptaqb_Utils_Invoice::validateId($params['id']);
 
   if ($id === FALSE) {
     throw new API_Exception('Could not find contribution with id '. $params['id'], 'fpptaqb-404');
   }
   
   try {
-    CRM_Fpptaqb_Util::holdInv($id);
+    CRM_Fpptaqb_Utils_Invoice::hold($id);
   }
   catch (CRM_Core_Exception $e) {
     if ($e->getErrorCode()) {
@@ -52,7 +52,7 @@ function civicrm_api3_fpptaqb_stepthru_invoice_Hold($params) {
     // OK, return several data rows
     'id' => $id,
     'text' => "Contribution id=$id has been placed on hold.",
-    'statistics' => CRM_Fpptaqb_Util::getStepthruStatistics(),
+    'statistics' => CRM_Fpptaqb_Utils_Invoice::getStepthruStatistics(),
   );
 
   // Spec: civicrm_api3_create_success($values = 1, $params = [], $entity = NULL, $action = NULL)

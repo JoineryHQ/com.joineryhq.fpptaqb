@@ -63,7 +63,7 @@ class CRM_Fpptaqb_Sync_Mock {
    * Given a contribution, push it to QB via api.
    * 
    * @param Array $contribution
-   *   Contribution details as built by CRM_Fpptaqb_Util::getInvToSync().
+   *   Contribution details as built by CRM_Fpptaqb_Utils_Invoice::getInvToSync().
    */
   public function pushInv($contribution) {
     // Half the time, fail with an error.

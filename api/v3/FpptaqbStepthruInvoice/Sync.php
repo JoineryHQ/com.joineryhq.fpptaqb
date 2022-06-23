@@ -35,18 +35,18 @@ function _civicrm_api3_fpptaqb_stepthru_invoice_Sync_spec(&$spec) {
  * @throws API_Exception
  */
 function civicrm_api3_fpptaqb_stepthru_invoice_Sync($params) {
-  $id = CRM_Fpptaqb_Util::validateInvId($params['id']);
+  $id = CRM_Fpptaqb_Utils_Invoice::validateId($params['id']);
 
   if ($id === FALSE) {
     throw new API_Exception('Could not find contribution with id '. $params['id'], 'fpptaqb-404');
   }
 
-  if ($params['hash'] != CRM_Fpptaqb_Util::getContributionHash($id)) {
+  if ($params['hash'] != CRM_Fpptaqb_Utils_Invoice::getHash($id)) {
     throw new API_Exception('This contribution has changed since you viewed it. Please reload it before continuing.', 'fpptaqb-409');
   }
   
   try {
-    $qbInvId = CRM_Fpptaqb_Util::syncInv($id);
+    $qbInvId = CRM_Fpptaqb_Utils_Invoice::sync($id);
   }
   catch (CRM_Core_Exception $e) {
     $extraParams = ['values' => $params];
@@ -63,7 +63,7 @@ function civicrm_api3_fpptaqb_stepthru_invoice_Sync($params) {
     'id' => $id,
     'text' => "Created QuickBooks invoice id=$qbInvId",
     'statusCode' => 201,
-    'statistics' => CRM_Fpptaqb_Util::getStepthruStatistics(),
+    'statistics' => CRM_Fpptaqb_Utils_Invoice::getStepthruStatistics(),
   );
 
   // Spec: civicrm_api3_create_success($values = 1, $params = [], $entity = NULL, $action = NULL)

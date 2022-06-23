@@ -28,7 +28,7 @@ function _civicrm_api3_fpptaqb_stepthru_invoice_Load_spec(&$spec) {
  * @throws API_Exception
  */
 function civicrm_api3_fpptaqb_stepthru_invoice_Load($params) {
-  $id = ($params['id'] ?? CRM_Fpptaqb_Util::getInvToSyncIdNext());
+  $id = ($params['id'] ?? CRM_Fpptaqb_Utils_Invoice::getReadyToSyncIdNext());
   if (!$id) {
     // No "next" contribution id was found; there must be none ready.
     // This is not an error; just inform the user.
@@ -37,7 +37,7 @@ function civicrm_api3_fpptaqb_stepthru_invoice_Load($params) {
   }
   else {
     try {
-      $contribution = CRM_Fpptaqb_Util::getInvToSync($id);
+      $contribution = CRM_Fpptaqb_Utils_Invoice::getReadyToSync($id);
     }
     catch (CRM_Core_Exception $e) {
       $extraParams = ['values' => $params];
@@ -53,7 +53,7 @@ function civicrm_api3_fpptaqb_stepthru_invoice_Load($params) {
 
     $smarty->assign('contribution', $contribution);
     $text = CRM_Core_Smarty::singleton()->fetch('CRM/Fpptaqb/Snippet/FpptaqbStepthruInvoice/load.tpl');
-    $hash = CRM_Fpptaqb_Util::getContributionHash($id);
+    $hash = CRM_Fpptaqb_Utils_Invoice::getHash($id);
     $statusCode = 200;
   }
   $returnValues = array(
@@ -62,7 +62,7 @@ function civicrm_api3_fpptaqb_stepthru_invoice_Load($params) {
     'text' => $text,
     'hash' => $hash,
     'statusCode' => $statusCode,
-    'statistics' => CRM_Fpptaqb_Util::getStepthruStatistics(),
+    'statistics' => CRM_Fpptaqb_Utils_Invoice::getStepthruStatistics(),
   );
 
   // Spec: civicrm_api3_create_success($values = 1, $params = [], $entity = NULL, $action = NULL)
