@@ -6,4 +6,10 @@
     <title>Step-thru QuickBooks sync: Invoices</title>
     <access_arguments>fpptaqb: sync to quickbooks</access_arguments>
   </item>
+  <item>
+    <path>civicrm/fpptaqb/stepthru/pmt</path>
+    <page_callback>CRM_Fpptaqb_Page_StepthruPmtSync</page_callback>
+    <title>Step-thru QuickBooks sync: Payments</title>
+    <access_arguments>fpptaqb: sync to quickbooks</access_arguments>
+  </item>
 </menu>
