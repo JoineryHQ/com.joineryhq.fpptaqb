@@ -17,6 +17,7 @@
 
 SET FOREIGN_KEY_CHECKS=0;
 
+DROP TABLE IF EXISTS `civicrm_fpptaquickbooks_trxn_payment`;
 DROP TABLE IF EXISTS `civicrm_fpptaquickbooks_contribution_invoice`;
 DROP TABLE IF EXISTS `civicrm_fpptaquickbooks_contact_customer`;
 DROP TABLE IF EXISTS `civicrm_fpptaquickbooks_account_item`;
@@ -73,5 +74,21 @@ CREATE TABLE `civicrm_fpptaquickbooks_contribution_invoice` (
   `quickbooks_id` int unsigned COMMENT 'Quickbooks invoice ID',
   PRIMARY KEY (`id`),
   CONSTRAINT FK_civicrm_fpptaquickbooks_contribution_invoice_contribution_id FOREIGN KEY (`contribution_id`) REFERENCES `civicrm_contribution`(`id`) ON DELETE CASCADE
+)
+ENGINE=InnoDB;
+
+-- /*******************************************************
+-- *
+-- * civicrm_fpptaquickbooks_trxn_payment
+-- *
+-- * FIXME
+-- *
+-- *******************************************************/
+CREATE TABLE `civicrm_fpptaquickbooks_trxn_payment` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT COMMENT 'Unique FpptaquickbooksTrxnPayment ID',
+  `financial_trxn_id` int unsigned COMMENT 'FK to civicrm_entity_financial_trxn',
+  `quickbooks_id` int unsigned COMMENT 'Quickbooks payment ID',
+  PRIMARY KEY (`id`),
+  CONSTRAINT FK_civicrm_fpptaquickbooks_trxn_payment_financial_trxn_id FOREIGN KEY (`financial_trxn_id`) REFERENCES `civicrm_entity_financial_trxn`(`id`) ON DELETE CASCADE
 )
 ENGINE=InnoDB;

@@ -322,5 +322,10 @@ function _fpptaqb_civix_civicrm_entityTypes(&$entityTypes) {
       'class' => 'CRM_Fpptaqb_DAO_FpptaquickbooksContributionInvoice',
       'table' => 'civicrm_fpptaquickbooks_contribution_invoice',
     ],
+    'CRM_Fpptaqb_DAO_FpptaquickbooksTrxnPayment' => [
+      'name' => 'FpptaquickbooksTrxnPayment',
+      'class' => 'CRM_Fpptaqb_DAO_FpptaquickbooksTrxnPayment',
+      'table' => 'civicrm_fpptaquickbooks_trxn_payment',
+    ],
   ]);
 }

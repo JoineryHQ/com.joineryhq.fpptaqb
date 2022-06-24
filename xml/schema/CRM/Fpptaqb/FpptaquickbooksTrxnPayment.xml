@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+
+<table>
+  <base>CRM/Fpptaqb</base>
+  <class>FpptaquickbooksTrxnPayment</class>
+  <name>civicrm_fpptaquickbooks_trxn_payment</name>
+  <comment>Link civicrm financial transaction payments to quickbooks payments</comment>
+  <log>true</log>
+
+  <field>
+    <name>id</name>
+    <type>int unsigned</type>
+    <required>true</required>
+    <comment>Unique FpptaquickbooksTrxnPayment ID</comment>
+    <html>
+      <type>Number</type>
+    </html>
+  </field>
+  <primaryKey>
+    <name>id</name>
+    <autoincrement>true</autoincrement>
+  </primaryKey>
+
+  <field>
+    <name>financial_trxn_id</name>
+    <type>int unsigned</type>
+    <comment>FK to civicrm_entity_financial_trxn</comment>
+  </field>
+  <foreignKey>
+    <name>financial_trxn_id</name>
+    <table>civicrm_entity_financial_trxn</table>
+    <key>id</key>
+    <onDelete>CASCADE</onDelete>
+  </foreignKey>
+
+  <field>
+    <name>quickbooks_id</name>
+    <type>int unsigned</type>
+    <comment>Quickbooks payment ID</comment>
+  </field>
+
+</table>
