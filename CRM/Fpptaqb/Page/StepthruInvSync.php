@@ -12,7 +12,8 @@ class CRM_Fpptaqb_Page_StepthruInvSync extends CRM_Core_Page {
     $this->assign('isMock', Civi::settings()->get('fpptaqb_use_sync_mock'));
     
     CRM_Core_Resources::singleton()->addScriptFile('com.joineryhq.fpptaqb', 'js/CrmFpptaqbPageStepthruInvSync.js');
-    CRM_Core_Resources::singleton()->addStyleFile('com.joineryhq.fpptaqb', 'css/CrmFpptaqbPageStepthruInvSync.css');
+    CRM_Core_Resources::singleton()->addScriptFile('com.joineryhq.fpptaqb', 'js/CrmFpptaqbPageStepthru_Sync.js');
+    CRM_Core_Resources::singleton()->addStyleFile('com.joineryhq.fpptaqb', 'css/CrmFpptaqbPageStepthru_Sync.css');
 
     $vars = [
       'debug_enabled' => Civi::settings()->get('debug_enabled'),
