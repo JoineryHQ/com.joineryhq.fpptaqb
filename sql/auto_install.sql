@@ -81,7 +81,7 @@ ENGINE=InnoDB;
 -- *
 -- * civicrm_fpptaquickbooks_trxn_payment
 -- *
--- * FIXME
+-- * Link civicrm financial transaction payments to quickbooks payments
 -- *
 -- *******************************************************/
 CREATE TABLE `civicrm_fpptaquickbooks_trxn_payment` (
