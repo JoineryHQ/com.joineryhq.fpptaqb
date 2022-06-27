@@ -9,25 +9,26 @@ class CRM_Fpptaqb_Utils_Payment {
    */
   public static function getReadyToSyncIds() {
     static $ids;
-    if (!isset($ids)) {
-      // FIXME: STUB
-      return array (1,2,3);
-      
-      // FIXME: following code copied from CRM_Fpptaqb_Utils_Invoice::getReadyToSyncIds().
-      
+    if (!isset($ids)) {    
       // FIXME: hard-coded day-zero cutoff date
       $dayZero = '20220501';
       $ids = [];
       $query = "
-        SELECT ctrb.id
-        FROM civicrm_contribution ctrb
-          LEFT JOIN civicrm_fpptaquickbooks_contribution_invoice fci ON fci.contribution_id = ctrb.id
-        WHERE
-          ctrb.receive_date >= %1
-          AND fci.id IS NULL
-        ORDER BY
-          ctrb.receive_date, ctrb.id
-      ";
+        select
+          ft.id,
+          ft.trxn_date,
+          ft.total_amount
+        from
+          civicrm_entity_financial_trxn eft
+          inner join civicrm_financial_trxn ft on eft.financial_trxn_id = ft.id
+          inner join civicrm_financial_account fa on ft.to_financial_account_id = fa.id
+          inner join civicrm_fpptaquickbooks_contribution_invoice ci on ci.contribution_id = eft.entity_id
+        where
+          ft.trxn_date >= %1
+          and ft.is_payment
+          and eft.entity_table = 'civicrm_contribution'
+          and ci.quickbooks_id is not null
+  ";
       $queryParams = [
         '1' => [$dayZero, 'Int']
       ];
@@ -52,52 +53,55 @@ class CRM_Fpptaqb_Utils_Payment {
    *
    * @return Array
    */
-  public static function getReadyToSync(int $contributionId) {
+  public static function getReadyToSync(int $financialTrxnId) {
     static $cache = [];
-    if (!isset($cache[$contributionId])) {
-      $contributionCount = civicrm_api3('Contribution', 'getCount', [
-        'id' => $contributionId,
+    if (!isset($cache[$financialTrxnId])) {
+      $financialTrxnCount = civicrm_api3('FinancialTrxn', 'getCount', [
+        'id' => $financialTrxnId,
       ]);
 
-      if (!$contributionCount) {
-        throw new CRM_Fpptaqb_Exception('Contribution not found', 404);
+      if (!$financialTrxnCount) {
+        throw new CRM_Fpptaqb_Exception('Payment not found', 404);
       }
 
-      $lineItemsGet = civicrm_api3('LineItem', 'get', [
-        'sequential' => 1,
-        'contribution_id' => $contributionId,
-        'api.FinancialType.get' => ['return' => ["name"]],
+      $financialTrxn = civicrm_api3('FinancialTrxn', 'getSingle', [
+        'id' => $financialTrxnId,
       ]);
-      $lineItems = $lineItemsGet['values'];
-      foreach ($lineItems as &$lineItem) {
-        $lineItem['financialType'] = $lineItem['api.FinancialType.get']['values'][0]['name'];
-        $financialTypeId = $lineItem['api.FinancialType.get']['values'][0]['id'];
-        $qbItemDetails = CRM_Fpptaqb_Utils_Quickbooks::getItemDetails($financialTypeId);
-        $lineItem['qbGlCode'] = $qbItemDetails['code'];
-        $lineItem['qbGlDescription'] = $qbItemDetails['description'];
-      }
-      $contribution = civicrm_api3('Contribution', 'getSingle', [
-        'id' => $contributionId,
+      $contributionId = civicrm_api3('EntityFinancialTrxn', 'getValue', [
+        'entity_table' => "civicrm_contribution", 
+        'financial_trxn_id' => $financialTrxnId,
+        'return' => 'entity_id'
       ]);
-      $organizationCid = self::getContactId($contributionId);
+      
+      $contribution = civicrm_api3('Contribution', 'getSingle', ['id' => $contributionId]);
+      
+      $organizationCid = CRM_Fpptaqb_Utils_Invoice::getContactId($contributionId);
       $qbCustomerId = CRM_Fpptaqb_Utils_Quickbooks::getCustomerIdForContact($organizationCid);
       $qbCustomerDetails = CRM_Fpptaqb_Utils_Quickbooks::getCustomerDetails($qbCustomerId);
-      $contribution += [
+      $qbInvId = civicrm_api3('FpptaquickbooksContributionInvoice', 'getValue', [
+        'contribution_id' => $contributionId,
+        'return' => 'quickbooks_id',
+      ]);
+      $qbInvDetails = CRM_Fpptaqb_Utils_Quickbooks::getInoiceDetails($qbInvId);
+      
+      $financialTrxn += [
+        'contributionCid' => $contribution['contact_id'],
         'organizationCid' => $organizationCid,
         'organizationName' => civicrm_api3('Contact', 'getValue', [
           'id' => $organizationCid,
           'return' => 'display_name',
         ]),
+        'contributionId' => $contributionId,
         'qbCustomerName' => $qbCustomerDetails['name'],
         'qbCustomerId' => $qbCustomerId,
-        'qbInvNumber' => preg_replace('/^' . Civi::settings()->get('invoice_prefix') . '/', '', $contribution['invoice_number']),
-        'lineItems' => $lineItems,
-        'qbNote' => self::composeQbNote($contributionId),
+        'qbInvNumber' => $qbInvDetails['docNumber'],
+        'qbInvId' => $qbInvId,
+        'paymentInstrumentLabel' => CRM_Core_PseudoConstant::getLabel('CRM_Core_BAO_FinancialTrxn', 'payment_instrument_id', $financialTrxn['payment_instrument_id']),
       ];
 
-      $cache[$contributionId] = $contribution;
+      $cache[$financialTrxnId] = $financialTrxn;
     }
-    return $cache[$contributionId];
+    return $cache[$financialTrxnId];
   }
 
   /**

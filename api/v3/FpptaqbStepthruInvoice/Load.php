@@ -1,4 +1,5 @@
 <?php
+
 use CRM_Fpptaqb_ExtensionUtil as E;
 
 /**
@@ -13,7 +14,8 @@ function _civicrm_api3_fpptaqb_stepthru_invoice_Load_spec(&$spec) {
   $spec['id'] = [
     'title' => 'Contribution ID',
     'type' => CRM_Utils_Type::T_INT,
-  ];}
+  ];
+}
 
 /**
  * FpptaqbStepthruInvoice.Load API
@@ -42,10 +44,10 @@ function civicrm_api3_fpptaqb_stepthru_invoice_Load($params) {
     catch (CRM_Core_Exception $e) {
       $extraParams = ['values' => $params];
       if ($e->getErrorCode()) {
-        throw new API_Exception($e->getMessage(), 'fpptaqb-'. $e->getErrorCode(), $extraParams);
+        throw new API_Exception($e->getMessage(), 'fpptaqb-' . $e->getErrorCode(), $extraParams);
       }
       else {
-        throw new API_Exception("Unknown error: ". $e->getMessage(), 'fpptaqb-500', $extraParams);
+        throw new API_Exception("Unknown error: " . $e->getMessage(), 'fpptaqb-500', $extraParams);
       }
     }
 

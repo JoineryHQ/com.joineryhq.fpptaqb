@@ -10,7 +10,10 @@ use CRM_Fpptaqb_ExtensionUtil as E;
  * @see https://docs.civicrm.org/dev/en/latest/framework/api-architecture/
  */
 function _civicrm_api3_fpptaqb_stepthru_payment_Load_spec(&$spec) {
-  $spec['magicword']['api.required'] = 1;
+  $spec['id'] = [
+    'title' => 'Financial Trxn ID',
+    'type' => CRM_Utils_Type::T_INT,
+  ];
 }
 
 /**
@@ -26,20 +29,43 @@ function _civicrm_api3_fpptaqb_stepthru_payment_Load_spec(&$spec) {
  * @throws API_Exception
  */
 function civicrm_api3_fpptaqb_stepthru_payment_Load($params) {
-  if (array_key_exists('magicword', $params) && $params['magicword'] == 'sesame') {
-    $returnValues = array(
-      // OK, return several data rows
-      12 => ['id' => 12, 'name' => 'Twelve'],
-      34 => ['id' => 34, 'name' => 'Thirty four'],
-      56 => ['id' => 56, 'name' => 'Fifty six'],
-    );
-    // ALTERNATIVE: $returnValues = []; // OK, success
-    // ALTERNATIVE: $returnValues = ["Some value"]; // OK, return a single value
-
-    // Spec: civicrm_api3_create_success($values = 1, $params = [], $entity = NULL, $action = NULL)
-    return civicrm_api3_create_success($returnValues, $params, 'FpptaqbStepthruPayment', 'Load');
+  $id = ($params['id'] ?? CRM_Fpptaqb_Utils_Payment::getReadyToSyncIdNext());
+  if (!$id) {
+    // No "next" payment id was found; there must be none ready.
+    // This is not an error; just inform the user.
+    $text = 'There are no more items ready to be synced.';
+    $statusCode = 204;
   }
   else {
-    throw new API_Exception(/*error_message*/ 'Everyone knows that the magicword is "sesame"', /*error_code*/ 'magicword_incorrect');
+    try {
+      $payment = CRM_Fpptaqb_Utils_Payment::getReadyToSync($id);
+    }
+    catch (CRM_Core_Exception $e) {
+      $extraParams = ['values' => $params];
+      if ($e->getErrorCode()) {
+        throw new API_Exception($e->getMessage(), 'fpptaqb-' . $e->getErrorCode(), $extraParams);
+      }
+      else {
+        throw new API_Exception("Unknown error: " . $e->getMessage(), 'fpptaqb-500', $extraParams);
+      }
+    }
+
+    $smarty = CRM_Core_Smarty::singleton();
+
+    $smarty->assign('payment', $payment);
+    $text = CRM_Core_Smarty::singleton()->fetch('CRM/Fpptaqb/Snippet/FpptaqbStepthruPayment/load.tpl');
+    $hash = CRM_Fpptaqb_Utils_Payment::getHash($id);
+    $statusCode = 200;
   }
+  $returnValues = array(
+    // OK, return several data rows
+    'id' => $id,
+    'text' => $text,
+    'hash' => $hash,
+    'statusCode' => $statusCode,
+    'statistics' => CRM_Fpptaqb_Utils_Payment::getStepthruStatistics(),
+  );
+
+  // Spec: civicrm_api3_create_success($values = 1, $params = [], $entity = NULL, $action = NULL)
+  return civicrm_api3_create_success($returnValues, $params, 'FpptaqbStepthruPayment', 'Load');
 }

@@ -60,6 +60,18 @@ class CRM_Fpptaqb_Sync_Mock {
   }
 
   /**
+   * For a given QuickBooks invoice ID, get relevant invoice details.
+   * 
+   * @return Array
+   */
+  public function fetchInvoiceDetails($invoiceId) {
+    // Return identical data for any invoiceId
+    return [
+      'docNumber' => '1234',
+    ];
+  }
+
+  /**
    * Given a contribution, push it to QB via api.
    * 
    * @param Array $contribution
