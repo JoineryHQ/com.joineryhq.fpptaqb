@@ -22,12 +22,13 @@ class CRM_Fpptaqb_Utils_Payment {
           civicrm_entity_financial_trxn eft
           inner join civicrm_financial_trxn ft on eft.financial_trxn_id = ft.id
           inner join civicrm_financial_account fa on ft.to_financial_account_id = fa.id
-          inner join civicrm_fpptaquickbooks_contribution_invoice ci on ci.contribution_id = eft.entity_id
+          inner join civicrm_fpptaquickbooks_contribution_invoice fci on fci.contribution_id = eft.entity_id
+          left join civicrm_fpptaquickbooks_trxn_payment tp on tp.financial_trxn_id = ft.id
         where
           ft.trxn_date >= %1
           and ft.is_payment
           and eft.entity_table = 'civicrm_contribution'
-          and ci.quickbooks_id is not null
+          and tp.id is null
   ";
       $queryParams = [
         '1' => [$dayZero, 'Int']
@@ -98,7 +99,7 @@ class CRM_Fpptaqb_Utils_Payment {
         'qbInvId' => $qbInvId,
         'paymentInstrumentLabel' => CRM_Core_PseudoConstant::getLabel('CRM_Core_BAO_FinancialTrxn', 'payment_instrument_id', $financialTrxn['payment_instrument_id']),
       ];
-
+//var_dump($financialTrxn); die();
       $cache[$financialTrxnId] = $financialTrxn;
     }
     return $cache[$financialTrxnId];
@@ -116,13 +117,13 @@ class CRM_Fpptaqb_Utils_Payment {
       $dayZero = '20220501';
       $ids = [];
       $query = "
-        SELECT ctrb.id
-        FROM civicrm_contribution ctrb
-          INNER JOIN civicrm_fpptaquickbooks_contribution_invoice fci ON fci.contribution_id = ctrb.id
+        SELECT ft.id
+        FROM civicrm_financial_trxn ft
+          INNER JOIN civicrm_fpptaquickbooks_trxn_payment tp ON tp.financial_trxn_id = ft.id
         WHERE
-          fci.quickbooks_id IS NULL
+          tp.quickbooks_id IS NULL
         ORDER BY
-          ctrb.receive_date, ctrb.id
+          ft.trxn_date, ft.id
       ";
       $dao = CRM_Core_DAO::executeQuery($query);
       $ids = CRM_Utils_Array::collect('id', $dao->fetchAll());
@@ -150,14 +151,14 @@ class CRM_Fpptaqb_Utils_Payment {
   /**
    * For a given contribution id, mark it on hold.
    *
-   * @param int $contributionId
+   * @param int $trxnId
    *
    * @return void
    */
-  public static function hold(int $contributionId) {
+  public static function hold(int $trxnId) {
     // Log the contribution-invoice connection
-    $result = civicrm_api3('FpptaquickbooksContributionInvoice', 'create', [
-      'contribution_id' => $contributionId,
+    $result = civicrm_api3('FpptaquickbooksTrxnPayment', 'create', [
+      'financial_trxn_id' => $trxnId,
       'quickbooks_id' => 'null',
     ]);
   }
@@ -172,28 +173,29 @@ FIXME:CONTACT-NAMES
 ";
   }
 
-  public static function getHash($id) {
-    $contribution = self::getReadyToSync($id);
-    return sha1(json_encode($contribution));
+  public static function getHash($trxnId) {
+    $payment = self::getReadyToSync($trxnId);
+    return sha1(json_encode($payment));
   }
 
+  // FIXME: Delete this unused method?
   public static function getContactId($contributionId) {
     // FIXME: STUB
     return 184; // Bay Health School
   }
 
-  public static function sync($contributionId) {
-    $contribution = self::getReadyToSync($contributionId);
+  public static function sync($trxnId) {
+    $payment = self::getReadyToSync($trxnId);
     $sync = CRM_Fpptaqb_Util::getSyncObject();
-    $qbInvId = $sync->pushInv($contribution);
+    $qbPmtId = $sync->pushPmt($payment);
 
-    // Log the contribution-invoice connection
-    $result = civicrm_api3('FpptaquickbooksContributionInvoice', 'create', [
-      'contribution_id' => $contributionId,
-      'quickbooks_id' => $qbInvId,
+    // Log the trxn-payment connection
+    $result = civicrm_api3('FpptaquickbooksTrxnPayment', 'create', [
+      'financial_trxn_id' => $trxnId,
+      'quickbooks_id' => $qbPmtId,
     ]);
 
-    return $qbInvId;
+    return $qbPmtId;
   }
 
   public static function getStepthruStatistics() {

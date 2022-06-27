@@ -86,9 +86,9 @@ ENGINE=InnoDB;
 -- *******************************************************/
 CREATE TABLE `civicrm_fpptaquickbooks_trxn_payment` (
   `id` int unsigned NOT NULL AUTO_INCREMENT COMMENT 'Unique FpptaquickbooksTrxnPayment ID',
-  `financial_trxn_id` int unsigned COMMENT 'FK to civicrm_entity_financial_trxn',
+  `financial_trxn_id` int unsigned COMMENT 'FK to civicrm_financial_trxn',
   `quickbooks_id` int unsigned COMMENT 'Quickbooks payment ID',
   PRIMARY KEY (`id`),
-  CONSTRAINT FK_civicrm_fpptaquickbooks_trxn_payment_financial_trxn_id FOREIGN KEY (`financial_trxn_id`) REFERENCES `civicrm_entity_financial_trxn`(`id`) ON DELETE CASCADE
+  CONSTRAINT FK_civicrm_fpptaquickbooks_trxn_payment_financial_trxn_id FOREIGN KEY (`financial_trxn_id`) REFERENCES `civicrm_financial_trxn`(`id`) ON DELETE CASCADE
 )
 ENGINE=InnoDB;

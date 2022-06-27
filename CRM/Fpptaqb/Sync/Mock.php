@@ -87,5 +87,22 @@ class CRM_Fpptaqb_Sync_Mock {
 
     return rand(1000, 9999);
   }
+  
+  /**
+   * Given a contribution, push it to QB via api.
+   * 
+   * @param Array $payment
+   *   Payment details as built by CRM_Fpptaqb_Utils_Pmt::getReadyToSync().
+   */
+  public function pushPmt($payment) {
+    // Half the time, fail with an error.
+    $oddOrEven = rand(0, 9);
+    // Error on even integers.
+    if ($oddOrEven % 2 == 0) {
+      throw new CRM_Fpptaqb_Exception('Placeholder sync: this error happens around half the time.', 503);
+    }
+
+    return rand(1000, 9999);
+  }
 
 }
