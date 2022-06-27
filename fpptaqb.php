@@ -6,6 +6,13 @@ use CRM_Fpptaqb_ExtensionUtil as E;
 // phpcs:enable
 
 /**
+ * Implements hook_civicrm_fpptaqbhelper_settings().
+ */
+function fpptaqb_civicrm_fpptaqbhelper_settings(&$settingsGroups) {
+  $settingsGroups[] = 'fpptaqb';
+}
+
+/**
  * Implements hook_civicrm_permission().
  *
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_permission/
