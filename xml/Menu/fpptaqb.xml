@@ -12,4 +12,16 @@
     <title>Step-thru QuickBooks sync: Payments</title>
     <access_arguments>fpptaqb: sync to quickbooks</access_arguments>
   </item>
+  <item>
+    <path>civicrm/fpptaqb/helditems/inv</path>
+    <page_callback>CRM_Fpptaqb_Page_HeldItemsInv</page_callback>
+    <title>QuickBooks Sync: Held Invoices</title>
+    <access_arguments>fpptaqb: sync to quickbooks</access_arguments>
+  </item>
+  <item>
+    <path>civicrm/fpptaqb/loaditem/inv</path>
+    <page_callback>CRM_Fpptaqb_Page_LoadInv</page_callback>
+    <title>Load Invoice</title>
+    <access_arguments>fpptaqb: sync to quickbooks</access_arguments>
+  </item>
 </menu>

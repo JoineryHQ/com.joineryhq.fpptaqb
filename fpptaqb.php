@@ -6,6 +6,17 @@ use CRM_Fpptaqb_ExtensionUtil as E;
 // phpcs:enable
 
 /**
+ * Implements hook_civicrm_alterTemplateFile().
+ */
+function fpptaqb_civicrm_alterTemplateFile($formName, &$form, $context, &$tplName) {
+  dsm($formName, 'formName');
+  dsm($context, 'context');
+  if ($context == 'page' && $formName == 'CRM_Fpptaqb_Page_LoadInv') {
+    $tplName = 'CRM/Fpptaqb/Snippet/FpptaqbStepthruInvoice/load.tpl';
+  }
+}
+
+/**
  * Implements hook_civicrm_fpptaqbhelper_settings().
  */
 function fpptaqb_civicrm_fpptaqbhelper_settings(&$settingsGroups) {
