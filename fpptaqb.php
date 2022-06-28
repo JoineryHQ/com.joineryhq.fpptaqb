@@ -10,10 +10,9 @@ use CRM_Fpptaqb_ExtensionUtil as E;
  */
 function fpptaqb_civicrm_alterTemplateFile($formName, &$form, $context, &$tplName) {
   if ($context == 'page' && $formName == 'CRM_Fpptaqb_Page_ItemAction') {
-    $type = CRM_Utils_Request::retrieve('type', 'String');
-    $id = CRM_Utils_Request::retrieve('id', 'Int');
-    $action = CRM_Utils_Request::retrieve('action', 'String');
-    if ($type == 'inv' && $action == 'load') {
+    $type = CRM_Utils_Request::retrieveValue('type', 'String');
+    $itemaction = CRM_Utils_Request::retrieveValue('itemaction', 'String');
+    if ($type === 'inv' && $itemaction === 'load') {
       $tplName = 'CRM/Fpptaqb/Snippet/FpptaqbStepthruInvoice/load.tpl';
     }
   }

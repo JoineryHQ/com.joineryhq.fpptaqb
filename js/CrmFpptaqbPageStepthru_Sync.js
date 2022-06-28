@@ -81,6 +81,9 @@ CRM.fpptaqbStepthru = {
       }
       if (result.values.statistics.countHeld != undefined) {
         CRM.$('#fpptaqb-statistics-countItemsHeld').html(result.values.statistics.countHeld);
+        if (result.values.statistics.countHeld > 0) {
+          CRM.$('span#fpptaqb-review-held').show();
+        }
       }
 
       if (result.values.statistics.isMock != undefined) {
