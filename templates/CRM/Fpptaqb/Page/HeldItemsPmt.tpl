@@ -30,7 +30,6 @@
 </table>
 
 {else}
-<p class="status">{ts}There are no held payments.{/ts}</p>
-{crmButton href="/civicrm/fpptaqb/stepthru/pmt" title="Return to step-thru payment sync" icon=""}Return to step-thru payment sync{/crmButton}
-
+  <p class="status">{ts}There are no held payments.{/ts}</p>
 {/if}
+{crmButton href="/civicrm/fpptaqb/stepthru/pmt" title="Return to step-thru payment sync" icon=""}Return to step-thru payment sync{/crmButton}

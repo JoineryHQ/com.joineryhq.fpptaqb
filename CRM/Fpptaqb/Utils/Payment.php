@@ -23,6 +23,7 @@ class CRM_Fpptaqb_Utils_Payment {
           inner join civicrm_financial_trxn ft on eft.financial_trxn_id = ft.id
           inner join civicrm_financial_account fa on ft.to_financial_account_id = fa.id
           inner join civicrm_fpptaquickbooks_contribution_invoice fci on fci.contribution_id = eft.entity_id
+             and fci.quickbooks_id is not null
           left join civicrm_fpptaquickbooks_trxn_payment tp on tp.financial_trxn_id = ft.id
         where
           ft.trxn_date >= %1
@@ -99,7 +100,6 @@ class CRM_Fpptaqb_Utils_Payment {
         'qbInvId' => $qbInvId,
         'paymentInstrumentLabel' => CRM_Core_PseudoConstant::getLabel('CRM_Core_BAO_FinancialTrxn', 'payment_instrument_id', $financialTrxn['payment_instrument_id']),
       ];
-//var_dump($financialTrxn); die();
       $cache[$financialTrxnId] = $financialTrxn;
     }
     return $cache[$financialTrxnId];
