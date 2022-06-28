@@ -19,7 +19,7 @@
       <td>{$row.organizationName}</td>
       <td>{$row.trxn_date}</td>
       <td>{$row.paymentInstrumentLabel}</td>
-      <td>{$row.total_amount}</td>
+      <td>{$row.total_amount|crmMoney}</td>
       <td>
         <a href="{crmURL p="civicrm/fpptaqb/itemaction" q="itemaction=load&type=pmt&id=`$row.id`"}" class="action-item crm-hover-button crm-popup" title="Load Payment">Load</a>
         <a href="{crmURL p="civicrm/fpptaqb/itemaction" q="itemaction=unhold&type=pmt&id=`$row.id`"}" class="action-item crm-hover-button" title="Un-hold">Un-hold</a>

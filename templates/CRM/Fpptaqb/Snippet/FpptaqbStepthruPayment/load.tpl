@@ -5,6 +5,7 @@ Attributed to Organization: {$payment.organizationName} (id={$payment.organizati
 Found QuickBooks customer "{$payment.qbCustomerName}" (id={$payment.qbCustomerId})
 Payment method: {$payment.paymentInstrumentLabel}
 Payment date: {$payment.trxn_date}
+Amount: {$payment.total_amount|crmMoney}
 </pre>
 
 <h4>Will create QuickBooks payment:</h4>
@@ -13,5 +14,6 @@ QuickBooks customer "{$payment.qbCustomerName}" (id={$payment.qbCustomerId})
 Invoice Number: {$payment.qbInvNumber} 
 Payment Date: {$payment.trxn_date|crmDate:'%Y-%m-%d'} 
 Payment method: {$payment.paymentInstrumentLabel}
+Amount: {$payment.total_amount|crmMoney}
 </pre>
 
