@@ -74,7 +74,7 @@ class CRM_Fpptaqb_Utils_Invoice {
       $contribution = civicrm_api3('Contribution', 'getSingle', [
         'id' => $contributionId,
       ]);
-      $organizationCid = self::getContactId($contributionId);
+      $organizationCid = self::getAttributedContactId($contributionId);
       $qbCustomerId = CRM_Fpptaqb_Utils_Quickbooks::getCustomerIdForContact($organizationCid);
       $qbCustomerDetails = CRM_Fpptaqb_Utils_Quickbooks::getCustomerDetails($qbCustomerId);
       $contribution += [
@@ -103,8 +103,6 @@ class CRM_Fpptaqb_Utils_Invoice {
   public static function getHeldIds() {
     static $ids;
     if (!isset($ids)) {
-      // FIXME: hard-coded day-zero cutoff date
-      $dayZero = '20220501';
       $ids = [];
       $query = "
         SELECT ctrb.id
@@ -168,7 +166,16 @@ FIXME:CONTACT-NAMES
     return sha1(json_encode($contribution));
   }
 
-  public static function getContactId($contributionId) {
+  /**
+   * For a given contributionId, return the contact ID of the contact to whom
+   * the contribution should be attributed (per the field specified in 
+   * fpptaqbhelper settings fpptaqbhelper_cf_id_contribution or fpptaqbhelper_cf_id_participant)
+   * 
+   * @param int $contributionId
+   * 
+   * @return int
+   */
+  public static function getAttributedContactId($contributionId) {
     // FIXME: STUB
     return 184; // Bay Health School
   }

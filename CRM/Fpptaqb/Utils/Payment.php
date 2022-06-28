@@ -76,7 +76,7 @@ class CRM_Fpptaqb_Utils_Payment {
       
       $contribution = civicrm_api3('Contribution', 'getSingle', ['id' => $contributionId]);
       
-      $organizationCid = CRM_Fpptaqb_Utils_Invoice::getContactId($contributionId);
+      $organizationCid = CRM_Fpptaqb_Utils_Invoice::getAttributedContactId($contributionId);
       $qbCustomerId = CRM_Fpptaqb_Utils_Quickbooks::getCustomerIdForContact($organizationCid);
       $qbCustomerDetails = CRM_Fpptaqb_Utils_Quickbooks::getCustomerDetails($qbCustomerId);
       $qbInvId = civicrm_api3('FpptaquickbooksContributionInvoice', 'getValue', [
