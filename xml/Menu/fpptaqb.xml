@@ -19,9 +19,9 @@
     <access_arguments>fpptaqb: sync to quickbooks</access_arguments>
   </item>
   <item>
-    <path>civicrm/fpptaqb/loaditem/inv</path>
-    <page_callback>CRM_Fpptaqb_Page_LoadInv</page_callback>
-    <title>Load Invoice</title>
+    <path>civicrm/fpptaqb/itemaction</path>
+    <page_callback>CRM_Fpptaqb_Page_ItemAction</page_callback>
+    <title>ItemAction</title>
     <access_arguments>fpptaqb: sync to quickbooks</access_arguments>
   </item>
 </menu>

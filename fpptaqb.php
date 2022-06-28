@@ -9,10 +9,13 @@ use CRM_Fpptaqb_ExtensionUtil as E;
  * Implements hook_civicrm_alterTemplateFile().
  */
 function fpptaqb_civicrm_alterTemplateFile($formName, &$form, $context, &$tplName) {
-  dsm($formName, 'formName');
-  dsm($context, 'context');
-  if ($context == 'page' && $formName == 'CRM_Fpptaqb_Page_LoadInv') {
-    $tplName = 'CRM/Fpptaqb/Snippet/FpptaqbStepthruInvoice/load.tpl';
+  if ($context == 'page' && $formName == 'CRM_Fpptaqb_Page_ItemAction') {
+    $type = CRM_Utils_Request::retrieve('type', 'String');
+    $id = CRM_Utils_Request::retrieve('id', 'Int');
+    $action = CRM_Utils_Request::retrieve('action', 'String');
+    if ($type == 'inv' && $action == 'load') {
+      $tplName = 'CRM/Fpptaqb/Snippet/FpptaqbStepthruInvoice/load.tpl';
+    }
   }
 }
 

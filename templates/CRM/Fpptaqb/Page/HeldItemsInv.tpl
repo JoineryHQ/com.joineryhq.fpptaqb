@@ -18,7 +18,7 @@
       <td>{$row.loadedInvoice.display_name}</td>
       <td>{$row.loadedInvoice.total_amount}</td>
       <td>
-        <a data-title="foobar" href="{crmURL p="civicrm/fpptaqb/loaditem/inv" q="id=`$row.loadedInvoice.id`"}" class="action-item crm-hover-button crm-popup" title="Load Invoice">Load</a>
+        <a data-title="foobar" href="{crmURL p="civicrm/fpptaqb/itemaction" q="action=load&type=inv&id=`$row.loadedInvoice.id`"}" class="action-item crm-hover-button crm-popup" title="Load Invoice">Load</a>
       </td>      
     </tr>
   {/foreach}
