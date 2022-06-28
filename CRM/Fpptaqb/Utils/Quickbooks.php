@@ -34,7 +34,7 @@ class CRM_Fpptaqb_Utils_Quickbooks {
     return $sync->fetchCustomerDetails($customerId);
   }
   
-  public static function getInoiceDetails($invoiceId) {
+  public static function getInvoiceDetails($invoiceId) {
     $sync = CRM_Fpptaqb_Util::getSyncObject();
     return $sync->fetchInvoiceDetails($invoiceId);
   }

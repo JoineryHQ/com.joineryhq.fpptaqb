@@ -34,6 +34,29 @@ class CRM_Fpptaqb_Page_ItemAction extends CRM_Core_Page {
         }
         break;
       case 'pmt':
+        switch ($itemaction) {
+          case 'load':
+            $payment = CRM_Fpptaqb_Utils_Payment::getReadyToSync($id);
+            $smarty = CRM_Core_Smarty::singleton();
+            $smarty->assign('payment', $payment);
+            CRM_Utils_System::setTitle(E::ts('Load Payment'));
+            break;
+          case 'unhold':
+            $trxnPaymentId = civicrm_api3('FpptaquickbooksTrxnPayment', 'getValue', [
+              'financial_trxn_id' => $id,
+              'quickbooks_id' => ['IS NULL' => 1],
+              'return' => 'id'
+            ]);
+            civicrm_api3('FpptaquickbooksTrxnPayment', 'delete', [
+              'id' => $trxnPaymentId,
+            ]);
+            $msg = E::ts('Payment %1 has been un-held.', [1 => $id]);
+            CRM_Core_Session::setStatus($msg, 'Success', 'success');
+            CRM_Utils_System::redirect(CRM_Utils_System::url('civicrm/fpptaqb/helditems/pmt'));
+            break;
+          default:
+            CRM_Core_Error::statusBounce('Invalid action for type "pmt"; must be "load" or "unhold"');
+        }
         break;
       default:
         CRM_Core_Error::statusBounce('Invalid type; must be "inv" or "pmt"');

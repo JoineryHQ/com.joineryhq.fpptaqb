@@ -15,6 +15,9 @@ function fpptaqb_civicrm_alterTemplateFile($formName, &$form, $context, &$tplNam
     if ($type === 'inv' && $itemaction === 'load') {
       $tplName = 'CRM/Fpptaqb/Snippet/FpptaqbStepthruInvoice/load.tpl';
     }
+    elseif ($type === 'pmt' && $itemaction === 'load') {
+      $tplName = 'CRM/Fpptaqb/Snippet/FpptaqbStepthruPayment/load.tpl';
+    }
   }
 }
 

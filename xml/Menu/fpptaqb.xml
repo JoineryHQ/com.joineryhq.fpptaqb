@@ -13,15 +13,21 @@
     <access_arguments>fpptaqb: sync to quickbooks</access_arguments>
   </item>
   <item>
+    <path>civicrm/fpptaqb/itemaction</path>
+    <page_callback>CRM_Fpptaqb_Page_ItemAction</page_callback>
+    <title>ItemAction</title>
+    <access_arguments>fpptaqb: sync to quickbooks</access_arguments>
+  </item>
+  <item>
     <path>civicrm/fpptaqb/helditems/inv</path>
     <page_callback>CRM_Fpptaqb_Page_HeldItemsInv</page_callback>
     <title>QuickBooks Sync: Held Invoices</title>
     <access_arguments>fpptaqb: sync to quickbooks</access_arguments>
   </item>
   <item>
-    <path>civicrm/fpptaqb/itemaction</path>
-    <page_callback>CRM_Fpptaqb_Page_ItemAction</page_callback>
-    <title>ItemAction</title>
+    <path>civicrm/fpptaqb/helditems/pmt</path>
+    <page_callback>CRM_Fpptaqb_Page_HeldItemsPmt</page_callback>
+    <title>QuickBooks Sync: Held Payments</title>
     <access_arguments>fpptaqb: sync to quickbooks</access_arguments>
   </item>
 </menu>
