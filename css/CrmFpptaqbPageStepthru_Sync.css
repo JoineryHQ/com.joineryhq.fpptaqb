@@ -5,7 +5,8 @@
 .crm-container a.button.fpptaqb-sync-button {
   display: none;
 }
-.crm-container a.button.fpptaqb-sync-button#fpptaqb-button-begin {
+.crm-container a.button.fpptaqb-sync-button#fpptaqb-button-begin,
+.crm-container a.button.fpptaqb-sync-button#fpptaqb-button-exit {
   display: block;
 }
 

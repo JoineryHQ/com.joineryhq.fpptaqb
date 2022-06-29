@@ -46,9 +46,9 @@ function fpptaqb_civicrm_alterTemplateFile($formName, &$form, $context, &$tplNam
 }
 
 /**
- * Implements hook_civicrm_fpptaqbhelper_settings().
+ * Implements hook_civicrm_fpptaqb_settings().
  */
-function fpptaqb_civicrm_fpptaqbhelper_settings(&$settingsGroups) {
+function fpptaqb_civicrm_fpptaqb_settings(&$settingsGroups) {
   $settingsGroups[] = 'fpptaqb';
 }
 
@@ -170,3 +170,46 @@ function fpptaqb_civicrm_entityTypes(&$entityTypes) {
 //  ]);
 //  _fpptaqb_civix_navigationMenu($menu);
 //}
+
+
+
+/**
+ * Implements hook_civicrm_navigationMenu().
+ *
+ * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_navigationMenu
+ */
+/**
+ * Implements hook_civicrm_navigationMenu().
+ *
+ * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_navigationMenu
+ */
+function fpptaqb_civicrm_navigationMenu(&$menu) {
+  _fpptaqb_get_max_navID($menu, $max_navID);
+  _fpptaqb_civix_insert_navigation_menu($menu, 'Contributions', array(
+    'label' => E::ts('FPPTA QuickBooks Sync'),
+    'name' => 'FPPTA QuickBooks Sync',
+    'url' => 'civicrm/fpptaqb/stepthru',
+    'permission' => 'fpptaqb: sync to quickbooks',
+    'operator' => 'AND',
+    'separator' => NULL,
+    'navID' => ++$max_navID,
+  ));
+  _fpptaqb_civix_navigationMenu($menu);
+}
+
+/**
+ * For an array of menu items, recursively get the value of the greatest navID
+ * attribute.
+ * @param <type> $menu
+ * @param <type> $max_navID
+ */
+function _fpptaqb_get_max_navID(&$menu, &$max_navID = NULL) {
+  foreach ($menu as $id => $item) {
+    if (!empty($item['attributes']['navID'])) {
+      $max_navID = max($max_navID, $item['attributes']['navID']);
+    }
+    if (!empty($item['child'])) {
+      _fpptaqb_get_max_navID($item['child'], $max_navID);
+    }
+  }
+}

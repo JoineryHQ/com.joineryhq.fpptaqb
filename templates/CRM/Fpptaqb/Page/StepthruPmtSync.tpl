@@ -26,7 +26,7 @@
   {crmButton class="fpptaqb-sync-button" href="#" id="fpptaqb-button-sync-retry" title="Try again to sync this payment to QuickBooks" icon="fa-paper-plane"}Re-try sync this item to QuickBooks{/crmButton}
   {crmButton class="fpptaqb-sync-button" href="#" id="fpptaqb-button-hold" title="Mark this item \"held\" and move on" icon="fa-ban"}Skip this item, and load next{/crmButton}
   {crmButton class="fpptaqb-sync-button" href="#" id="fpptaqb-button-next" title="Load the next payment" icon="fa-chevron-right"}Load next item{/crmButton}
-  {crmButton class="fpptaqb-sync-button" href="/civicrm/fpptaqb/stepthru/pmt" id="fpptaqb-button-exit" title="Exit this process" icon="fa-times"}Exit the step-through process{/crmButton}
+  {crmButton class="fpptaqb-sync-button" href="/civicrm/fpptaqb/stepthru" id="fpptaqb-button-exit" title="Exit this process" icon="fa-times"}Exit the step-through process{/crmButton}
 </div>
 {else}
 <p class="status">There are no items to ready sync.</p>

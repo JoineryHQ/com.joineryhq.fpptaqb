@@ -31,3 +31,4 @@
   <p class="status">{ts}There are no held invoices.{/ts}</p>
 {/if}
 {crmButton href="/civicrm/fpptaqb/stepthru/inv" title="Return to step-thru invoice sync" icon=""}Return to step-thru invoice sync{/crmButton}
+{crmButton href="/civicrm/fpptaqb/stepthru" title="Return to step-thru invoice sync" icon=""}Return to step-thru dashboard{/crmButton}

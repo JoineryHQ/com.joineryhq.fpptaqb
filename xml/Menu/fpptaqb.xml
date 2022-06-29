@@ -4,6 +4,7 @@
     <path>civicrm/fpptaqb/stepthru/inv</path>
     <page_callback>CRM_Fpptaqb_Page_StepthruInvSync</page_callback>
     <title>Step-thru QuickBooks sync: Invoices</title>
+    <x-fixme>change perms to 'administer CiviCRM'</x-fixme>
     <access_arguments>fpptaqb: sync to quickbooks</access_arguments>
   </item>
   <item>
@@ -28,6 +29,12 @@
     <path>civicrm/fpptaqb/helditems/pmt</path>
     <page_callback>CRM_Fpptaqb_Page_HeldItemsPmt</page_callback>
     <title>QuickBooks Sync: Held Payments</title>
+    <access_arguments>fpptaqb: sync to quickbooks</access_arguments>
+  </item>
+  <item>
+    <path>civicrm/fpptaqb/stepthru</path>
+    <page_callback>CRM_Fpptaqb_Page_StepThruDashboard</page_callback>
+    <title>Step-thru QuickBooks sync: Dashboard</title>
     <access_arguments>fpptaqb: sync to quickbooks</access_arguments>
   </item>
 </menu>
