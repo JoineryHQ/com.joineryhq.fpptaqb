@@ -6,6 +6,30 @@ use CRM_Fpptaqb_ExtensionUtil as E;
 // phpcs:enable
 
 /**
+ * Implements hook_civicrm_apiWrappers().
+ */
+function fpptaqb_civicrm_apiWrappers(&$wrappers, $apiRequest) {
+  // The APIWrapper is conditionally registered so that it runs only when appropriate
+  $loggedApiEntities = [
+    'fpptaquickbooksaccountitem' => ['create'],
+    'fpptaquickbookscontactcustomer' => ['create'],
+    'fpptaquickbookscontributioninvoice' => ['create'],
+    'fpptaquickbookstrxnpayment' => ['create'],
+    'fpptaqbstepthruinvoice' => ['load', 'sync', 'hold'],
+    'fpptaqbstepthrupayment' => ['load', 'sync', 'hold'],
+  ];
+  $loggedActions = ($loggedApiEntities[strtolower($apiRequest['entity'])] ?? array());
+  if (
+    !empty($loggedActions)
+    && in_array(strtolower($apiRequest['action']), $loggedActions)
+  ) {
+    if ($apiRequest['version'] == 3) {
+      $wrappers[] = new CRM_Fpptaqb_APIWrappers_Log();
+    }
+  }
+}
+
+/**
  * Implements hook_civicrm_alterTemplateFile().
  */
 function fpptaqb_civicrm_alterTemplateFile($formName, &$form, $context, &$tplName) {
@@ -37,11 +61,11 @@ function fpptaqb_civicrm_permission(&$permissions) {
   $permissions['fpptaqb: administer quickbooks configuration'] = [
     ts('FPPTA QuickBooks: administer configuration'),                     // label
     null,  // description
-  ];  
+  ];
   $permissions['fpptaqb: sync to quickbooks'] = [
     ts('FPPTA QuickBooks: sync data to QuickBooks'),                     // label
     null,  // description
-  ];  
+  ];
   _fpptaqb_civix_civicrm_config($config);
 }
 

@@ -13,5 +13,13 @@ class CRM_Fpptaqb_Util {
       throw new CRM_Fpptaqb_Exception('No live QB sync object has been created yet.');
     }
   }
+  
+  public static function getLogCallerId() {
+    if (!isset(Civi::$statics[__METHOD__]['logCallerId'])) {
+      $maxId = CRM_Core_DAO::singleValueQuery("select ifnull(max(id), 0) from civicrm_fpptaquickbooks_log");
+      Civi::$statics[__METHOD__]['logCallerId'] = uniqid() . $maxId;
+    }
+    return Civi::$statics[__METHOD__]['logCallerId'];
+  }
 
 }

@@ -21,11 +21,18 @@
     <name>contact_id</name>
     <type>int unsigned</type>
     <comment>FK to Contact</comment>
+    <unique>true</unique>
   </field>
+  <index>
+    <name>UI_fpptaquickbooks_contact_customer_contact_id</name>
+    <fieldName>contact_id</fieldName>
+    <unique>true</unique>
+  </index>  
 
   <field>
     <name>quickbooks_id</name>
-    <type>int unsigned</type>
+    <type>varchar</type>
+    <length>255</length>
     <comment>Quickbooks customer ID</comment>
   </field>
 

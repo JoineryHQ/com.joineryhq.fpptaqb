@@ -18,6 +18,7 @@
 SET FOREIGN_KEY_CHECKS=0;
 
 DROP TABLE IF EXISTS `civicrm_fpptaquickbooks_trxn_payment`;
+DROP TABLE IF EXISTS `civicrm_fpptaquickbooks_log`;
 DROP TABLE IF EXISTS `civicrm_fpptaquickbooks_contribution_invoice`;
 DROP TABLE IF EXISTS `civicrm_fpptaquickbooks_contact_customer`;
 DROP TABLE IF EXISTS `civicrm_fpptaquickbooks_account_item`;
@@ -55,8 +56,9 @@ ENGINE=InnoDB;
 CREATE TABLE `civicrm_fpptaquickbooks_contact_customer` (
   `id` int unsigned NOT NULL AUTO_INCREMENT COMMENT 'Unique FpptaquickbooksContactCustomer ID',
   `contact_id` int unsigned COMMENT 'FK to Contact',
-  `quickbooks_id` int unsigned COMMENT 'Quickbooks customer ID',
+  `quickbooks_id` varchar(255) COMMENT 'Quickbooks customer ID',
   PRIMARY KEY (`id`),
+  UNIQUE INDEX `UI_fpptaquickbooks_contact_customer_contact_id`(contact_id),
   CONSTRAINT FK_civicrm_fpptaquickbooks_contact_customer_contact_id FOREIGN KEY (`contact_id`) REFERENCES `civicrm_contact`(`id`) ON DELETE CASCADE
 )
 ENGINE=InnoDB;
@@ -74,6 +76,29 @@ CREATE TABLE `civicrm_fpptaquickbooks_contribution_invoice` (
   `quickbooks_id` int unsigned COMMENT 'Quickbooks invoice ID',
   PRIMARY KEY (`id`),
   CONSTRAINT FK_civicrm_fpptaquickbooks_contribution_invoice_contribution_id FOREIGN KEY (`contribution_id`) REFERENCES `civicrm_contribution`(`id`) ON DELETE CASCADE
+)
+ENGINE=InnoDB;
+
+-- /*******************************************************
+-- *
+-- * civicrm_fpptaquickbooks_log
+-- *
+-- * Log relevant api calls for fpptaqb
+-- *
+-- *******************************************************/
+CREATE TABLE `civicrm_fpptaquickbooks_log` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT COMMENT 'Unique FpptaquickbooksLog ID',
+  `created` datetime COMMENT 'When was the log entry created.',
+  `contact_id` int unsigned COMMENT 'Contact who created this log entry; FK to civicrm_contact',
+  `unique_request_id` varchar(64) COMMENT 'Unique identifier for a single php invocation.',
+  `entity_id_param` varchar(64) COMMENT 'Name of api parameter identifying the relevant entity.',
+  `entity_id` int unsigned COMMENT 'Foreign key to the referenced item.',
+  `api_entity` varchar(64) COMMENT 'API entity for the api call which triggered this log entry',
+  `api_action` varchar(64) COMMENT 'API action for the api call which triggered this log entry',
+  `api_params` varchar(2550) COMMENT 'API parameters for the api call which triggered this log entry',
+  `api_output` text COMMENT 'API parameters for the api call which triggered this log entry',
+  PRIMARY KEY (`id`),
+  CONSTRAINT FK_civicrm_fpptaquickbooks_log_contact_id FOREIGN KEY (`contact_id`) REFERENCES `civicrm_contact`(`id`) ON DELETE CASCADE
 )
 ENGINE=InnoDB;
 

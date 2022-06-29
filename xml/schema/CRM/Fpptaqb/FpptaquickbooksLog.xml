@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+
+<table>
+  <base>CRM/Fpptaqb</base>
+  <class>FpptaquickbooksLog</class>
+  <name>civicrm_fpptaquickbooks_log</name>
+  <comment>Log relevant api calls for fpptaqb</comment>
+  <log>true</log>
+
+  <field>
+    <name>id</name>
+    <type>int unsigned</type>
+    <required>true</required>
+    <comment>Unique FpptaquickbooksLog ID</comment>
+    <html>
+      <type>Number</type>
+    </html>
+  </field>
+  <primaryKey>
+    <name>id</name>
+    <autoincrement>true</autoincrement>
+  </primaryKey>
+
+  <field>
+    <name>created</name>
+    <title>Created Date</title>
+    <type>datetime</type>
+    <comment>When was the log entry created.</comment>
+  </field>
+  
+  <field>
+    <name>contact_id</name>
+    <type>int unsigned</type>
+    <title>Contact ID</title>
+    <comment>Contact who created this log entry; FK to civicrm_contact</comment>
+    <html>
+      <label>Contact</label>
+    </html>
+  </field>
+  <foreignKey>
+    <name>contact_id</name>
+    <table>civicrm_contact</table>
+    <key>id</key>
+    <onDelete>CASCADE</onDelete>
+  </foreignKey>
+
+  <field>
+    <name>unique_request_id</name>
+    <title>Unique Request ID</title>
+    <type>varchar</type>
+    <length>64</length>
+    <comment>Unique identifier for a single php invocation.</comment>
+  </field>
+
+  <field>
+    <name>entity_id_param</name>
+    <title>Entity ID Param</title>
+    <type>varchar</type>
+    <length>64</length>
+    <comment>Name of api parameter identifying the relevant entity.</comment>
+  </field>
+  <field>
+    <name>entity_id</name>
+    <title>Entity ID </title>
+    <type>int unsigned</type>
+    <comment>Foreign key to the referenced item.</comment>
+  </field>
+
+  <field>
+    <name>api_entity</name>
+    <title>API entity</title>
+    <type>varchar</type>
+    <length>64</length>
+    <comment>API entity for the api call which triggered this log entry</comment>
+  </field>
+
+  <field>
+    <name>api_action</name>
+    <title>API action</title>
+    <type>varchar</type>
+    <length>64</length>
+    <comment>API action for the api call which triggered this log entry</comment>
+  </field>
+
+  <field>
+    <name>api_params</name>
+    <title>API parameters</title>
+    <type>varchar</type>
+    <length>2550</length>
+    <comment>API parameters for the api call which triggered this log entry</comment>
+  </field>
+
+  <field>
+    <name>api_output</name>
+    <title>Note</title>
+    <type>text</type>
+    <comment>API parameters for the api call which triggered this log entry</comment>
+    <html>
+      <type>TextArea</type>
+      <rows>4</rows>
+      <cols>60</cols>
+    </html>
+  </field>
+
+
+</table>
