@@ -25,7 +25,13 @@
     <name>financial_trxn_id</name>
     <type>int unsigned</type>
     <comment>FK to civicrm_financial_trxn</comment>
+    <unique>true</unique>
   </field>
+  <index>
+    <name>UI_fpptaquickbooks_trxn_payment_financial_trxn_id</name>
+    <fieldName>financial_trxn_id</fieldName>
+    <unique>true</unique>
+  </index>
   <foreignKey>
     <name>financial_trxn_id</name>
     <table>civicrm_financial_trxn</table>

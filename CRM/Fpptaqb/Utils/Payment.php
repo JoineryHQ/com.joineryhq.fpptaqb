@@ -112,8 +112,6 @@ class CRM_Fpptaqb_Utils_Payment {
   public static function getHeldIds() {
     static $ids;
     if (!isset($ids)) {
-      // FIXME: hard-coded day-zero cutoff date
-      $dayZero = '20220501';
       $ids = [];
       $query = "
         SELECT ft.id
@@ -133,17 +131,19 @@ class CRM_Fpptaqb_Utils_Payment {
   /**
    * For a given contribution id, check that the contribution exists.
    *
-   * @param int $id
+   * @param int $financialTrxnId
    *
-   * @return boolean|int FALSE if not valid; otherwise the given $id.
+   * @return boolean|int FALSE if not valid; otherwise the given $financialTrxnId.
    */
-  public static function validateId($id) {
-    // FIXME: STUB.
-    if ($id == -1) {
-      return FALSE;
+  public static function validateId($financialTrxnId) {
+    $count = civicrm_api3('FinancialTrxn', 'getCount', [
+      'id' => $financialTrxnId,
+    ]);
+    if ($count) {
+      return $financialTrxnId;
     }
     else {
-      return $id;
+      return FALSE;
     }
   }
 
@@ -175,12 +175,6 @@ FIXME:CONTACT-NAMES
   public static function getHash($trxnId) {
     $payment = self::getReadyToSync($trxnId);
     return sha1(json_encode($payment));
-  }
-
-  // FIXME: Delete this unused method?
-  public static function getContactId($contributionId) {
-    // FIXME: STUB
-    return 184; // Bay Health School
   }
 
   public static function sync($trxnId) {

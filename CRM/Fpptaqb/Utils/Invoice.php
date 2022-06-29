@@ -126,12 +126,14 @@ class CRM_Fpptaqb_Utils_Invoice {
    * @return boolean|int FALSE if not valid; otherwise the given $id.
    */
   public static function validateId($id) {
-    // FIXME: STUB.
-    if ($id == -1) {
-      return FALSE;
+    $count = civicrm_api3('Contribution', 'getCount', [
+      'id' => $id,
+    ]);
+    if ($count) {
+      return $id;
     }
     else {
-      return $id;
+      return FALSE;
     }
   }
 

@@ -25,7 +25,13 @@
     <name>contribution_id</name>
     <type>int unsigned</type>
     <comment>FK to Contribution</comment>
+    <unique>true</unique>
   </field>
+  <index>
+    <name>UI_fpptaquickbooks_contribution_invoice_contribution_id</name>
+    <fieldName>contribution_id</fieldName>
+    <unique>true</unique>
+  </index>
   <foreignKey>
     <name>contribution_id</name>
     <table>civicrm_contribution</table>
