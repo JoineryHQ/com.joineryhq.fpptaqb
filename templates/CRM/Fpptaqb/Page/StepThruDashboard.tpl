@@ -1,3 +1,16 @@
+<h3>Settings <a style="margin-left: 3em" class="action-item crm-hover-button" href="{crmURL p="civicrm/admin/fpptaqbhelper/settings" q="reset=1"}">Edit settings</a></h3>
+<table class="report-layout statistics-table">
+    <tr>
+      <th class="statistics" scope="row">{ts}Minimum invoice/payment date{/ts}</th>
+      <td>{$fpptaqb_minimum_date}</td>
+    </tr>
+    <tr>
+      <th class="statistics" scope="row">{ts}Days to wait before syncing an invoice or payment{/ts}</th>
+      <td>{$fpptaqb_sync_wait_days}</td>
+    </tr>
+</table>
+
+<h3 style="margin-top: 2em">Sync data</h3>
 <table id="fpptaqbSyncDashboard" class="row-highlight">
   <thead>
     <tr>

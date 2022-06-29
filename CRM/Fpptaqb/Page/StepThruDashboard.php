@@ -14,8 +14,10 @@ class CRM_Fpptaqb_Page_StepThruDashboard extends CRM_Core_Page {
         'statistics' => CRM_Fpptaqb_Utils_Payment::getStepthruStatistics(),
       ],
     ];
-    // Example: Assign a variable for use in a template
     $this->assign('rows', $rows);
+    $this->assign('fpptaqb_minimum_date', Civi::settings()->get('fpptaqb_minimum_date'));
+    $this->assign('fpptaqb_sync_wait_days', Civi::settings()->get('fpptaqb_sync_wait_days'));
+    $this->assign('is_admin', CRM_Core_Permission::check('administer CiviCRM'));
 
     parent::run();
   }
