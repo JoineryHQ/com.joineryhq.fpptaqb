@@ -48,8 +48,26 @@ function fpptaqb_civicrm_alterTemplateFile($formName, &$form, $context, &$tplNam
 /**
  * Implements hook_civicrm_fpptaqb_settings().
  */
-function fpptaqb_civicrm_fpptaqb_settings(&$settingsGroups) {
+function fpptaqb_civicrm_fpptaqbhelper_settings(&$settingsGroups) {
   $settingsGroups[] = 'fpptaqb';
+}
+
+/**
+ * Implements hook_civicrm_validateForm().
+ * 
+ * This extension uses fpptaqbhelper to manage settings, so it must use this
+ * hook to validate its settings in that form.
+ */
+function fpptaqb_civicrm_validateForm($formName, &$fields, &$files, &$form, &$errors) {
+  if ($formName == 'CRM_Fpptaqbhelper_Form_Settings') {
+    if (!empty($fields['fpptaqb_minimum_date'])) {
+      $yyyymmdd = CRM_Utils_Date::customFormat($fields['fpptaqb_minimum_date'], '%Y-%m-%d');
+      if ($yyyymmdd != $fields['fpptaqb_minimum_date']) {
+        $thisYear = CRM_Utils_Date::getToday(NULL, 'Y');
+        $errors['fpptaqb_minimum_date'] = E::ts('Please specify a date in the format "YYYY-MM-DD" (e.g. "%1-12-01" for Dec. 1 this year.)', ['1' => $thisYear]);
+      }
+    }
+  }
 }
 
 /**

@@ -10,8 +10,7 @@ class CRM_Fpptaqb_Utils_Payment {
   public static function getReadyToSyncIds() {
     static $ids;
     if (!isset($ids)) {    
-      // FIXME: hard-coded day-zero cutoff date
-      $dayZero = '20220501';
+      $dayZero = CRM_Utils_Date::isoToMysql(Civi::settings()->get('fpptaqb_minimum_date'));
       $ids = [];
       $query = "
         select
