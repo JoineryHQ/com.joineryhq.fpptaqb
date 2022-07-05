@@ -76,15 +76,14 @@ function fpptaqb_civicrm_validateForm($formName, &$fields, &$files, &$form, &$er
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_permission/
  */
 function fpptaqb_civicrm_permission(&$permissions) {
-  $permissions['fpptaqb: administer quickbooks configuration'] = [
+  $permissions['fpptaqb_administer_quickbooks_configuration'] = [
     ts('FPPTA QuickBooks: administer configuration'),                     // label
     null,  // description
   ];
-  $permissions['fpptaqb: sync to quickbooks'] = [
+  $permissions['fpptaqb_sync_to_quickbooks'] = [
     ts('FPPTA QuickBooks: sync data to QuickBooks'),                     // label
     null,  // description
   ];
-  _fpptaqb_civix_civicrm_config($config);
 }
 
 /**
@@ -207,7 +206,7 @@ function fpptaqb_civicrm_navigationMenu(&$menu) {
     'label' => E::ts('FPPTA QuickBooks Sync'),
     'name' => 'FPPTA QuickBooks Sync',
     'url' => 'civicrm/fpptaqb/stepthru',
-    'permission' => 'fpptaqb: sync to quickbooks',
+    'permission' => 'fpptaqb_sync_to_quickbooks',
     'operator' => 'AND',
     'separator' => NULL,
     'navID' => ++$max_navID,
