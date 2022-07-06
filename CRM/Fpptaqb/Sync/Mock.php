@@ -105,6 +105,13 @@ class CRM_Fpptaqb_Sync_Mock {
     return rand(1000, 9999);
   }
   
+  public function fetchItemById($id) {
+    // In LIVE sync this should probably be an actual live API query, but in
+    // this mock we'll just use the static values from self::fetchActiveItemsList().
+    $items = $this->fetchActiveItemsList();
+    return $items[$id];
+  }
+
   public function fetchActiveItemsList() {
     $json = '
       {
@@ -3940,8 +3947,7 @@ class CRM_Fpptaqb_Sync_Mock {
        }
       ';
       $response = json_decode($json, TRUE);
-      return $response['QueryResponse']['Item'];
-
+      return CRM_Utils_Array::rekey($response['QueryResponse']['Item'], 'Id');
   }
 
 }

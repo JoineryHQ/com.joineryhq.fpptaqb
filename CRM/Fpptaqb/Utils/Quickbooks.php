@@ -3,11 +3,29 @@
 class CRM_Fpptaqb_Utils_Quickbooks {
 
   public static function getItemDetails(int $financialTypeId) {
-    // FIXME: STUB
-    return [
-      'code' => "FIXME:qb{$financialTypeId}",
-      'description' => "FIXME:qbDescription-{$financialTypeId}",
-    ];
+    $itemDetails = [];
+    // Get financial account for this financial Type
+    $entityFinancialAccount = civicrm_api3('entityFinancialAccount', 'get', [
+      'sequential' => TRUE,
+      'account_relationship' => 1,
+      'entity_table' => 'civicrm_financial_type',
+      'entity_id' => $financialTypeId,
+    ]);
+
+    if ($entityFinancialAccount['count'] == 1) {
+      $accountItem = civicrm_api3('FpptaquickbooksAccountItem', 'get', [
+        'sequential' => TRUE,
+        'financial_account_id' => $entityFinancialAccount['values'][0]['financial_account_id'],
+      ]);
+      if ($accountItem['count'] == 1) {
+        $qbItemId = $accountItem['values'][0]['quickbooks_id'];
+        $itemDetails['code'] = $qbItemId;
+        $sync = CRM_Fpptaqb_Util::getSyncObject();
+        $itemDetails = $sync->fetchItemById($qbItemId);
+      }
+    }
+
+    return $itemDetails;
   }
 
   public static function getCustomerIdForContact($contactId) {

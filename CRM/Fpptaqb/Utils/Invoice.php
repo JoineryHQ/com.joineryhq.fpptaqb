@@ -1,5 +1,9 @@
 <?php
 
+// phpcs:disable
+use CRM_Fpptaqb_ExtensionUtil as E;
+// phpcs:enable
+
 class CRM_Fpptaqb_Utils_Invoice {
 
   /**
@@ -67,8 +71,10 @@ class CRM_Fpptaqb_Utils_Invoice {
         $lineItem['financialType'] = $lineItem['api.FinancialType.get']['values'][0]['name'];
         $financialTypeId = $lineItem['api.FinancialType.get']['values'][0]['id'];
         $qbItemDetails = CRM_Fpptaqb_Utils_Quickbooks::getItemDetails($financialTypeId);
-        $lineItem['qbGlCode'] = $qbItemDetails['code'];
-        $lineItem['qbGlDescription'] = $qbItemDetails['description'];
+        if (empty($qbItemDetails)) {
+          throw new CRM_Fpptaqb_Exception(E::ts('QuickBooks item not found for financial type: %1; is the Financial Account properly configured?', ['%1' => $lineItem['financialType']]), 'fpptaqb-500');
+        }
+        $lineItem['qbItemDetails'] = $qbItemDetails;
       }
       $contribution = civicrm_api3('Contribution', 'getSingle', [
         'id' => $contributionId,
