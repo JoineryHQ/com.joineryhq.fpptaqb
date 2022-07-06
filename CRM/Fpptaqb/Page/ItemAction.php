@@ -17,12 +17,12 @@ class CRM_Fpptaqb_Page_ItemAction extends CRM_Core_Page {
             CRM_Utils_System::setTitle(E::ts('Load Invoice'));
             break;
           case 'unhold':
-            $contributionInvId = civicrm_api3('FpptaquickbooksContributionInvoice', 'getValue', [
+            $contributionInvId = _fpptaqb_civicrmapi('FpptaquickbooksContributionInvoice', 'getValue', [
               'contribution_id' => $id,
               'quickbooks_id' => ['IS NULL' => 1],
               'return' => 'id'
             ]);
-            civicrm_api3('FpptaquickbooksContributionInvoice', 'delete', [
+            _fpptaqb_civicrmapi('FpptaquickbooksContributionInvoice', 'delete', [
               'id' => $contributionInvId,
             ]);
             $msg = E::ts('Contribution %1 has been un-held.', [1 => $id]);
@@ -42,12 +42,12 @@ class CRM_Fpptaqb_Page_ItemAction extends CRM_Core_Page {
             CRM_Utils_System::setTitle(E::ts('Load Payment'));
             break;
           case 'unhold':
-            $trxnPaymentId = civicrm_api3('FpptaquickbooksTrxnPayment', 'getValue', [
+            $trxnPaymentId = _fpptaqb_civicrmapi('FpptaquickbooksTrxnPayment', 'getValue', [
               'financial_trxn_id' => $id,
               'quickbooks_id' => ['IS NULL' => 1],
               'return' => 'id'
             ]);
-            civicrm_api3('FpptaquickbooksTrxnPayment', 'delete', [
+            _fpptaqb_civicrmapi('FpptaquickbooksTrxnPayment', 'delete', [
               'id' => $trxnPaymentId,
             ]);
             $msg = E::ts('Payment %1 has been un-held.', [1 => $id]);

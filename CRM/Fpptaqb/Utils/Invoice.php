@@ -54,7 +54,7 @@ class CRM_Fpptaqb_Utils_Invoice {
   public static function getReadyToSync(int $contributionId) {
     static $cache = [];
     if (!isset($cache[$contributionId])) {
-      $contributionCount = civicrm_api3('Contribution', 'getCount', [
+      $contributionCount = _fpptaqb_civicrmapi('Contribution', 'getCount', [
         'id' => $contributionId,
       ]);
 
@@ -62,7 +62,7 @@ class CRM_Fpptaqb_Utils_Invoice {
         throw new CRM_Fpptaqb_Exception('Contribution not found', 404);
       }
 
-      $lineItemsGet = civicrm_api3('LineItem', 'get', [
+      $lineItemsGet = _fpptaqb_civicrmapi('LineItem', 'get', [
         'sequential' => 1,
         'contribution_id' => $contributionId,
         'api.FinancialType.get' => ['return' => ["name"]],
@@ -77,15 +77,18 @@ class CRM_Fpptaqb_Utils_Invoice {
         }
         $lineItem['qbItemDetails'] = $qbItemDetails;
       }
-      $contribution = civicrm_api3('Contribution', 'getSingle', [
+      $contribution = _fpptaqb_civicrmapi('Contribution', 'getSingle', [
         'id' => $contributionId,
       ]);
       $organizationCid = self::getAttributedContactId($contributionId);
+      if (!$organizationCid) {
+        throw new CRM_Fpptaqb_Exception(E::ts('Could not identify an attributed organization for contribution id=%1', ['%1' => $contributionId]), 503);
+      } 
       $qbCustomerId = CRM_Fpptaqb_Utils_Quickbooks::getCustomerIdForContact($organizationCid);
       $qbCustomerDetails = CRM_Fpptaqb_Utils_Quickbooks::getCustomerDetails($qbCustomerId);
       $contribution += [
         'organizationCid' => $organizationCid,
-        'organizationName' => civicrm_api3('Contact', 'getValue', [
+        'organizationName' => _fpptaqb_civicrmapi('Contact', 'getValue', [
           'id' => $organizationCid,
           'return' => 'display_name',
         ]),
@@ -133,7 +136,7 @@ class CRM_Fpptaqb_Utils_Invoice {
    * @return boolean|int FALSE if not valid; otherwise the given $id.
    */
   public static function validateId($id) {
-    $count = civicrm_api3('Contribution', 'getCount', [
+    $count = _fpptaqb_civicrmapi('Contribution', 'getCount', [
       'id' => $id,
     ]);
     if ($count) {
@@ -153,7 +156,7 @@ class CRM_Fpptaqb_Utils_Invoice {
    */
   public static function hold(int $contributionId) {
     // Log the contribution-invoice connection
-    $result = civicrm_api3('FpptaquickbooksContributionInvoice', 'create', [
+    $result = _fpptaqb_civicrmapi('FpptaquickbooksContributionInvoice', 'create', [
       'contribution_id' => $contributionId,
       'quickbooks_id' => 'null',
     ]);
@@ -162,11 +165,9 @@ class CRM_Fpptaqb_Utils_Invoice {
   /**
    * For a given contribution id, compose a formatted note for the QuickBooks invoice.
    */
-  public static function composeQbNote(int $id) {
-    // FIXME: STUB
-    return "CiviCRM Contribution ID: {$id}
-FIXME:CONTACT-NAMES
-";
+  public static function composeQbNote(int $contributionId) {
+    $contactNames = CRM_Fpptaqb_Utils_Invoice::getRelatedContactNames($contributionId);
+    return "CiviCRM Contribution ID: {$contributionId}\n" . implode(', ', $contactNames);
   }
 
   public static function getHash($id) {
@@ -181,11 +182,48 @@ FIXME:CONTACT-NAMES
    * 
    * @param int $contributionId
    * 
-   * @return int
+   * @return int | NULL if none found.
    */
-  public static function getAttributedContactId($contributionId) {
+  public static function getAttributedContactId($contributionId) {    
+    $contribution = _fpptaqb_civicrmapi('Contribution', 'getSingle', ['id' => $contributionId]);
+    $contributionOrgCustomFieldId = Civi::settings()->get('fpptaqbhelper_cf_id_contribution');
+    // Return the org attributed for this contribution, if any.
+    $contributionOrgCid = $contribution['custom_' . $contributionOrgCustomFieldId];
+    if ($contributionOrgCid) {
+      return $contributionOrgCid;
+    }
+    
+    // If we're still here, that means no "attributed organization" value was set 
+    // on the contribution. Perhaps it's a participant payment, so we'll check the
+    // participant record for an "attributed organization".
+    $partiicpantOrgCustomFieldId = Civi::settings()->get('fpptaqbhelper_cf_id_participant');
+    $participantPaymentGet = _fpptaqb_civicrmapi('participantPayment', 'get', [
+      'sequential' => TRUE,
+      'contribution_id' => $contributionId,
+      'api.Participant.get' => [],
+    ]);
+    $participantOrgCid = $participantPaymentGet['values'][0]['api.Participant.get']['values'][0]['custom_' . $partiicpantOrgCustomFieldId . '_id'];
+    // Return whatever that is. If it's nothing, then we can't get it, so we should
+    // just return null anyway.
+    return $participantOrgCid; 
+  }
+
+  /**
+   * For a given contributionId, get an array of display_name for each related contact.
+   * 
+   * @param type $contributionId
+   * 
+   * @return Array [$contactId => $displayName]
+   */
+  public static function getRelatedContactNames($contributionId) {
     // FIXME: STUB
-    return 184; // Bay Health School
+    $contacts = _fpptaqb_civicrmapi('Contact', 'get', [
+      'contact_type' => 'Individual',
+      'options' => [
+        'limit' => 3,
+      ],
+    ]);
+    return CRM_Utils_Array::collect('display_name', $contacts['values']);
   }
 
   public static function sync($contributionId) {
@@ -194,7 +232,7 @@ FIXME:CONTACT-NAMES
     $qbInvId = $sync->pushInv($contribution);
 
     // Log the contribution-invoice connection
-    $result = civicrm_api3('FpptaquickbooksContributionInvoice', 'create', [
+    $result = _fpptaqb_civicrmapi('FpptaquickbooksContributionInvoice', 'create', [
       'contribution_id' => $contributionId,
       'quickbooks_id' => $qbInvId,
     ]);

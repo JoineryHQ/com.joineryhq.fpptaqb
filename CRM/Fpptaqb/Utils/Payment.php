@@ -58,7 +58,7 @@ class CRM_Fpptaqb_Utils_Payment {
   public static function getReadyToSync(int $financialTrxnId) {
     static $cache = [];
     if (!isset($cache[$financialTrxnId])) {
-      $financialTrxnCount = civicrm_api3('FinancialTrxn', 'getCount', [
+      $financialTrxnCount = _fpptaqb_civicrmapi('FinancialTrxn', 'getCount', [
         'id' => $financialTrxnId,
       ]);
 
@@ -66,21 +66,21 @@ class CRM_Fpptaqb_Utils_Payment {
         throw new CRM_Fpptaqb_Exception('Payment not found', 404);
       }
 
-      $financialTrxn = civicrm_api3('FinancialTrxn', 'getSingle', [
+      $financialTrxn = _fpptaqb_civicrmapi('FinancialTrxn', 'getSingle', [
         'id' => $financialTrxnId,
       ]);
-      $contributionId = civicrm_api3('EntityFinancialTrxn', 'getValue', [
+      $contributionId = _fpptaqb_civicrmapi('EntityFinancialTrxn', 'getValue', [
         'entity_table' => "civicrm_contribution", 
         'financial_trxn_id' => $financialTrxnId,
         'return' => 'entity_id'
       ]);
       
-      $contribution = civicrm_api3('Contribution', 'getSingle', ['id' => $contributionId]);
+      $contribution = _fpptaqb_civicrmapi('Contribution', 'getSingle', ['id' => $contributionId]);
 
       $organizationCid = CRM_Fpptaqb_Utils_Invoice::getAttributedContactId($contributionId);
       $qbCustomerId = CRM_Fpptaqb_Utils_Quickbooks::getCustomerIdForContact($organizationCid);
       $qbCustomerDetails = CRM_Fpptaqb_Utils_Quickbooks::getCustomerDetails($qbCustomerId);
-      $qbInvId = civicrm_api3('FpptaquickbooksContributionInvoice', 'getValue', [
+      $qbInvId = _fpptaqb_civicrmapi('FpptaquickbooksContributionInvoice', 'getValue', [
         'contribution_id' => $contributionId,
         'return' => 'quickbooks_id',
       ]);
@@ -89,7 +89,7 @@ class CRM_Fpptaqb_Utils_Payment {
       $financialTrxn += [
         'contributionCid' => $contribution['contact_id'],
         'organizationCid' => $organizationCid,
-        'organizationName' => civicrm_api3('Contact', 'getValue', [
+        'organizationName' => _fpptaqb_civicrmapi('Contact', 'getValue', [
           'id' => $organizationCid,
           'return' => 'display_name',
         ]),
@@ -137,7 +137,7 @@ class CRM_Fpptaqb_Utils_Payment {
    * @return boolean|int FALSE if not valid; otherwise the given $financialTrxnId.
    */
   public static function validateId($financialTrxnId) {
-    $count = civicrm_api3('FinancialTrxn', 'getCount', [
+    $count = _fpptaqb_civicrmapi('FinancialTrxn', 'getCount', [
       'id' => $financialTrxnId,
     ]);
     if ($count) {
@@ -157,7 +157,7 @@ class CRM_Fpptaqb_Utils_Payment {
    */
   public static function hold(int $trxnId) {
     // Log the contribution-invoice connection
-    $result = civicrm_api3('FpptaquickbooksTrxnPayment', 'create', [
+    $result = _fpptaqb_civicrmapi('FpptaquickbooksTrxnPayment', 'create', [
       'financial_trxn_id' => $trxnId,
       'quickbooks_id' => 'null',
     ]);
@@ -184,7 +184,7 @@ FIXME:CONTACT-NAMES
     $qbPmtId = $sync->pushPmt($payment);
 
     // Log the trxn-payment connection
-    $result = civicrm_api3('FpptaquickbooksTrxnPayment', 'create', [
+    $result = _fpptaqb_civicrmapi('FpptaquickbooksTrxnPayment', 'create', [
       'financial_trxn_id' => $trxnId,
       'quickbooks_id' => $qbPmtId,
     ]);

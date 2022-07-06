@@ -39,8 +39,7 @@ class CRM_Fpptaqb_Sync_Mock {
    */
   public function fetchCustomerIdForContact($contactId) {
     $dummyData = [
-      // Bay Health School
-      184 => '234h79fwh79',
+      $contactId => rand(1000, 9999),
     ];
     return $dummyData[$contactId];
   }
@@ -51,12 +50,9 @@ class CRM_Fpptaqb_Sync_Mock {
    * @return Array
    */
   public function fetchCustomerDetails($customerId) {
-    $dummyData = [
-      '234h79fwh79' => [
-        'name' => 'Bay Health School',
-      ]
+    return [
+      'name' => "Random Customer $customerId",
     ];
-    return $dummyData[$customerId];
   }
 
   /**

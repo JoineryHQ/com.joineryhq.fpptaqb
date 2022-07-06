@@ -5,7 +5,7 @@ Attributed to Organization: {$contribution.organizationName} (id={$contribution.
 Found QuickBooks customer "{$contribution.qbCustomerName}" (id={$contribution.qbCustomerId})
 {"$contribution.lineItems"|count} line items found:
 {foreach from=$contribution.lineItems key=lineItemId item=lineItem}
-  - "{$lineItem.label}" {$lineItem.qty} @ {$lineItem.unit_price|crmMoney} (Financial Type: {$lineItem.financialType} => QuickBooks Item: "{$lineItem.qbGlDescription}")
+  - "{$lineItem.label}" {$lineItem.qty} @ {$lineItem.unit_price|crmMoney} (Financial Type: {$lineItem.financialType} => QuickBooks Item: "{$lineItem.qbItemDetails.FullyQualifiedName}")
 {/foreach}
 </pre>
 

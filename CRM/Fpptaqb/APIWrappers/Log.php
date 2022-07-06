@@ -29,7 +29,7 @@ class CRM_Fpptaqb_APIWrappers_Log  implements API_Wrapper {
       'api_action' => $apiRequest['action'],
       'api_params' => json_encode($apiRequest['params']),
     ];
-    $create = civicrm_api3('FpptaquickbooksLog', 'create', $logParams);
+    $create = _fpptaqb_civicrmapi('FpptaquickbooksLog', 'create', $logParams);
 
     // Store the log id in the api request itself, so we can update the log when 
     // the api request completes.
@@ -48,7 +48,7 @@ class CRM_Fpptaqb_APIWrappers_Log  implements API_Wrapper {
         'id' => $apiRequest['fpptaqb']['log_id'],
         'api_output' => json_encode($result),
       ];
-      civicrm_api3('FpptaquickbooksLog', 'create', $logParams);
+      _fpptaqb_civicrmapi('FpptaquickbooksLog', 'create', $logParams);
     }
     return $result;
   }

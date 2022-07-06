@@ -44,7 +44,7 @@ function fpptaqb_civicrm_buildForm($formName, &$form) {
     if ($financialAccountId) {
       // If this is not a "create new" form:
       // Get existing link if any;
-      $accountItem = civicrm_api3('FpptaquickbooksAccountItem', 'get', [
+      $accountItem = _fpptaqb_civicrmapi('FpptaquickbooksAccountItem', 'get', [
         'sequential' => TRUE,
         'financial_account_id' => $financialAccountId,
       ]);
@@ -83,7 +83,7 @@ function fpptaqb_civicrm_postProcess($formName, $form) {
     $financialAccountId = $form->_id;
     // Get existing link if any;
     $accountItemId = NULL;
-    $accountItem = civicrm_api3('FpptaquickbooksAccountItem', 'get', [
+    $accountItem = _fpptaqb_civicrmapi('FpptaquickbooksAccountItem', 'get', [
       'financial_account_id' => $financialAccountId
     ]);
     if ($accountItem['id']) {
@@ -92,7 +92,7 @@ function fpptaqb_civicrm_postProcess($formName, $form) {
     // Update, create, or deletelinked account_item.
     if ($form->_submitValues['fpptaqb_quickbooks_id']) {
       // A QB item is selected, so save the link record.
-      civicrm_api3('FpptaquickbooksAccountItem', 'create', [
+      _fpptaqb_civicrmapi('FpptaquickbooksAccountItem', 'create', [
         'id' => $accountItemId,
         'financial_account_id' => $financialAccountId,
         'quickbooks_id' => $form->_submitValues['fpptaqb_quickbooks_id'],
@@ -100,7 +100,7 @@ function fpptaqb_civicrm_postProcess($formName, $form) {
     }
     else {
       // A QB item is NOT selected, so delete the link record.
-      civicrm_api3('FpptaquickbooksAccountItem', 'delete', [
+      _fpptaqb_civicrmapi('FpptaquickbooksAccountItem', 'delete', [
         'id' => $accountItemId,
       ]);
     }
@@ -331,4 +331,34 @@ function _fpptaqb_get_max_navID(&$menu, &$max_navID = NULL) {
       _fpptaqb_get_max_navID($item['child'], $max_navID);
     }
   }
+}
+
+/**
+ * Log CiviCRM API errors to CiviCRM log.
+ */
+function _fpptaqb_log_api_error(Exception $e, string $entity, string $action, array $params) {
+  $message = "CiviCRM API Error '{$entity}.{$action}': " . $e->getMessage() . '; ';
+  $message .= "API parameters when this error happened: " . json_encode($params) . '; ';
+  $bt = debug_backtrace();
+  $error_location = "{$bt[1]['file']}::{$bt[1]['line']}";
+  $message .= "Error API called from: $error_location";
+  CRM_Core_Error::debug_log_message($message);
+}
+
+/**
+ * CiviCRM API wrapper. Wraps with try/catch, redirects errors to log, saves
+ * typing.
+ */
+function _fpptaqb_civicrmapi(string $entity, string $action, array $params, bool $silence_errors = FALSE) {
+  try {
+    $result = civicrm_api3($entity, $action, $params);
+  }
+  catch (CiviCRM_API3_Exception $e) {
+    _fpptaqb_log_api_error($e, $entity, $action, $params);
+    if (!$silence_errors) {
+      throw $e;
+    }
+  }
+
+  return $result;
 }

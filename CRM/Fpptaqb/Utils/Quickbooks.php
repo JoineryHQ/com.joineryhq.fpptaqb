@@ -5,7 +5,7 @@ class CRM_Fpptaqb_Utils_Quickbooks {
   public static function getItemDetails(int $financialTypeId) {
     $itemDetails = [];
     // Get financial account for this financial Type
-    $entityFinancialAccount = civicrm_api3('entityFinancialAccount', 'get', [
+    $entityFinancialAccount = _fpptaqb_civicrmapi('entityFinancialAccount', 'get', [
       'sequential' => TRUE,
       'account_relationship' => 1,
       'entity_table' => 'civicrm_financial_type',
@@ -13,7 +13,7 @@ class CRM_Fpptaqb_Utils_Quickbooks {
     ]);
 
     if ($entityFinancialAccount['count'] == 1) {
-      $accountItem = civicrm_api3('FpptaquickbooksAccountItem', 'get', [
+      $accountItem = _fpptaqb_civicrmapi('FpptaquickbooksAccountItem', 'get', [
         'sequential' => TRUE,
         'financial_account_id' => $entityFinancialAccount['values'][0]['financial_account_id'],
       ]);
@@ -29,7 +29,7 @@ class CRM_Fpptaqb_Utils_Quickbooks {
   }
 
   public static function getCustomerIdForContact($contactId) {
-    $qbCustomer = civicrm_api3('FpptaquickbooksContactCustomer', 'get', [
+    $qbCustomer = _fpptaqb_civicrmapi('FpptaquickbooksContactCustomer', 'get', [
       'sequential' => 1,
       'contact_id' => $contactId,
     ]);
@@ -39,7 +39,7 @@ class CRM_Fpptaqb_Utils_Quickbooks {
     else {
       $sync = CRM_Fpptaqb_Util::getSyncObject();
       $customerId = $sync->fetchCustomerIdForContact($contactId);
-      civicrm_api3('FpptaquickbooksContactCustomer', 'create', [
+      _fpptaqb_civicrmapi('FpptaquickbooksContactCustomer', 'create', [
         'contact_id' => $contactId,
         'quickbooks_id' => $customerId,
       ]);
