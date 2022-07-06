@@ -25,7 +25,13 @@
     <name>financial_account_id</name>
     <type>int unsigned</type>
     <comment>FK to Financial Account</comment>
+    <unique>true</unique>
   </field>
+  <index>
+    <name>UI_fpptaquickbooks_account_item_financial_account_id</name>
+    <fieldName>financial_account_id</fieldName>
+    <unique>true</unique>
+  </index>  
   <foreignKey>
     <name>financial_account_id</name>
     <table>civicrm_financial_account</table>

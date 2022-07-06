@@ -42,6 +42,7 @@ CREATE TABLE `civicrm_fpptaquickbooks_account_item` (
   `financial_account_id` int unsigned COMMENT 'FK to Financial Account',
   `quickbooks_id` int unsigned COMMENT 'Quickbooks invoice ID',
   PRIMARY KEY (`id`),
+  UNIQUE INDEX `UI_fpptaquickbooks_account_item_financial_account_id`(financial_account_id),
   CONSTRAINT FK_civicrm_fpptaquickbooks_account_item_financial_account_id FOREIGN KEY (`financial_account_id`) REFERENCES `civicrm_financial_account`(`id`) ON DELETE CASCADE
 )
 ENGINE=InnoDB;
