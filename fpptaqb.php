@@ -6,6 +6,108 @@ use CRM_Fpptaqb_ExtensionUtil as E;
 // phpcs:enable
 
 /**
+ * Implements hook_civicrm_pageRun().
+ */
+function fpptaqb_civicrm_pageRun(&$page) {
+  $pageName = $page->getVar('_name');
+//  $page = new CRM_Financial_Page_FinancialAccount();
+  if ($pageName == 'CRM_Financial_Page_FinancialAccount' && $page->getVar('_action') == CRM_Core_Action::BROWSE) {
+    $smarty = CRM_Core_Smarty::singleton();
+    $rows = $smarty->get_template_vars('rows');
+    $a = 1;
+  }
+}
+
+/**
+ * Implements hook_civicrm_buildForm().
+ */
+function fpptaqb_civicrm_buildForm($formName, &$form) {
+  if (
+    $formName == "CRM_Financial_Form_FinancialAccount"
+    && ($form->_defaultValues['financial_account_type_id'][0] ?? ($form->_defaultValues['financial_account_type_id'] ?? 3)) == 3
+  ) {
+    // For the form CRM_Financial_Form_FinancialAccount
+    // when financial_account_type_id is NULL or 3, we'll add a 'quickbooks item'
+    // field for linking to the correct QB item.
+    // First get the list of QB Item options and add the select element.
+    $options = CRM_Fpptaqb_Utils_FinancialAccount::getItemOptions();
+    $form->addElement(
+      'select',
+      'fpptaqb_quickbooks_id',
+      E::ts('QuickBooks: Linked item'),
+      ['' => E::ts('- select -')] + $options,
+      ['class' => 'crm-select2']
+    );
+    // Set a default value for this field, if possbile.    
+    $defaults = [];
+    $financialAccountId = $form->_id;
+    if ($financialAccountId) {
+      // If this is not a "create new" form:
+      // Get existing link if any;
+      $accountItem = civicrm_api3('FpptaquickbooksAccountItem', 'get', [
+        'sequential' => TRUE,
+        'financial_account_id' => $financialAccountId,
+      ]);
+      if ($accountItem['values']) {
+        $defaults['fpptaqb_quickbooks_id'] = $accountItem['values'][0]['quickbooks_id'];
+      }    
+      $form->setDefaults($defaults);
+    }
+      
+    // Add the field to bhfe fields and add JS to move it int othe right place in the DOM.
+    $bhfe = $form->get_template_vars('beginHookFormElements');
+    if (!$bhfe) {
+      $bhfe = [];
+    }
+    $bhfe[] = 'fpptaqb_quickbooks_id';
+    $form->assign('beginHookFormElements', $bhfe);
+    CRM_Core_Resources::singleton()->addScriptFile('com.joineryhq.fpptaqb', 'js/CRM_Financial_Form_FinancialAccount.js');
+    $jsvars = [
+      'descriptions' => [
+        'fpptaqb_quickbooks_id' => 'Only relevant if Financial Account Type is "Revenue".',
+      ],
+    ];
+    CRM_Core_Resources::singleton()->addVars('fpptaqb', $jsvars);
+  }
+}
+
+/**
+ * Implements hook_civicrm_postProcess().
+ */
+function fpptaqb_civicrm_postProcess($formName, $form) {
+  if (
+    $formName == "CRM_Financial_Form_FinancialAccount"
+    && $form->_submitValues['financial_account_type_id'] == 3
+  ) {
+    // Upon processing the CRM_Financial_Form_FinancialAccount form for 'Revenue' accounts:
+    $financialAccountId = $form->_id;
+    // Get existing link if any;
+    $accountItemId = NULL;
+    $accountItem = civicrm_api3('FpptaquickbooksAccountItem', 'get', [
+      'financial_account_id' => $financialAccountId
+    ]);
+    if ($accountItem['id']) {
+      $accountItemId = $accountItem['id'];
+    }
+    // Update, create, or deletelinked account_item.
+    if ($form->_submitValues['fpptaqb_quickbooks_id']) {
+      // A QB item is selected, so save the link record.
+      civicrm_api3('FpptaquickbooksAccountItem', 'create', [
+        'id' => $accountItemId,
+        'financial_account_id' => $financialAccountId,
+        'quickbooks_id' => $form->_submitValues['fpptaqb_quickbooks_id'],
+      ]);
+    }
+    else {
+      // A QB item is NOT selected, so delete the link record.
+      civicrm_api3('FpptaquickbooksAccountItem', 'delete', [
+        'id' => $accountItemId,
+      ]);
+    }
+  }  
+}
+
+/**
  * Implements hook_civicrm_apiWrappers().
  */
 function fpptaqb_civicrm_apiWrappers(&$wrappers, $apiRequest) {
