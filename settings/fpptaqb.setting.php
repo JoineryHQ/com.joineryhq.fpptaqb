@@ -18,7 +18,6 @@ return array(
     'html_type' => 'radio',
   ),
   'fpptaqb_sync_wait_days' => array(
-    // FIXME: This setting not yet in use.
     'group_name' => 'Fpptaqb Settings',
     'group' => 'fpptaqb',
     'name' => 'fpptaqb_sync_wait_days',

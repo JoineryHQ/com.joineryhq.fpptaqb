@@ -14,7 +14,6 @@ class CRM_Fpptaqb_Utils_Invoice {
   public static function getReadyToSyncIds() {
     static $ids;
     if (!isset($ids)) {
-      $dayZero = CRM_Utils_Date::isoToMysql(Civi::settings()->get('fpptaqb_minimum_date'));
       $ids = [];
       $query = "
         SELECT ctrb.id
@@ -22,12 +21,14 @@ class CRM_Fpptaqb_Utils_Invoice {
           LEFT JOIN civicrm_fpptaquickbooks_contribution_invoice fci ON fci.contribution_id = ctrb.id
         WHERE
           ctrb.receive_date >= %1
+          AND ctrb.receive_date <= (NOW() - INTERVAL %2 DAY)
           AND fci.id IS NULL
         ORDER BY
           ctrb.receive_date, ctrb.id
       ";
       $queryParams = [
-        '1' => [$dayZero, 'Int']
+        '1' => [CRM_Utils_Date::isoToMysql(Civi::settings()->get('fpptaqb_minimum_date')), 'Int'],
+        '2' => [CRM_Utils_Date::isoToMysql(Civi::settings()->get('fpptaqb_sync_wait_days')), 'Int'],
       ];
       $dao = CRM_Core_DAO::executeQuery($query, $queryParams);
       $ids = CRM_Utils_Array::collect('id', $dao->fetchAll());
