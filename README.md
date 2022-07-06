@@ -1,44 +1,61 @@
-# com.joineryhq.fpptaqb
+# FPPTA QuickBooks Sync
+## com.joineryhq.fpptaqb
 
-![Screenshot](/images/screenshot.png)
-
-(*FIXME: In one or two paragraphs, describe what the extension does and why one would download it. *)
+Custom QuickBooks Online integration for FPPTA.
 
 The extension is licensed under [GPL-3.0](LICENSE.txt).
 
 ## Requirements
+This extension requires the extension [FPPTA QuickBooks Helper](https://github.com/JoineryHQ/com.joineryhq.fpptaqbhelper).
 
-* PHP v7.2+
-* CiviCRM (*FIXME: Version number*)
+## Configuration
+After installation, you'll need to perform a few important configuration steps
+to get this working:
 
-## Installation (Web UI)
+1. Visit _Administer_ > _CiviContribute_ > _FPPTA QuickBooks Settings_ to 
+   establish authentication with QuickBooks Online and configure other important
+   settings.
+2. Visit _Administer_ > _CiviContribute_ > _Financial Accounts_ ; for each
+   Financial Account of type "Revenue", edit the Financial Account and find the
+   field named "QuickBooks: Linked item"; set this field to the appropriate
+   QuickBooks product or service matching this Financial Account. (Line items
+   will be entered on invoices using the apprpriate QuickBooks product or service,
+   based on the line item's Financial Type and the corresponding Financial Account.)
 
-Learn more about installing CiviCRM extensions in the [CiviCRM Sysadmin Guide](https://docs.civicrm.org/sysadmin/en/latest/customize/extensions/).
+## Usage
 
-## Installation (CLI, Zip)
+### Step-thru manual sync
 
-Sysadmins and developers may download the `.zip` file for this extension and
-install it with the command-line tool [cv](https://github.com/civicrm/cv).
+Navigate to _Contributions_ > _FPPTA QuickBooks Sync_ to access a dashboard for
+manual step-thru synchronization of Contributions (which will be synced to 
+QuickBooks invoices) and Payments (which will be synced to QuickBooks payments 
+against the appropriate invoice.
 
-```bash
-cd <extension-dir>
-cv dl com.joineryhq.fpptaqb@https://github.com/FIXME/com.joineryhq.fpptaqb/archive/master.zip
-```
+This manual step-thru sync interface will allow you to preview each invoice 
+and/or payment, one-at-a-time, and then choose either to sync it to QuickBooks, 
+or to place it on hold for later processing (which may be handy if, for example, 
+you wish to modify the Contribution record first).
 
-## Installation (CLI, Git)
+### Scheduled automated sync
+Configure the CiviCRM Scheduled Jobs "Sync QuickBooks Invoices" and "Sync 
+QuickBooks Payments" on the schedule you prefer; these jobs will perform the 
+same sync steps as in the step-thru manual sync, on a scheduled automated basis.
 
-Sysadmins and developers may clone the [Git](https://en.wikipedia.org/wiki/Git) repo for this extension and
-install it with the command-line tool [cv](https://github.com/civicrm/cv).
 
-```bash
-git clone https://github.com/FIXME/com.joineryhq.fpptaqb.git
-cv en fpptaqb
-```
+## Support
+![screenshot](/images/joinery-logo.png)
 
-## Getting Started
+Joinery provides services for CiviCRM including custom extension development,
+training, data migrations, and more. We aim to keep this extension in good
+working order, and will do our best to respond appropriately to issues reported
+on its [github issue queue](https://github.com/JoineryHQ/com.joineryhq.fpptaqb/issues).
+However, we place a priority on the needs of our clients, and we make no
+guarantees of support here. If you require urgent or highly customized
+improvements to this extension, we may suggest conducting a fee-based project
+under our standard commercial terms, based on availability.  In any case, the
+place to start is the [github issue queue](https://github.com/JoineryHQ/com.joineryhq.fpptaqb/issues) --
+let us hear what you need and we'll be glad to help where we can.
 
-(* FIXME: Where would a new user navigate to get started? What changes would they see? *)
-
-## Known Issues
-
-(* FIXME *)
+And, if you need help with any other aspect of CiviCRM -- from hosting to custom
+development to strategic consultation and more -- please contact us directly via
+https://joineryhq.com
