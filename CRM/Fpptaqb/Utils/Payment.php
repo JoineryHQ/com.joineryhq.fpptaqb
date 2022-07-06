@@ -163,16 +163,6 @@ class CRM_Fpptaqb_Utils_Payment {
     ]);
   }
 
-  /**
-   * For a given contribution id, compose a formatted note for the QuickBooks invoice.
-   */
-  public static function composeQbNote(int $id) {
-    // FIXME: STUB
-    return "CiviCRM Contribution ID: {$id}
-FIXME:CONTACT-NAMES
-";
-  }
-
   public static function getHash($trxnId) {
     $payment = self::getReadyToSync($trxnId);
     return sha1(json_encode($payment));
