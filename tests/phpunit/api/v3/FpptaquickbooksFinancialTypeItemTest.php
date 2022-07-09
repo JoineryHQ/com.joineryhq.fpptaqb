@@ -5,10 +5,10 @@ use Civi\Test\HookInterface;
 use Civi\Test\TransactionalInterface;
 
 /**
- * FpptaquickbooksAccountItem API Test Case
+ * FpptaquickbooksFinancialTypeItem API Test Case
  * @group headless
  */
-class api_v3_FpptaquickbooksAccountItemTest extends \PHPUnit\Framework\TestCase implements HeadlessInterface, HookInterface, TransactionalInterface {
+class api_v3_FpptaquickbooksFinancialTypeItemTest extends \PHPUnit\Framework\TestCase implements HeadlessInterface, HookInterface, TransactionalInterface {
   use \Civi\Test\Api3TestTrait;
 
   /**
@@ -28,8 +28,8 @@ class api_v3_FpptaquickbooksAccountItemTest extends \PHPUnit\Framework\TestCase 
    * The setup() method is executed before the test is executed (optional).
    */
   public function setUp() {
-    $table = CRM_Core_DAO_AllCoreTables::getTableForEntityName('FpptaquickbooksAccountItem');
-    $this->assertTrue($table && CRM_Core_DAO::checkTableExists($table), 'There was a problem with extension installation. Table for ' . 'FpptaquickbooksAccountItem' . ' not found.');
+    $table = CRM_Core_DAO_AllCoreTables::getTableForEntityName('FpptaquickbooksFinancialTypeItem');
+    $this->assertTrue($table && CRM_Core_DAO::checkTableExists($table), 'There was a problem with extension installation. Table for ' . 'FpptaquickbooksFinancialTypeItem' . ' not found.');
     parent::setUp();
   }
 
@@ -50,16 +50,16 @@ class api_v3_FpptaquickbooksAccountItemTest extends \PHPUnit\Framework\TestCase 
     // Boilerplate entity has one data field -- 'contact_id'.
     // Put some data in, read it back out, and delete it.
 
-    $created = $this->callAPISuccess('FpptaquickbooksAccountItem', 'create', [
+    $created = $this->callAPISuccess('FpptaquickbooksFinancialTypeItem', 'create', [
       'contact_id' => 1,
     ]);
     $this->assertTrue(is_numeric($created['id']));
 
-    $get = $this->callAPISuccess('FpptaquickbooksAccountItem', 'get', []);
+    $get = $this->callAPISuccess('FpptaquickbooksFinancialTypeItem', 'get', []);
     $this->assertEquals(1, $get['count']);
     $this->assertEquals(1, $get['values'][$created['id']]['contact_id']);
 
-    $this->callAPISuccess('FpptaquickbooksAccountItem', 'delete', [
+    $this->callAPISuccess('FpptaquickbooksFinancialTypeItem', 'delete', [
       'id' => $created['id'],
     ]);
   }

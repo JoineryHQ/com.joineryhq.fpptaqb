@@ -19,9 +19,9 @@ SET FOREIGN_KEY_CHECKS=0;
 
 DROP TABLE IF EXISTS `civicrm_fpptaquickbooks_trxn_payment`;
 DROP TABLE IF EXISTS `civicrm_fpptaquickbooks_log`;
+DROP TABLE IF EXISTS `civicrm_fpptaquickbooks_financialtype_item`;
 DROP TABLE IF EXISTS `civicrm_fpptaquickbooks_contribution_invoice`;
 DROP TABLE IF EXISTS `civicrm_fpptaquickbooks_contact_customer`;
-DROP TABLE IF EXISTS `civicrm_fpptaquickbooks_account_item`;
 
 SET FOREIGN_KEY_CHECKS=1;
 -- /*******************************************************
@@ -29,23 +29,6 @@ SET FOREIGN_KEY_CHECKS=1;
 -- * Create new tables
 -- *
 -- *******************************************************/
-
--- /*******************************************************
--- *
--- * civicrm_fpptaquickbooks_account_item
--- *
--- * Link civicrm financial account to quickbooks item/product
--- *
--- *******************************************************/
-CREATE TABLE `civicrm_fpptaquickbooks_account_item` (
-  `id` int unsigned NOT NULL AUTO_INCREMENT COMMENT 'Unique FpptaquickbooksAccountItem ID',
-  `financial_account_id` int unsigned COMMENT 'FK to Financial Account',
-  `quickbooks_id` int unsigned COMMENT 'Quickbooks invoice ID',
-  PRIMARY KEY (`id`),
-  UNIQUE INDEX `UI_fpptaquickbooks_account_item_financial_account_id`(financial_account_id),
-  CONSTRAINT FK_civicrm_fpptaquickbooks_account_item_financial_account_id FOREIGN KEY (`financial_account_id`) REFERENCES `civicrm_financial_account`(`id`) ON DELETE CASCADE
-)
-ENGINE=InnoDB;
 
 -- /*******************************************************
 -- *
@@ -78,6 +61,23 @@ CREATE TABLE `civicrm_fpptaquickbooks_contribution_invoice` (
   PRIMARY KEY (`id`),
   UNIQUE INDEX `UI_fpptaquickbooks_contribution_invoice_contribution_id`(contribution_id),
   CONSTRAINT FK_civicrm_fpptaquickbooks_contribution_invoice_contribution_id FOREIGN KEY (`contribution_id`) REFERENCES `civicrm_contribution`(`id`) ON DELETE CASCADE
+)
+ENGINE=InnoDB;
+
+-- /*******************************************************
+-- *
+-- * civicrm_fpptaquickbooks_financialtype_item
+-- *
+-- * Link civicrm financial type to quickbooks item/product
+-- *
+-- *******************************************************/
+CREATE TABLE `civicrm_fpptaquickbooks_financialtype_item` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT COMMENT 'Unique FpptaquickbooksFinancialTypeItem ID',
+  `financial_type_id` int unsigned COMMENT 'FK to Financial Type',
+  `quickbooks_id` int unsigned COMMENT 'Quickbooks item ID',
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `UI_civicrm_fpptaquickbooks_financialtype_item_financial_type_id`(financial_type_id),
+  CONSTRAINT FK_civicrm_fpptaquickbooks_financialtype_item_financial_type_id FOREIGN KEY (`financial_type_id`) REFERENCES `civicrm_financial_type`(`id`) ON DELETE CASCADE
 )
 ENGINE=InnoDB;
 

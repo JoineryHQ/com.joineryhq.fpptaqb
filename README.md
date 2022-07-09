@@ -15,12 +15,12 @@ to get this working:
 1. Visit _Administer_ > _CiviContribute_ > _FPPTA QuickBooks Settings_ to 
    establish authentication with QuickBooks Online and configure other important
    settings.
-2. Visit _Administer_ > _CiviContribute_ > _Financial Accounts_ ; for each
-   Financial Account of type "Revenue", edit the Financial Account and find the
+2. Visit _Administer_ > _CiviContribute_ > _Financial Types_ ; for each
+   Financial Type, edit the Financial Financial and find the
    field named "QuickBooks: Linked item"; set this field to the appropriate
-   QuickBooks product or service matching this Financial Account. (Line items
-   will be entered on invoices using the apprpriate QuickBooks product or service,
-   based on the line item's Financial Type and the corresponding Financial Account.)
+   QuickBooks product or service matching this Financial Type. (Line items
+   will be entered on invoices using the appropriate QuickBooks product or service,
+   based on the line item's Financial Type.)
 
 ## Usage
 

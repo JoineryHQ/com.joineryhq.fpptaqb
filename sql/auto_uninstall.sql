@@ -17,8 +17,8 @@ SET FOREIGN_KEY_CHECKS=0;
 
 DROP TABLE IF EXISTS `civicrm_fpptaquickbooks_trxn_payment`;
 DROP TABLE IF EXISTS `civicrm_fpptaquickbooks_log`;
+DROP TABLE IF EXISTS `civicrm_fpptaquickbooks_financialtype_item`;
 DROP TABLE IF EXISTS `civicrm_fpptaquickbooks_contribution_invoice`;
 DROP TABLE IF EXISTS `civicrm_fpptaquickbooks_contact_customer`;
-DROP TABLE IF EXISTS `civicrm_fpptaquickbooks_account_item`;
 
 SET FOREIGN_KEY_CHECKS=1;

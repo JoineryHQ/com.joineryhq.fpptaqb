@@ -7,30 +7,26 @@ use CRM_Fpptaqb_ExtensionUtil as E;
 
 /**
  * Implements hook_civicrm_pageRun().
+ * FIXME: REMOVE UNUSED CODE.
  */
-function fpptaqb_civicrm_pageRun(&$page) {
-  $pageName = $page->getVar('_name');
-//  $page = new CRM_Financial_Page_FinancialAccount();
-  if ($pageName == 'CRM_Financial_Page_FinancialAccount' && $page->getVar('_action') == CRM_Core_Action::BROWSE) {
-    $smarty = CRM_Core_Smarty::singleton();
-    $rows = $smarty->get_template_vars('rows');
-    $a = 1;
-  }
-}
+//function fpptaqb_civicrm_pageRun(&$page) {
+//  $pageName = $page->getVar('_name');
+//  if ($pageName == 'CRM_Financial_Page_FinancialType' && $page->getVar('_action') == CRM_Core_Action::BROWSE) {
+//    $smarty = CRM_Core_Smarty::singleton();
+//    $rows = $smarty->get_template_vars('rows');
+//    $a = 1;
+//  }
+//}
 
 /**
  * Implements hook_civicrm_buildForm().
  */
 function fpptaqb_civicrm_buildForm($formName, &$form) {
-  if (
-    $formName == "CRM_Financial_Form_FinancialAccount"
-    && ($form->_defaultValues['financial_account_type_id'][0] ?? ($form->_defaultValues['financial_account_type_id'] ?? 3)) == 3
-  ) {
-    // For the form CRM_Financial_Form_FinancialAccount
-    // when financial_account_type_id is NULL or 3, we'll add a 'quickbooks item'
+  if ($formName == "CRM_Financial_Form_FinancialType") {
+    // For the form CRM_Financial_Form_FinancialType, we'll add a 'quickbooks item'
     // field for linking to the correct QB item.
     // First get the list of QB Item options and add the select element.
-    $options = CRM_Fpptaqb_Utils_FinancialAccount::getItemOptions();
+    $options = CRM_Fpptaqb_Utils_FinancialType::getItemOptions();
     $form->addElement(
       'select',
       'fpptaqb_quickbooks_id',
@@ -40,16 +36,16 @@ function fpptaqb_civicrm_buildForm($formName, &$form) {
     );
     // Set a default value for this field, if possbile.    
     $defaults = [];
-    $financialAccountId = $form->_id;
-    if ($financialAccountId) {
+    $financialTypeId = $form->_id;
+    if ($financialTypeId) {
       // If this is not a "create new" form:
       // Get existing link if any;
-      $accountItem = _fpptaqb_civicrmapi('FpptaquickbooksAccountItem', 'get', [
+      $financialTypeItem = _fpptaqb_civicrmapi('FpptaquickbooksFinancialTypeItem', 'get', [
         'sequential' => TRUE,
-        'financial_account_id' => $financialAccountId,
+        'financial_type_id' => $financialTypeId,
       ]);
-      if ($accountItem['values']) {
-        $defaults['fpptaqb_quickbooks_id'] = $accountItem['values'][0]['quickbooks_id'];
+      if ($financialTypeItem['values']) {
+        $defaults['fpptaqb_quickbooks_id'] = $financialTypeItem['values'][0]['quickbooks_id'];
       }    
       $form->setDefaults($defaults);
     }
@@ -61,10 +57,12 @@ function fpptaqb_civicrm_buildForm($formName, &$form) {
     }
     $bhfe[] = 'fpptaqb_quickbooks_id';
     $form->assign('beginHookFormElements', $bhfe);
-    CRM_Core_Resources::singleton()->addScriptFile('com.joineryhq.fpptaqb', 'js/CRM_Financial_Form_FinancialAccount.js');
+    CRM_Core_Resources::singleton()->addScriptFile('com.joineryhq.fpptaqb', 'js/CRM_Financial_Form_FinancialType.js');
     $jsvars = [
       'descriptions' => [
-        'fpptaqb_quickbooks_id' => 'Only relevant if Financial Account Type is "Revenue".',
+        // You could define descriptions here, but currently there are none defined.
+        // See js/CRM_Financial_Form_FinancialType.js
+        // $fieldId => $fieldDescription,
       ],
     ];
     CRM_Core_Resources::singleton()->addVars('fpptaqb', $jsvars);
@@ -75,33 +73,30 @@ function fpptaqb_civicrm_buildForm($formName, &$form) {
  * Implements hook_civicrm_postProcess().
  */
 function fpptaqb_civicrm_postProcess($formName, $form) {
-  if (
-    $formName == "CRM_Financial_Form_FinancialAccount"
-    && $form->_submitValues['financial_account_type_id'] == 3
-  ) {
-    // Upon processing the CRM_Financial_Form_FinancialAccount form for 'Revenue' accounts:
-    $financialAccountId = $form->_id;
+  if ($formName == "CRM_Financial_Form_FinancialType") {
+    // Upon processing the CRM_Financial_Form_FinancialType:
+    $financialTypeId = $form->_id;
     // Get existing link if any;
-    $accountItemId = NULL;
-    $accountItem = _fpptaqb_civicrmapi('FpptaquickbooksAccountItem', 'get', [
-      'financial_account_id' => $financialAccountId
+    $financialTypeItemId = NULL;
+    $financialTypeItem = _fpptaqb_civicrmapi('FpptaquickbooksFinancialTypeItem', 'get', [
+      'financial_type_id' => $financialTypeId
     ]);
-    if ($accountItem['id']) {
-      $accountItemId = $accountItem['id'];
+    if ($financialTypeItem['id']) {
+      $financialTypeItemId = $financialTypeItem['id'];
     }
-    // Update, create, or deletelinked account_item.
+    // Update, create, or delete linked financialtype_item.
     if ($form->_submitValues['fpptaqb_quickbooks_id']) {
       // A QB item is selected, so save the link record.
-      _fpptaqb_civicrmapi('FpptaquickbooksAccountItem', 'create', [
-        'id' => $accountItemId,
-        'financial_account_id' => $financialAccountId,
+      _fpptaqb_civicrmapi('FpptaquickbooksFinancialTypeItem', 'create', [
+        'id' => $financialTypeItemId,
+        'financial_type_id' => $financialTypeId,
         'quickbooks_id' => $form->_submitValues['fpptaqb_quickbooks_id'],
       ]);
     }
     else {
       // A QB item is NOT selected, so delete the link record.
-      _fpptaqb_civicrmapi('FpptaquickbooksAccountItem', 'delete', [
-        'id' => $accountItemId,
+      _fpptaqb_civicrmapi('FpptaquickbooksFinancialTypeItem', 'delete', [
+        'id' => $financialTypeItemId,
       ]);
     }
   }  
@@ -113,7 +108,7 @@ function fpptaqb_civicrm_postProcess($formName, $form) {
 function fpptaqb_civicrm_apiWrappers(&$wrappers, $apiRequest) {
   // The APIWrapper is conditionally registered so that it runs only when appropriate
   $loggedApiEntities = [
-    'fpptaquickbooksaccountitem' => ['create'],
+    'fpptaquickbooksfinancialtypeitem' => ['create'],
     'fpptaquickbookscontactcustomer' => ['create'],
     'fpptaquickbookscontributioninvoice' => ['create'],
     'fpptaquickbookstrxnpayment' => ['create'],

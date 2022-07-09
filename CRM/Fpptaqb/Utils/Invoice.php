@@ -73,7 +73,7 @@ class CRM_Fpptaqb_Utils_Invoice {
         $financialTypeId = $lineItem['api.FinancialType.get']['values'][0]['id'];
         $qbItemDetails = CRM_Fpptaqb_Utils_Quickbooks::getItemDetails($financialTypeId);
         if (empty($qbItemDetails)) {
-          throw new CRM_Fpptaqb_Exception(E::ts('QuickBooks item not found for financial type: %1; is the Financial Account properly configured?', ['%1' => $lineItem['financialType']]), 503);
+          throw new CRM_Fpptaqb_Exception(E::ts('QuickBooks item not found for financial type: %1; is the Financial Type properly configured?', ['%1' => $lineItem['financialType']]), 503);
         }
         $lineItem['qbItemDetails'] = $qbItemDetails;
       }

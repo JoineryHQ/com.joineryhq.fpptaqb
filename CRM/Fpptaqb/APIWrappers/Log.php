@@ -12,7 +12,7 @@ class CRM_Fpptaqb_APIWrappers_Log  implements API_Wrapper {
     
     // Each api entity is expecting a relevant identifier; define that here.
     $apiEntityIdParamNames = [
-      'fpptaquickbooksaccountitem' => 'financial_account_id',
+      'fpptaquickbooksfinancialtypeitem' => 'financial_type_id',
       'fpptaquickbookscontactcustomer' => 'contact_id',
       'fpptaquickbookscontributioninvoice' => 'contribution_id',
       'fpptaquickbookstrxnpayment' => 'financial_trxn_id',

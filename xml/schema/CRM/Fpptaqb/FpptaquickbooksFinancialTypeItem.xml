@@ -2,16 +2,16 @@
 
 <table>
   <base>CRM/Fpptaqb</base>
-  <class>FpptaquickbooksAccountItem</class>
-  <name>civicrm_fpptaquickbooks_account_item</name>
-  <comment>Link civicrm financial account to quickbooks item/product</comment>
+  <class>FpptaquickbooksFinancialTypeItem</class>
+  <name>civicrm_fpptaquickbooks_financialtype_item</name>
+  <comment>Link civicrm financial type to quickbooks item/product</comment>
   <log>true</log>
 
   <field>
     <name>id</name>
     <type>int unsigned</type>
     <required>true</required>
-    <comment>Unique FpptaquickbooksAccountItem ID</comment>
+    <comment>Unique FpptaquickbooksFinancialTypeItem ID</comment>
     <html>
       <type>Number</type>
     </html>
@@ -22,19 +22,19 @@
   </primaryKey>
 
   <field>
-    <name>financial_account_id</name>
+    <name>financial_type_id</name>
     <type>int unsigned</type>
-    <comment>FK to Financial Account</comment>
+    <comment>FK to Financial Type</comment>
     <unique>true</unique>
   </field>
   <index>
-    <name>UI_fpptaquickbooks_account_item_financial_account_id</name>
-    <fieldName>financial_account_id</fieldName>
+    <name>UI_civicrm_fpptaquickbooks_financialtype_item_financial_type_id</name>
+    <fieldName>financial_type_id</fieldName>
     <unique>true</unique>
   </index>  
   <foreignKey>
-    <name>financial_account_id</name>
-    <table>civicrm_financial_account</table>
+    <name>financial_type_id</name>
+    <table>civicrm_financial_type</table>
     <key>id</key>
     <onDelete>CASCADE</onDelete>
   </foreignKey>
@@ -42,7 +42,7 @@
   <field>
     <name>quickbooks_id</name>
     <type>int unsigned</type>
-    <comment>Quickbooks invoice ID</comment>
+    <comment>Quickbooks item ID</comment>
   </field>
 
 </table>

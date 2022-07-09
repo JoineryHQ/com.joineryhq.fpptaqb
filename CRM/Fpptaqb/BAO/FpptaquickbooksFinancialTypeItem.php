@@ -1,17 +1,17 @@
 <?php
 use CRM_Fpptaqb_ExtensionUtil as E;
 
-class CRM_Fpptaqb_BAO_FpptaquickbooksAccountItem extends CRM_Fpptaqb_DAO_FpptaquickbooksAccountItem {
+class CRM_Fpptaqb_BAO_FpptaquickbooksFinancialTypeItem extends CRM_Fpptaqb_DAO_FpptaquickbooksFinancialTypeItem {
 
   /**
-   * Create a new FpptaquickbooksAccountItem based on array-data
+   * Create a new FpptaquickbooksFinancialTypeItem based on array-data
    *
    * @param array $params key-value pairs
-   * @return CRM_Fpptaqb_DAO_FpptaquickbooksAccountItem|NULL
+   * @return CRM_Fpptaqb_DAO_FpptaquickbooksFinancialTypeItem|NULL
    *
   public static function create($params) {
-    $className = 'CRM_Fpptaqb_DAO_FpptaquickbooksAccountItem';
-    $entityName = 'FpptaquickbooksAccountItem';
+    $className = 'CRM_Fpptaqb_DAO_FpptaquickbooksFinancialTypeItem';
+    $entityName = 'FpptaquickbooksFinancialTypeItem';
     $hook = empty($params['id']) ? 'create' : 'edit';
 
     CRM_Utils_Hook::pre($hook, $entityName, CRM_Utils_Array::value('id', $params), $params);

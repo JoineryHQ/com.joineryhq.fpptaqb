@@ -1,6 +1,6 @@
 <?php
 
-class CRM_Fpptaqb_Utils_FinancialAccount {
+class CRM_Fpptaqb_Utils_FinancialType {
 
   public static function getItemOptions() {
     $options = [];
