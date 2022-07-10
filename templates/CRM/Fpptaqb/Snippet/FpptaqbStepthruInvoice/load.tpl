@@ -15,8 +15,8 @@ QuickBooks customer "{$contribution.qbCustomerName}" (id={$contribution.qbCustom
 Date: {$contribution.receive_date|crmDate:'%Y-%m-%d'} 
 Invoice Number: {$contribution.qbInvNumber} 
 Line items: 
-{foreach from=$contribution.lineItems key=lineItemId item=lineItem}
-  - {$lineItem.qty} @ {$lineItem.unit_price|crmMoney} "{$lineItem.qbItemDetails.FullyQualifiedName}" "{$lineItem.label}"
+{foreach from=$contribution.qbLineItems key=qbLineItemId item=qbLineItem}
+  - {$qbLineItem.qty} @ {$qbLineItem.unit_price|crmMoney} "{$qbLineItem.qbItemDetails.FullyQualifiedName}" "{$qbLineItem.label}"
 {/foreach}
 Note:
 {$contribution.qbNote}

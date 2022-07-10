@@ -1,4 +1,7 @@
 <?php
+// phpcs:disable
+use CRM_Fpptaqb_ExtensionUtil as E;
+// phpcs:enable
 
 class CRM_Fpptaqb_Utils_Quickbooks {
 
@@ -47,4 +50,15 @@ class CRM_Fpptaqb_Utils_Quickbooks {
     return $sync->fetchInvoiceDetails($invoiceId);
   }
 
+  public static function getNullItem() {
+    return array (
+      'Name' => E::ts('N/A: zero-dollar line, not used.'),
+      'Description' => E::ts('N/A: zero-dollar line, not used.'),
+      'Active' => true,
+      'SubItem' => true,
+      'Level' => 1,
+      'FullyQualifiedName' => E::ts('N/A: zero-dollar line, not used.'),
+      'domain' => 'QBO',
+    );
+  }
 }

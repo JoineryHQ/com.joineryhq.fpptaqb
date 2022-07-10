@@ -68,14 +68,24 @@ class CRM_Fpptaqb_Utils_Invoice {
         'api.FinancialType.get' => ['return' => ["name"]],
       ]);
       $lineItems = $lineItemsGet['values'];
+      $qbLineItems = [];
       foreach ($lineItems as &$lineItem) {
         $lineItem['financialType'] = $lineItem['api.FinancialType.get']['values'][0]['name'];
         $financialTypeId = $lineItem['api.FinancialType.get']['values'][0]['id'];
-        $qbItemDetails = CRM_Fpptaqb_Utils_Quickbooks::getItemDetails($financialTypeId);
-        if (empty($qbItemDetails)) {
+        if ((float)$lineItem['line_total'] > 0) {
+          $lineItem['qbItemDetails'] = CRM_Fpptaqb_Utils_Quickbooks::getItemDetails($financialTypeId);
+          $qbLineItems[] = $lineItem;
+        }
+        else {
+          $lineItem['qbItemDetails'] = CRM_Fpptaqb_Utils_Quickbooks::getNullItem();
+        }
+
+        // If we have no qbItem, it means this is a non-zero line item, and that
+        // no corresponding active qbItem was found, so we can't proceed. Throw
+        // an exception.
+        if (empty($lineItem['qbItemDetails'])) {
           throw new CRM_Fpptaqb_Exception(E::ts('QuickBooks item not found for financial type: %1; is the Financial Type properly configured?', ['%1' => $lineItem['financialType']]), 503);
         }
-        $lineItem['qbItemDetails'] = $qbItemDetails;
       }
       $contribution = _fpptaqb_civicrmapi('Contribution', 'getSingle', [
         'id' => $contributionId,
@@ -97,6 +107,7 @@ class CRM_Fpptaqb_Utils_Invoice {
         'qbInvNumber' => preg_replace('/^' . Civi::settings()->get('invoice_prefix') . '/', '', $contribution['invoice_number']),
         'lineItems' => $lineItems,
         'qbNote' => self::composeQbNote($contributionId),
+        'qbLineItems' => $qbLineItems,
       ];
 
       $cache[$contributionId] = $contribution;
@@ -216,14 +227,44 @@ class CRM_Fpptaqb_Utils_Invoice {
    * @return Array [$contactId => $displayName]
    */
   public static function getRelatedContactNames($contributionId) {
-    // FIXME: STUB
-    $contacts = _fpptaqb_civicrmapi('Contact', 'get', [
-      'contact_type' => 'Individual',
-      'options' => [
-        'limit' => 3,
-      ],
+    $contactNames = [];
+    // If this is a participant payment, get all names of participants on this 
+    // potentially multi-person event registration.
+    $participantPaymentGet = _fpptaqb_civicrmapi('ParticipantPayment', 'get', [
+      'sequential' => 1,
+      'contribution_id' => $contributionId,
     ]);
-    return CRM_Utils_Array::collect('display_name', $contacts['values']);
+    $primaryParticipantId = $participantPaymentGet['values'][0]['participant_id'];
+    if ($participantPaymentGet['count']) {
+      $primaryParticipantGet = _fpptaqb_civicrmapi('Participant', 'get', [
+        'sequential' => 1,
+        'id' => $primaryParticipantId,
+        'api.Contact.get' => ['return' => "display_name"],
+      ]);
+      $contactNames[] = $primaryParticipantGet['values'][0]["api.Contact.get"]['values'][0]['display_name'];
+      $additionalParticipantsGet = _fpptaqb_civicrmapi('Participant', 'get', [
+        'sequential' => 1,
+        'registered_by_id' => $primaryParticipantId,
+        'api.Contact.get' => ['return' => "display_name"],
+      ]);
+      if ($additionalParticipantsGet['count']) {
+        foreach ($additionalParticipantsGet['values'] as $additionalParticipant) {
+          $contactNames[] = $additionalParticipant["api.Contact.get"]['values'][0]['display_name'];
+        }
+      }
+    }
+    else {
+      // FIXME: STUB: Must account for other-than-participant-payment contributions.
+      // TODO: consider contribution  6452: get all soft credits, grouped by soft-credit-type
+      $contacts = _fpptaqb_civicrmapi('Contact', 'get', [
+        'contact_type' => 'Individual',
+        'options' => [
+          'limit' => 3,
+        ],
+      ]);
+      $contactNames = CRM_Utils_Array::collect('display_name', $contacts['values']);
+    }
+    return $contactNames;
   }
 
   public static function sync($contributionId) {
