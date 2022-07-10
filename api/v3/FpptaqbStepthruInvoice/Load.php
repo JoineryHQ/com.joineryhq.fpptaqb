@@ -43,6 +43,7 @@ function civicrm_api3_fpptaqb_stepthru_invoice_Load($params) {
     }
     catch (CRM_Core_Exception $e) {
       $extraParams = ['values' => $params];
+      $extraParams['values']['id'] = $id;
       if ($e->getErrorCode()) {
         throw new API_Exception($e->getMessage(), 'fpptaqb-' . $e->getErrorCode(), $extraParams);
       }

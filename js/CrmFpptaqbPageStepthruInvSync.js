@@ -12,11 +12,9 @@ CRM.$(function ($) {
         'fpptaqb-404': [
           'fpptaqb-button-next'
         ],
-        'fpptaqb-500': [
+        default: [
           'fpptaqb-button-hold',
-          'fpptaqb-button-reload'
-        ],
-        default: []
+          'fpptaqb-button-reload']
       },
       'status': {
         204: [],
