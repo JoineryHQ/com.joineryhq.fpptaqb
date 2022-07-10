@@ -20,7 +20,10 @@
   <compatibility>
     <ver>5.0</ver>
   </compatibility>
-  <comments>This is a new, undeveloped module</comments>
+  <requires>
+    <ext>com.joineryhq.fpptaqbhelper</ext>
+  </requires>
+  <comments>Developed by Joinery for FPPTA.</comments>
   <classloader>
     <psr4 prefix="Civi\" path="Civi"/>
   </classloader>
