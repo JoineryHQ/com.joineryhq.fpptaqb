@@ -41,7 +41,7 @@ class CRM_Fpptaqb_Sync_Mock {
     $dummyData = [
       $contactId => rand(1000, 9999),
     ];
-    return $dummyData[$contactId];
+    return 'MOCK-' . $dummyData[$contactId];
   }
 
   /**
@@ -51,7 +51,7 @@ class CRM_Fpptaqb_Sync_Mock {
    */
   public function fetchCustomerDetails($customerId) {
     return [
-      'name' => "Random Customer $customerId",
+      'name' => "MOCK: Random Customer $customerId",
     ];
   }
 
@@ -67,6 +67,12 @@ class CRM_Fpptaqb_Sync_Mock {
     ];
   }
 
+  private static function failRandom($percent) {
+    $rand = rand(1, 100);
+    // Should return true around $percent % of the time.
+    return ($rand <= $percent);
+  }
+
   /**
    * Given a contribution, push it to QB via api.
    * 
@@ -74,11 +80,9 @@ class CRM_Fpptaqb_Sync_Mock {
    *   Contribution details as built by CRM_Fpptaqb_Utils_Invoice::getInvToSync().
    */
   public function pushInv($contribution) {
-    // Half the time, fail with an error.
-    $oddOrEven = rand(0, 9);
-    // Error on even integers.
-    if ($oddOrEven % 2 == 0) {
-      throw new CRM_Fpptaqb_Exception('Placeholder sync: this error happens around half the time.', 503);
+    // Sometimes, fail with an error.
+    if (self::failRandom(20)) {
+      throw new CRM_Fpptaqb_Exception('MOCK sync: this error happens around 20% of the time.', 503);
     }
 
     return rand(1000, 9999);
@@ -91,11 +95,9 @@ class CRM_Fpptaqb_Sync_Mock {
    *   Payment details as built by CRM_Fpptaqb_Utils_Pmt::getReadyToSync().
    */
   public function pushPmt($payment) {
-    // Half the time, fail with an error.
-    $oddOrEven = rand(0, 9);
-    // Error on even integers.
-    if ($oddOrEven % 2 == 0) {
-      throw new CRM_Fpptaqb_Exception('Placeholder sync: this error happens around half the time.', 503);
+    // Sometimes, fail with an error.
+    if (self::failRandom(20)) {
+      throw new CRM_Fpptaqb_Exception('MOCK sync: this error happens around 20% of the time.', 503);
     }
 
     return rand(1000, 9999);
