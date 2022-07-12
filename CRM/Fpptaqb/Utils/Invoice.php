@@ -177,8 +177,12 @@ class CRM_Fpptaqb_Utils_Invoice {
    * For a given contribution id, compose a formatted note for the QuickBooks invoice.
    */
   public static function composeQbNote(int $contributionId) {
-    $contactNames = CRM_Fpptaqb_Utils_Invoice::getRelatedContactNames($contributionId);
-    return "CiviCRM Contribution ID: {$contributionId}\n" . implode(', ', $contactNames);
+    $contactNamesByType = CRM_Fpptaqb_Utils_Invoice::getRelatedContactNames($contributionId);
+    $contactNameRows = [];
+    foreach ($contactNamesByType as $type => $contactNames) {
+      $contactNameRows[] = $type . ': ' . implode(', ', $contactNames);
+    }
+    return "CiviCRM Contribution ID: {$contributionId}\n" . implode("\n", $contactNameRows);
   }
 
   public static function getHash($id) {
@@ -220,11 +224,13 @@ class CRM_Fpptaqb_Utils_Invoice {
   }
 
   /**
-   * For a given contributionId, get an array of display_name for each related contact.
+   * For a given contributionId, get an array of display_name for each related contact,
+   * grouped by "attribution type", i.e., how they are related (e.g.,
+   * participant, soft-credit-type)
    * 
    * @param type $contributionId
    * 
-   * @return Array [$contactId => $displayName]
+   * @return Array ['Human Readable Attribution Type' => [$contactId => $displayName]]
    */
   public static function getRelatedContactNames($contributionId) {
     $contactNames = [];
@@ -236,12 +242,34 @@ class CRM_Fpptaqb_Utils_Invoice {
     ]);
     $primaryParticipantId = $participantPaymentGet['values'][0]['participant_id'];
     if ($participantPaymentGet['count']) {
+      // Get the primary participant record.
       $primaryParticipantGet = _fpptaqb_civicrmapi('Participant', 'get', [
         'sequential' => 1,
         'id' => $primaryParticipantId,
         'api.Contact.get' => ['return' => "display_name"],
       ]);
-      $contactNames[] = $primaryParticipantGet['values'][0]["api.Contact.get"]['values'][0]['display_name'];
+      $roleId = $primaryParticipantGet['values'][0]['role_id'];
+      $eventId = $primaryParticipantGet['values'][0]['event_id'];
+      // Find out if this role is a groupReg 'nonattendee_role_id' for this event.
+      $includePrimaryPartipant = TRUE;
+      $groupregIsInstalled = ('installed' === CRM_Extension_System::singleton()->getManager()->getStatus('com.joineryhq.groupreg'));
+      if ($groupregIsInstalled) {
+        $groupregEvents = \Civi\Api4\GroupregEvent::get()
+          ->setCheckPermissions(FALSE)
+          ->addWhere('nonattendee_role_id', '=', $roleId)
+          ->addWhere('event_id', '=', $eventId)
+          ->setLimit(1)
+          ->execute();
+        if ($groupregEvents['rowCount']) {
+          $includePrimaryPartipant = FALSE;
+        }
+      }
+      if ($includePrimaryPartipant) {
+        $contactId = $primaryParticipantGet['values'][0]["api.Contact.get"]['values'][0]['id'];
+        $displayName = $primaryParticipantGet['values'][0]["api.Contact.get"]['values'][0]['display_name'];
+        $contactNames['Participant'][$contactId] = $displayName;
+      }
+      // Now include additional participants (assume they are all attending).
       $additionalParticipantsGet = _fpptaqb_civicrmapi('Participant', 'get', [
         'sequential' => 1,
         'registered_by_id' => $primaryParticipantId,
@@ -249,21 +277,26 @@ class CRM_Fpptaqb_Utils_Invoice {
       ]);
       if ($additionalParticipantsGet['count']) {
         foreach ($additionalParticipantsGet['values'] as $additionalParticipant) {
-          $contactNames[] = $additionalParticipant["api.Contact.get"]['values'][0]['display_name'];
+          $contactId = $additionalParticipant["api.Contact.get"]['values'][0]['id'];
+          $displayName = $additionalParticipant["api.Contact.get"]['values'][0]['display_name'];
+          $contactNames['Participant'][$contactId] = $displayName;
         }
       }
     }
-    else {
-      // FIXME: STUB: Must account for other-than-participant-payment contributions.
-      // TODO: consider contribution  6452: get all soft credits, grouped by soft-credit-type
-      $contacts = _fpptaqb_civicrmapi('Contact', 'get', [
-        'contact_type' => 'Individual',
-        'options' => [
-          'limit' => 3,
-        ],
-      ]);
-      $contactNames = CRM_Utils_Array::collect('display_name', $contacts['values']);
+
+    // Also append any soft-credit contacts.
+    $contributionSoftGet = _fpptaqb_civicrmapi('ContributionSoft', 'get', [
+      'sequential' => 1,
+      'contribution_id' => $contributionId,
+      'api.Contact.get' => [],
+      'api.OptionValue.getSingle' => ['option_group_id' => "soft_credit_type", 'value' => '$value.soft_credit_type_id'],
+    ]);
+    foreach ($contributionSoftGet['values'] as $contributionSoft) {
+      $softCreditType = $contributionSoft['api.OptionValue.getSingle']['label'];
+      $displayName = $contributionSoft['api.Contact.get']['values'][0]['display_name'];
+      $contactNames[$softCreditType][] = $displayName;
     }
+
     return $contactNames;
   }
 
