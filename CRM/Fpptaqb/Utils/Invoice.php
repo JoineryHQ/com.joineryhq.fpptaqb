@@ -242,13 +242,14 @@ class CRM_Fpptaqb_Utils_Invoice {
     ]);
     $primaryParticipantId = $participantPaymentGet['values'][0]['participant_id'];
     if ($participantPaymentGet['count']) {
+      // FIXME: e.g. contributionid = 6527, a non-participant role is being added to names.
       // Get the primary participant record.
       $primaryParticipantGet = _fpptaqb_civicrmapi('Participant', 'get', [
         'sequential' => 1,
         'id' => $primaryParticipantId,
         'api.Contact.get' => ['return' => "display_name"],
       ]);
-      $roleId = $primaryParticipantGet['values'][0]['role_id'];
+      $roleId = $primaryParticipantGet['values'][0]['participant_role_id'];
       $eventId = $primaryParticipantGet['values'][0]['event_id'];
       // Find out if this role is a groupReg 'nonattendee_role_id' for this event.
       $includePrimaryPartipant = TRUE;
@@ -260,7 +261,7 @@ class CRM_Fpptaqb_Utils_Invoice {
           ->addWhere('event_id', '=', $eventId)
           ->setLimit(1)
           ->execute();
-        if ($groupregEvents['rowCount']) {
+        if (($groupregEvents['rowCount'] ?? FALSE)) {
           $includePrimaryPartipant = FALSE;
         }
       }
