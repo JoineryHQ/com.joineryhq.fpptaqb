@@ -61,4 +61,35 @@ class CRM_Fpptaqb_Utils_Quickbooks {
       'domain' => 'QBO',
     );
   }
+
+  /**
+   * For a given set of lineItems, consolidate to an array grouped by QB ItemId,
+   * with a correct count per type.
+   *
+   * @param array $qbLineItems An array of line items. Each item is the output of
+   *   civicrm api3 lineItem.getSingle, with an additional element 'qbItemDetails',
+   *   which is the output of CRM_Fpptaqb_Utils_Quickbooks::getItemDetails($financialTypeId)
+   *   for the value of lineItem.financial_type_id.
+   *
+   * @return array [$qbItemId => [$prop => $value]].
+   */
+  public static function consolidateLineItems($qbLineItems) {
+    $ret = [];
+    $countsPerItem = [];
+    foreach ($qbLineItems as $qbLineItem) {
+      $itemId = $qbLineItem['qbItemDetails']['Id'];
+      if (isset($ret[$itemId])) {
+        ++$ret[$itemId]['qty'];
+      }
+      else {
+        $ret[$itemId] = [
+          'qty' => 1,
+          'qbItemDetails' => $qbLineItem['qbItemDetails'],
+          'unit_price' => $qbLineItem['unit_price'],
+          'label' => $qbLineItem['label'],
+        ];
+      }
+    }
+    return $ret;
+  }
 }

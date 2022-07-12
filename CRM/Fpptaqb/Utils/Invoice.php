@@ -107,7 +107,7 @@ class CRM_Fpptaqb_Utils_Invoice {
         'qbInvNumber' => preg_replace('/^' . Civi::settings()->get('invoice_prefix') . '/', '', $contribution['invoice_number']),
         'lineItems' => $lineItems,
         'qbNote' => self::composeQbNote($contributionId),
-        'qbLineItems' => $qbLineItems,
+        'qbLineItems' => CRM_Fpptaqb_Utils_Quickbooks::consolidateLineItems($qbLineItems),
       ];
 
       $cache[$contributionId] = $contribution;
