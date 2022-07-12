@@ -1,7 +1,7 @@
-<H3>Processing contribution ID: {$contribution.id} &nbsp; <a target="_blank" href="{crmURL p="civicrm/contact/view/contribution" q="reset=1&action=view&cid=`$contribution.contact_id`&id=`$contribution.id`"}">View</a></H3>
+<H3>Processing contribution ID: {$contribution.id} &nbsp; <a target="_blank" href="{crmURL fb=1 p="civicrm/contact/view/contribution" q="reset=1&action=view&cid=`$contribution.contact_id`&id=`$contribution.id`" fb=1}">View</a></H3>
 <pre>
 Status: {$contribution.contribution_status}
-Attributed to Organization: {$contribution.organizationName} (id={$contribution.organizationCid})   <a target="_blank" href="{crmURL p="civicrm/contact/view" q="reset=1&cid=`$contribution.organizationCid`"}">View</a>
+Attributed to Organization: {$contribution.organizationName} (id={$contribution.organizationCid})   <a target="_blank" href="{crmURL fb=1 p="civicrm/contact/view" q="reset=1&cid=`$contribution.organizationCid`"}">View</a>
 Found QuickBooks customer "{$contribution.qbCustomerName}" (id={$contribution.qbCustomerId})
 {$contribution.lineItems|@count} line items found:
 {foreach from=$contribution.lineItems key=lineItemId item=lineItem}

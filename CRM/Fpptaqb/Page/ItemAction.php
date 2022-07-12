@@ -27,7 +27,7 @@ class CRM_Fpptaqb_Page_ItemAction extends CRM_Core_Page {
             ]);
             $msg = E::ts('Contribution %1 has been un-held.', [1 => $id]);
             CRM_Core_Session::setStatus($msg, 'Success', 'success');
-            CRM_Utils_System::redirect(CRM_Utils_System::url('civicrm/fpptaqb/helditems/inv'));
+            CRM_Utils_System::redirect(CRM_Utils_System::url('civicrm/fpptaqb/helditems/inv', NULL, NULL, NULL, NULL, NULL, TRUE));
             break;
           default:
             CRM_Core_Error::statusBounce('Invalid action for type "inv"; must be "load" or "unhold"');
@@ -52,7 +52,7 @@ class CRM_Fpptaqb_Page_ItemAction extends CRM_Core_Page {
             ]);
             $msg = E::ts('Payment %1 has been un-held.', [1 => $id]);
             CRM_Core_Session::setStatus($msg, 'Success', 'success');
-            CRM_Utils_System::redirect(CRM_Utils_System::url('civicrm/fpptaqb/helditems/pmt'));
+            CRM_Utils_System::redirect(CRM_Utils_System::url('civicrm/fpptaqb/helditems/pmt', NULL, NULL, NULL, NULL, NULL, TRUE));
             break;
           default:
             CRM_Core_Error::statusBounce('Invalid action for type "pmt"; must be "load" or "unhold"');

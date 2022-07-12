@@ -21,8 +21,8 @@
       <td>{$row.paymentInstrumentLabel}</td>
       <td>{$row.total_amount|crmMoney}</td>
       <td>
-        <a href="{crmURL p="civicrm/fpptaqb/itemaction" q="itemaction=load&type=pmt&id=`$row.id`"}" class="action-item crm-hover-button crm-popup" title="Load Payment">Load</a>
-        <a href="{crmURL p="civicrm/fpptaqb/itemaction" q="itemaction=unhold&type=pmt&id=`$row.id`"}" class="action-item crm-hover-button" title="Un-hold">Un-hold</a>
+        <a href="{crmURL fb=1 p="civicrm/fpptaqb/itemaction" q="itemaction=load&type=pmt&id=`$row.id`"}" class="action-item crm-hover-button crm-popup" title="Load Payment">Load</a>
+        <a href="{crmURL fb=1 p="civicrm/fpptaqb/itemaction" q="itemaction=unhold&type=pmt&id=`$row.id`"}" class="action-item crm-hover-button" title="Un-hold">Un-hold</a>
       </td>      
     </tr>
   {/foreach}
@@ -32,5 +32,5 @@
 {else}
   <p class="status">{ts}There are no held payments.{/ts}</p>
 {/if}
-{crmButton href="/civicrm/fpptaqb/stepthru/pmt" title="Return to step-thru payment sync" icon=""}Return to step-thru payment sync{/crmButton}
-{crmButton href="/civicrm/fpptaqb/stepthru" title="Return to step-thru invoice sync" icon=""}Return to step-thru dashboard{/crmButton}
+{crmButton fb=1 p="civicrm/fpptaqb/stepthru/pmt" title="Return to step-thru payment sync" icon=""}Return to step-thru payment sync{/crmButton}
+{crmButton fb=1 p="civicrm/fpptaqb/stepthru" title="Return to step-thru invoice sync" icon=""}Return to step-thru dashboard{/crmButton}
