@@ -5,6 +5,18 @@ require_once 'fpptaqb.civix.php';
 use CRM_Fpptaqb_ExtensionUtil as E;
 // phpcs:enable
 
+function fpptaqb_civicrm_pageRun(&$page) {
+  $pageName = $page->getVar('_name');
+  if ($pageName == 'CRM_Financial_Page_FinancialType') {
+    $ext = CRM_Extension_Info::loadFromFile(E::path('info.xml'));
+    $url = CRM_Utils_System::url('civicrm/fpptaqb/financialType', 'reset=1', NULL, NULL, NULL, NULL, TRUE);
+    $message = E::ts('All Financial Types should be linked to a QuickBooks Product/Service. <a href="%1">View linkage for all Financial Types.</a>', [
+      '%1' => $url,
+    ]);
+    CRM_Core_Session::setStatus($message, $ext->label, 'no-popup');
+  }
+}
+
 /**
  * Implements hook_civicrm_links().
  */
