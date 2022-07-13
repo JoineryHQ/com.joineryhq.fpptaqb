@@ -44,5 +44,15 @@
     <type>int unsigned</type>
     <comment>Quickbooks invoice ID</comment>
   </field>
+  
+  <field>
+    <name>is_mock</name>
+    <title>Is this a mock sync?</title>
+    <import>true</import>
+    <export>true</export>
+    <type>boolean</type>
+    <required>true</required>
+    <default>0</default>
+  </field>
 
 </table>

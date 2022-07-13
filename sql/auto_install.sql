@@ -58,6 +58,7 @@ CREATE TABLE `civicrm_fpptaquickbooks_contribution_invoice` (
   `id` int unsigned NOT NULL AUTO_INCREMENT COMMENT 'Unique FpptaquickbooksContributionInvoice ID',
   `contribution_id` int unsigned COMMENT 'FK to Contribution',
   `quickbooks_id` int unsigned COMMENT 'Quickbooks invoice ID',
+  `is_mock` tinyint NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   UNIQUE INDEX `UI_fpptaquickbooks_contribution_invoice_contribution_id`(contribution_id),
   CONSTRAINT FK_civicrm_fpptaquickbooks_contribution_invoice_contribution_id FOREIGN KEY (`contribution_id`) REFERENCES `civicrm_contribution`(`id`) ON DELETE CASCADE
@@ -115,6 +116,7 @@ CREATE TABLE `civicrm_fpptaquickbooks_trxn_payment` (
   `id` int unsigned NOT NULL AUTO_INCREMENT COMMENT 'Unique FpptaquickbooksTrxnPayment ID',
   `financial_trxn_id` int unsigned COMMENT 'FK to civicrm_financial_trxn',
   `quickbooks_id` int unsigned COMMENT 'Quickbooks payment ID',
+  `is_mock` tinyint NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   UNIQUE INDEX `UI_fpptaquickbooks_trxn_payment_financial_trxn_id`(financial_trxn_id),
   CONSTRAINT FK_civicrm_fpptaquickbooks_trxn_payment_financial_trxn_id FOREIGN KEY (`financial_trxn_id`) REFERENCES `civicrm_financial_trxn`(`id`) ON DELETE CASCADE
