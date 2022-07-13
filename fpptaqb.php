@@ -5,15 +5,21 @@ require_once 'fpptaqb.civix.php';
 use CRM_Fpptaqb_ExtensionUtil as E;
 // phpcs:enable
 
+/**
+ * Implements hook_civicrm_pageRun().
+ * @param type $page
+ */
 function fpptaqb_civicrm_pageRun(&$page) {
   $pageName = $page->getVar('_name');
-  if ($pageName == 'CRM_Financial_Page_FinancialType') {
+  $action = $page->getVar('_action');
+  // On browse financial types, display a link to browse FT/QB linkage.
+  if ($pageName == 'CRM_Financial_Page_FinancialType' && $action == CRM_Core_Action::BROWSE) {
     $ext = CRM_Extension_Info::loadFromFile(E::path('info.xml'));
     $url = CRM_Utils_System::url('civicrm/fpptaqb/financialType', 'reset=1', NULL, NULL, NULL, NULL, TRUE);
     $message = E::ts('All Financial Types should be linked to a QuickBooks Product/Service. <a href="%1">View linkage for all Financial Types.</a>', [
       '%1' => $url,
     ]);
-    CRM_Core_Session::setStatus($message, $ext->label, 'no-popup');
+    CRM_Core_Session::setStatus($message, $ext->label, 'no-popup', ['expires' => 0]);
   }
 }
 
@@ -107,8 +113,9 @@ function fpptaqb_civicrm_postProcess($formName, $form) {
         'quickbooks_id' => $form->_submitValues['fpptaqb_quickbooks_id'],
       ]);
     }
-    else {
-      // A QB item is NOT selected, so delete the link record.
+    elseif($financialTypeItemId) {
+      // A QB item is NOT selected, but a financialTypeItem record exists;
+      // delete the link record.
       _fpptaqb_civicrmapi('FpptaquickbooksFinancialTypeItem', 'delete', [
         'id' => $financialTypeItemId,
       ]);
