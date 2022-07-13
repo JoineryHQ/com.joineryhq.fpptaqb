@@ -242,7 +242,6 @@ class CRM_Fpptaqb_Utils_Invoice {
     ]);
     $primaryParticipantId = $participantPaymentGet['values'][0]['participant_id'];
     if ($participantPaymentGet['count']) {
-      // FIXME: e.g. contributionid = 6527, a non-participant role is being added to names.
       // Get the primary participant record.
       $primaryParticipantGet = _fpptaqb_civicrmapi('Participant', 'get', [
         'sequential' => 1,
