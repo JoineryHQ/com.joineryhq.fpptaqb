@@ -6,17 +6,19 @@ use CRM_Fpptaqb_ExtensionUtil as E;
 // phpcs:enable
 
 /**
- * Implements hook_civicrm_pageRun().
- * FIXME: REMOVE UNUSED CODE.
+ * Implements hook_civicrm_links().
  */
-//function fpptaqb_civicrm_pageRun(&$page) {
-//  $pageName = $page->getVar('_name');
-//  if ($pageName == 'CRM_Financial_Page_FinancialType' && $page->getVar('_action') == CRM_Core_Action::BROWSE) {
-//    $smarty = CRM_Core_Smarty::singleton();
-//    $rows = $smarty->get_template_vars('rows');
-//    $a = 1;
-//  }
-//}
+function fpptaqb_civicrm_links($op, $objectName, $objectId, &$links, &$mask, &$values) {
+  if ($objectName == 'Contribution' && $op = 'contribution.selector.row') {
+    $links[] = [
+      'name' => E::ts('QB Status'),
+      'url' => 'civicrm/fpptaqb/syncstatus',
+      'qs' => 'id=%%myObjId%%',
+      'title' => E::ts('QB Sync Status'),
+    ];
+    $values['myObjId'] = $objectId;
+  }
+}
 
 /**
  * Implements hook_civicrm_buildForm().
