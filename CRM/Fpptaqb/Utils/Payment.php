@@ -1,4 +1,6 @@
 <?php
+use CRM_Fpptaqb_ExtensionUtil as E;
+
 
 class CRM_Fpptaqb_Utils_Payment {
 
@@ -29,7 +31,7 @@ class CRM_Fpptaqb_Utils_Payment {
           and ft.is_payment
           and eft.entity_table = 'civicrm_contribution'
           and tp.id is null
-  ";
+      ";
       $queryParams = [
         '1' => [CRM_Utils_Date::isoToMysql(Civi::settings()->get('fpptaqb_minimum_date')), 'Int'],
         '2' => [CRM_Utils_Date::isoToMysql(Civi::settings()->get('fpptaqb_sync_wait_days')), 'Int'],
@@ -55,7 +57,7 @@ class CRM_Fpptaqb_Utils_Payment {
    *
    * @return Array
    */
-  public static function getReadyToSync(int $financialTrxnId) {
+  public static function getReadyToSync(int $financialTrxnId, $ignoreQbInvoice = FALSE) {
     static $cache = [];
     if (!isset($cache[$financialTrxnId])) {
       $financialTrxnCount = _fpptaqb_civicrmapi('FinancialTrxn', 'getCount', [
@@ -80,12 +82,13 @@ class CRM_Fpptaqb_Utils_Payment {
       $organizationCid = CRM_Fpptaqb_Utils_Invoice::getAttributedContactId($contributionId);
       $qbCustomerId = CRM_Fpptaqb_Utils_Quickbooks::getCustomerIdForContact($organizationCid);
       $qbCustomerDetails = CRM_Fpptaqb_Utils_Quickbooks::getCustomerDetails($qbCustomerId);
-      $qbInvId = _fpptaqb_civicrmapi('FpptaquickbooksContributionInvoice', 'getValue', [
-        'contribution_id' => $contributionId,
-        'return' => 'quickbooks_id',
-      ]);
-      $qbInvDetails = CRM_Fpptaqb_Utils_Quickbooks::getInvoiceDetails($qbInvId);
-      
+      if (!$ignoreQbInvoice) {
+        $qbInvId = _fpptaqb_civicrmapi('FpptaquickbooksContributionInvoice', 'getValue', [
+          'contribution_id' => $contributionId,
+          'return' => 'quickbooks_id',
+        ]);
+      }
+
       $financialTrxn += [
         'contributionCid' => $contribution['contact_id'],
         'organizationCid' => $organizationCid,
@@ -96,7 +99,7 @@ class CRM_Fpptaqb_Utils_Payment {
         'contributionId' => $contributionId,
         'qbCustomerName' => $qbCustomerDetails['name'],
         'qbCustomerId' => $qbCustomerId,
-        'qbInvNumber' => $qbInvDetails['docNumber'],
+        'qbInvNumber' => CRM_Fpptaqb_Utils_Quickbooks::prepInvNumber($contribution['invoice_number']),
         'qbInvId' => $qbInvId,
         'paymentInstrumentLabel' => CRM_Core_PseudoConstant::getLabel('CRM_Core_BAO_FinancialTrxn', 'payment_instrument_id', $financialTrxn['payment_instrument_id']),
       ];
@@ -177,6 +180,7 @@ class CRM_Fpptaqb_Utils_Payment {
     $result = _fpptaqb_civicrmapi('FpptaquickbooksTrxnPayment', 'create', [
       'financial_trxn_id' => $trxnId,
       'quickbooks_id' => $qbPmtId,
+      'is_mock' => $sync->isMock(),
     ]);
 
     return $qbPmtId;

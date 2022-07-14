@@ -8,8 +8,6 @@ class CRM_Fpptaqb_Sync_Mock {
   /**
    * We only need one instance of this object. So we use the singleton
    * pattern and cache the instance in this variable
-   *
-   * @var CRM_Core_Config
    */
   private static $_singleton = NULL;
 
@@ -33,6 +31,13 @@ class CRM_Fpptaqb_Sync_Mock {
   }
 
   /**
+   * Is this a mock sync? (It's either that, or it's live.)
+   */
+  public function isMock() {
+    return TRUE;
+  }  
+
+  /**
    * For a given contact ID, get the QB customer number.
    * 
    * @return int
@@ -52,18 +57,6 @@ class CRM_Fpptaqb_Sync_Mock {
   public function fetchCustomerDetails($customerId) {
     return [
       'name' => "MOCK: Random Customer $customerId",
-    ];
-  }
-
-  /**
-   * For a given QuickBooks invoice ID, get relevant invoice details.
-   * 
-   * @return Array
-   */
-  public function fetchInvoiceDetails($invoiceId) {
-    // Return identical data for any invoiceId
-    return [
-      'docNumber' => '1234',
     ];
   }
 

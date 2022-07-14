@@ -104,7 +104,7 @@ class CRM_Fpptaqb_Utils_Invoice {
         ]),
         'qbCustomerName' => $qbCustomerDetails['name'],
         'qbCustomerId' => $qbCustomerId,
-        'qbInvNumber' => preg_replace('/^' . Civi::settings()->get('invoice_prefix') . '/', '', $contribution['invoice_number']),
+        'qbInvNumber' => CRM_Fpptaqb_Utils_Quickbooks::prepInvNumber($contribution['invoice_number']),
         'lineItems' => $lineItems,
         'qbNote' => self::composeQbNote($contributionId),
         'qbLineItems' => CRM_Fpptaqb_Utils_Quickbooks::consolidateLineItems($qbLineItems),
@@ -309,6 +309,7 @@ class CRM_Fpptaqb_Utils_Invoice {
     $result = _fpptaqb_civicrmapi('FpptaquickbooksContributionInvoice', 'create', [
       'contribution_id' => $contributionId,
       'quickbooks_id' => $qbInvId,
+      'is_mock' => $sync->isMock(),
     ]);
 
     return $qbInvId;
@@ -319,6 +320,26 @@ class CRM_Fpptaqb_Utils_Invoice {
       'countReady' => count(self::getReadyToSyncIds()),
       'countHeld' => count(self::getHeldIds()),
     ];
+  }
+  
+  public static function getPaymentFinancialTrxnIds(int $contributionId) {
+      $query = "
+        select
+          ft.id
+        from
+          civicrm_entity_financial_trxn eft
+          inner join civicrm_financial_trxn ft on eft.financial_trxn_id = ft.id
+        where
+          ft.is_payment
+          and eft.entity_table = 'civicrm_contribution'
+          and eft.entity_id = %1
+      ";
+      $queryParams = [
+        '1' => [$contributionId, 'Int'],
+      ];
+      $dao = CRM_Core_DAO::executeQuery($query, $queryParams);      
+      $trxnIds = CRM_Utils_Array::collect('id', $dao->fetchAll());
+      return $trxnIds;
   }
 
 }

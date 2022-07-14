@@ -42,4 +42,10 @@
     <title>Financial Types: Linked to QuickBooks Items</title>
     <access_arguments>fpptaqb_administer_quickbooks_configuration</access_arguments>
   </item>
+  <item>
+    <path>civicrm/fpptaqb/syncstatus</path>
+    <page_callback>CRM_Fpptaqb_Page_SyncStatus</page_callback>
+    <title>QuickBooks Sync: Status</title>
+    <access_arguments>fpptaqb_sync_to_quickbooks</access_arguments>
+  </item>
 </menu>

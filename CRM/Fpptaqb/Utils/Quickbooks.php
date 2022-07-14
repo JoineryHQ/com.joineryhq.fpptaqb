@@ -5,6 +5,10 @@ use CRM_Fpptaqb_ExtensionUtil as E;
 
 class CRM_Fpptaqb_Utils_Quickbooks {
 
+  public static function prepInvNumber($invNumber) {
+    return preg_replace('/^' . Civi::settings()->get('invoice_prefix') . '/', '', $invNumber);
+  }
+  
   public static function getItemDetails(int $financialTypeId) {
     $itemDetails = [];
 
@@ -43,11 +47,6 @@ class CRM_Fpptaqb_Utils_Quickbooks {
   public static function getCustomerDetails($customerId) {
     $sync = CRM_Fpptaqb_Util::getSyncObject();
     return $sync->fetchCustomerDetails($customerId);
-  }
-  
-  public static function getInvoiceDetails($invoiceId) {
-    $sync = CRM_Fpptaqb_Util::getSyncObject();
-    return $sync->fetchInvoiceDetails($invoiceId);
   }
 
   public static function getNullItem() {

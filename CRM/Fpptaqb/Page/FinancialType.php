@@ -10,7 +10,7 @@ class CRM_Fpptaqb_Page_FinancialType extends CRM_Core_Page {
   
   public function run() {
     
-    
+    // Build one row per financial type, with linked QB Item data.
     $financialTypeGet = _fpptaqb_civicrmapi('FinancialType', 'get', [
       'sequential' => 1,
       'api.FpptaquickbooksFinancialTypeItem.get' => [],
