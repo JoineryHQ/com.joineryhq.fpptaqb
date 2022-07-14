@@ -25,7 +25,7 @@
       </tr>
       <tr>
         <td class="label">{ts}Payments{/ts}</td>
-        <td>{$paymentRows && $paymentRows|@count} payments found in CiviCRM.
+        <td>{$paymentRows|@count} payments found in CiviCRM.
           {if $paymentRows && $paymentRows|@count}
             <br/>
             <table>

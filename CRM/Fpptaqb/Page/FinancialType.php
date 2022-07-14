@@ -22,8 +22,8 @@ class CRM_Fpptaqb_Page_FinancialType extends CRM_Core_Page {
       $rows[] = [
         'id' => $financialTypeValue['id'],
         'name' => $financialTypeValue['name'],
-        'qbItemId' => $qbItemDetails['Id'],
-        'qbItemName' => $qbItemDetails['Name'],
+        'qbItemId' => ($qbItemDetails['Id'] ?? NULL),
+        'qbItemName' => ($qbItemDetails['Name'] ?? NULL),
       ];
     }
     $this->assign('rows', $rows);
