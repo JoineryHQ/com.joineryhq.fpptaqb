@@ -148,22 +148,6 @@ function fpptaqb_civicrm_apiWrappers(&$wrappers, $apiRequest) {
 }
 
 /**
- * Implements hook_civicrm_alterTemplateFile().
- */
-function fpptaqb_civicrm_alterTemplateFile($formName, &$form, $context, &$tplName) {
-  if ($context == 'page' && $formName == 'CRM_Fpptaqb_Page_ItemAction') {
-    $type = CRM_Utils_Request::retrieveValue('type', 'String');
-    $itemaction = CRM_Utils_Request::retrieveValue('itemaction', 'String');
-    if ($type === 'inv' && $itemaction === 'load') {
-      $tplName = 'CRM/Fpptaqb/Snippet/FpptaqbStepthruInvoice/load.tpl';
-    }
-    elseif ($type === 'pmt' && $itemaction === 'load') {
-      $tplName = 'CRM/Fpptaqb/Snippet/FpptaqbStepthruPayment/load.tpl';
-    }
-  }
-}
-
-/**
  * Implements hook_civicrm_fpptaqb_settings().
  */
 function fpptaqb_civicrm_fpptaqbhelper_settings(&$settingsGroups) {

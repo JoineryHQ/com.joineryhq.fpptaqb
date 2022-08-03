@@ -8,7 +8,7 @@ class CRM_Fpptaqb_Page_HeldItemsPmt extends CRM_Core_Page {
     
     $rows = [];
     foreach ($heldPaymentIds as $heldPaymentId) {
-      $rows[] = CRM_Fpptaqb_Utils_Payment::getReadyToSync($heldPaymentId);
+      $rows[] = CRM_Fpptaqb_Utils_Payment::getHeldItem($heldPaymentId);
     }
     $this->assign('rows', $rows);
 

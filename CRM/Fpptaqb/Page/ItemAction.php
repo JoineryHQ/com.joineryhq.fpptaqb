@@ -11,10 +11,15 @@ class CRM_Fpptaqb_Page_ItemAction extends CRM_Core_Page {
       case 'inv':
         switch ($itemaction) {
           case 'load':
-            $contribution = CRM_Fpptaqb_Utils_Invoice::getReadyToSync($id);
-            $smarty = CRM_Core_Smarty::singleton();
-            $smarty->assign('contribution', $contribution);
             CRM_Utils_System::setTitle(E::ts('Load Invoice'));
+            try {
+              $invoiceLoad = _fpptaqb_civicrmapi('FpptaqbStepthruInvoice', 'load', ['id' => $id]);
+              $content = ($invoiceLoad['values']['text'] ?? NULL);
+              $this->assign('content', $content);
+            }
+            catch (API_Exception | CiviCRM_API3_Exception $e) {
+              $this->assign('apiError', $e->getMessage());
+            }
             break;
           case 'unhold':
             $contributionInvId = _fpptaqb_civicrmapi('FpptaquickbooksContributionInvoice', 'getValue', [
@@ -99,10 +104,15 @@ class CRM_Fpptaqb_Page_ItemAction extends CRM_Core_Page {
       case 'pmt':
         switch ($itemaction) {
           case 'load':
-            $payment = CRM_Fpptaqb_Utils_Payment::getReadyToSync($id);
-            $smarty = CRM_Core_Smarty::singleton();
-            $smarty->assign('payment', $payment);
             CRM_Utils_System::setTitle(E::ts('Load Payment'));
+            try {
+              $paymentLoad = _fpptaqb_civicrmapi('FpptaqbStepthruPayment', 'load', ['id' => $id]);
+              $content = ($paymentLoad['values']['text'] ?? NULL);
+              $this->assign('content', $content);
+            }
+            catch (API_Exception | CiviCRM_API3_Exception $e) {
+              $this->assign('apiError', $e->getMessage());
+            }
             break;
           case 'unhold':
             $trxnPaymentId = _fpptaqb_civicrmapi('FpptaquickbooksTrxnPayment', 'getValue', [

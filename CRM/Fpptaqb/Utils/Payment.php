@@ -53,7 +53,7 @@ class CRM_Fpptaqb_Utils_Payment {
   }
 
   /**
-   * For a given contribution ID, get an array of all relevant properties for syncing.
+   * For a given financialTrxn ID, get an array of all relevant properties for syncing.
    *
    * @return Array
    */
@@ -101,6 +101,47 @@ class CRM_Fpptaqb_Utils_Payment {
         'qbCustomerId' => $qbCustomerId,
         'qbInvNumber' => CRM_Fpptaqb_Utils_Quickbooks::prepInvNumber($contribution['invoice_number']),
         'qbInvId' => $qbInvId,
+        'paymentInstrumentLabel' => CRM_Core_PseudoConstant::getLabel('CRM_Core_BAO_FinancialTrxn', 'payment_instrument_id', $financialTrxn['payment_instrument_id']),
+      ];
+      $cache[$financialTrxnId] = $financialTrxn;
+    }
+    return $cache[$financialTrxnId];
+  }
+
+  /**
+   * For a given financialTrxn ID, get an array of all relevant properties for listing
+   * in "Review Held Items".
+   *
+   * @return Array
+   */
+  public static function getHeldItem(int $financialTrxnId) {
+    static $cache = [];
+    if (!isset($cache[$financialTrxnId])) {
+      $financialTrxnCount = _fpptaqb_civicrmapi('FinancialTrxn', 'getCount', [
+        'id' => $financialTrxnId,
+      ]);
+
+      if (!$financialTrxnCount) {
+        throw new CRM_Fpptaqb_Exception('Payment not found', 404);
+      }
+
+      $financialTrxn = _fpptaqb_civicrmapi('FinancialTrxn', 'getSingle', [
+        'id' => $financialTrxnId,
+      ]);
+      $contributionId = _fpptaqb_civicrmapi('EntityFinancialTrxn', 'getValue', [
+        'entity_table' => "civicrm_contribution",
+        'financial_trxn_id' => $financialTrxnId,
+        'return' => 'entity_id'
+      ]);
+
+      $organizationCid = CRM_Fpptaqb_Utils_Invoice::getAttributedContactId($contributionId);
+
+      $financialTrxn += [
+        'organizationName' => _fpptaqb_civicrmapi('Contact', 'getValue', [
+          'id' => $organizationCid,
+          'return' => 'display_name',
+        ]),
+        'contributionId' => $contributionId,
         'paymentInstrumentLabel' => CRM_Core_PseudoConstant::getLabel('CRM_Core_BAO_FinancialTrxn', 'payment_instrument_id', $financialTrxn['payment_instrument_id']),
       ];
       $cache[$financialTrxnId] = $financialTrxn;

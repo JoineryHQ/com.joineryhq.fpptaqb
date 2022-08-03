@@ -9,7 +9,7 @@ class CRM_Fpptaqb_Page_HeldItemsInv extends CRM_Core_Page {
     $rows = [];
     foreach ($heldContributionIds as $heldContributionId) {
       try {
-        $rows[] = CRM_Fpptaqb_Utils_Invoice::getReadyToSync($heldContributionId);
+        $rows[] = CRM_Fpptaqb_Utils_Invoice::getHeldItem($heldContributionId);
       }
       catch (CRM_Fpptaqb_Exception $e) {
         $caughtMessage = $e->getMessage();

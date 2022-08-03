@@ -116,6 +116,47 @@ class CRM_Fpptaqb_Utils_Invoice {
   }
 
   /**
+   * For a given contribution ID, get an array of all relevant properties for listing
+   * in "Review Held Items".
+   *
+   * @return Array
+   */
+  public static function getHeldItem(int $contributionId) {
+    static $cache = [];
+    if (!isset($cache[$contributionId])) {
+      $contributionCount = _fpptaqb_civicrmapi('Contribution', 'getCount', [
+        'id' => $contributionId,
+      ]);
+
+      if (!$contributionCount) {
+        $cache[$contributionId]['error'] = E::ts('Contribution not found');
+        return $cache[$contributionId];
+      }
+
+      $contribution = _fpptaqb_civicrmapi('Contribution', 'getSingle', [
+        'id' => $contributionId,
+      ]);
+      $organizationCid = self::getAttributedContactId($contributionId);
+      if ($organizationCid) {
+        $organizationName = _fpptaqb_civicrmapi('Contact', 'getValue', [
+          'id' => $organizationCid,
+          'return' => 'display_name',
+        ]);
+      }
+      else {
+        $organizationName = E::ts('ERROR: NONE FOUND');
+      }
+      $contribution += [
+        'organizationCid' => $organizationCid,
+        'organizationName' => $organizationName,
+      ];
+
+      $cache[$contributionId] = $contribution;
+    }
+    return $cache[$contributionId];
+  }
+
+  /**
    * Get a list of IDs for all contributions marked to be held out from syncing.
    *
    * @return Array
@@ -211,13 +252,13 @@ class CRM_Fpptaqb_Utils_Invoice {
     // If we're still here, that means no "attributed organization" value was set 
     // on the contribution. Perhaps it's a participant payment, so we'll check the
     // participant record for an "attributed organization".
-    $partiicpantOrgCustomFieldId = Civi::settings()->get('fpptaqbhelper_cf_id_participant');
+    $participantOrgCustomFieldId = Civi::settings()->get('fpptaqbhelper_cf_id_participant');
     $participantPaymentGet = _fpptaqb_civicrmapi('participantPayment', 'get', [
       'sequential' => TRUE,
       'contribution_id' => $contributionId,
       'api.Participant.get' => [],
     ]);
-    $participantOrgCid = $participantPaymentGet['values'][0]['api.Participant.get']['values'][0]['custom_' . $partiicpantOrgCustomFieldId . '_id'];
+    $participantOrgCid = ($participantPaymentGet['values'][0]['api.Participant.get']['values'][0]['custom_' . $participantOrgCustomFieldId . '_id'] ?? NULL);
     // Return whatever that is. If it's nothing, then we can't get it, so we should
     // just return null anyway.
     return $participantOrgCid; 

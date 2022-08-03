@@ -30,5 +30,5 @@
 {else}
   <p class="status">{ts}There are no held invoices.{/ts}</p>
 {/if}
-{crmButton fb=1 p="/civicrm/fpptaqb/stepthru/inv" title="Return to step-thru invoice sync" icon=""}Return to step-thru invoice sync{/crmButton}
-{crmButton fb=1 p="/civicrm/fpptaqb/stepthru" title="Return to step-thru invoice sync" icon=""}Return to step-thru dashboard{/crmButton}
+{crmButton fb=1 p="civicrm/fpptaqb/stepthru/inv" title="Return to step-thru invoice sync" icon=""}Return to step-thru invoice sync{/crmButton}
+{crmButton fb=1 p="civicrm/fpptaqb/stepthru" title="Return to step-thru invoice sync" icon=""}Return to step-thru dashboard{/crmButton}
