@@ -316,7 +316,7 @@ class CRM_Fpptaqb_Utils_Invoice {
           ->addWhere('event_id', '=', $eventId)
           ->setLimit(1)
           ->execute();
-        if (($groupregEvents['rowCount'] ?? FALSE)) {
+        if (($groupregEvents->count())) {
           $includePrimaryPartipant = FALSE;
         }
       }
