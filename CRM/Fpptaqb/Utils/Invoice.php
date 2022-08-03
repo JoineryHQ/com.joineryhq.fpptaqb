@@ -259,9 +259,24 @@ class CRM_Fpptaqb_Utils_Invoice {
       'api.Participant.get' => [],
     ]);
     $participantOrgCid = ($participantPaymentGet['values'][0]['api.Participant.get']['values'][0]['custom_' . $participantOrgCustomFieldId . '_id'] ?? NULL);
-    // Return whatever that is. If it's nothing, then we can't get it, so we should
-    // just return null anyway.
-    return $participantOrgCid; 
+    if ($participantOrgCid) {
+      return $participantOrgCid;
+    }
+
+    // If we're still here, that means we're still looking. Perhaps it's a
+    // contribution from an Organization contatc. In that case, use that contact.
+    $contributionGet = _fpptaqb_civicrmapi('Contribution', 'get', [
+      'sequential' => 1,
+      'id' => $contributionId,
+      'api.Contact.get' => [],
+    ]);
+    if (strtolower($contributionGet['values'][0]['api.Contact.get']['values'][0]['contact_type'] ?? "") == 'organization') {
+      $contributionOrgCid = $contributionGet['values'][0]['api.Contact.get']['values'][0]['contact_id'];
+      return $contributionOrgCid;
+    }
+
+    // If we're still here, we have no idea; just return null.
+    return NULL;
   }
 
   /**
