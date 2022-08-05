@@ -87,6 +87,25 @@ function fpptaqb_civicrm_buildForm($formName, &$form) {
     ];
     CRM_Core_Resources::singleton()->addVars('fpptaqb', $jsvars);
   }
+  elseif ($formName == "CRM_Fpptaqbhelper_Form_Settings") {
+    $QBCredentials = CRM_Fpptaqb_APIHelper::getQuickBooksCredentials();
+    $isRefreshTokenExpired = CRM_Fpptaqb_APIHelper::isTokenExpired($QBCredentials, TRUE);
+
+    if ((!empty($QBCredentials['clientID']) && !empty($QBCredentials['clientSecret']) && empty($QBCredentials['accessToken']) && empty($QBCredentials['refreshToken']) && empty($QBCredentials['realMId'])) || $isRefreshTokenExpired) {
+      $url = str_replace("&amp;", "&", CRM_Utils_System::url("civicrm/quickbooks/OAuth", NULL, TRUE, NULL));
+      $form->assign('redirect_url', $url);
+    }
+
+    $form->assign('isRefreshTokenExpired', $isRefreshTokenExpired);
+
+    $showClientKeysMessage = TRUE;
+    if (!empty($QBCredentials['clientID']) && !empty($QBCredentials['clientSecret'])) {
+      $showClientKeysMessage = FALSE;
+    }
+
+    $form->assign('showClientKeysMessage', $showClientKeysMessage);
+    
+  }
 }
 
 /**
