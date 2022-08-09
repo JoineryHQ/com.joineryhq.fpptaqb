@@ -10,7 +10,7 @@ class CRM_Fpptaqb_Util {
       return CRM_Fpptaqb_Sync_Mock::singleton();
     }
     else {
-      throw new CRM_Fpptaqb_Exception('No live QB sync object has been created yet.');
+      return CRM_Fpptaqb_Sync_Quickbooks::singleton();
     }
   }
   

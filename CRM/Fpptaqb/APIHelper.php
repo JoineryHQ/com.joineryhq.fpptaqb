@@ -1,6 +1,9 @@
 <?php
 
 use QuickBooksOnline\API\Core\HttpClients\FaultHandler;
+use CRM_Fpptaqb_ExtensionUtil as E;
+require E::path('vendor/autoload.php');
+
 
 class CRM_Fpptaqb_APIHelper {
 
