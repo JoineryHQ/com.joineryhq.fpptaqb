@@ -44,16 +44,16 @@ class CRM_Fpptaqb_APIHelper {
     $redirectUrl = self::getRedirectUrl();
     $stateTokenValue = self::generateStateToken(40);
 
-    $clientID = civicrm_api3('Setting', 'getvalue', array('name' => "quickbooks_consumer_key"));
-    $clientSecret = civicrm_api3('Setting', 'getvalue', array('name' => "quickbooks_shared_secret"));
-    $logLocation = civicrm_api3('Setting', 'getvalue', array('name' => "quickbooks_log_dir"));
-    $logActivated = civicrm_api3('Setting', 'getvalue', array('name' => "quickbooks_activate_qbo_logging"));
+    $clientID = civicrm_api3('Setting', 'getvalue', array('name' => "fpptaqb_quickbooks_consumer_key"));
+    $clientSecret = civicrm_api3('Setting', 'getvalue', array('name' => "fpptaqb_quickbooks_shared_secret"));
+    $logLocation = civicrm_api3('Setting', 'getvalue', array('name' => "fpptaqb_quickbooks_log_dir"));
+    $logActivated = civicrm_api3('Setting', 'getvalue', array('name' => "fpptaqb_quickbooks_activate_qbo_logging"));
 
 
     $stateToken = array(
       'state_token' => $stateTokenValue,
     );
-    Civi::settings()->set('quickbooks_state_token', $stateTokenValue);
+    Civi::settings()->set('fpptaqb_quickbooks_state_token', $stateTokenValue);
 
     self::$quickBooksDataService = \QuickBooksOnline\API\DataService\DataService::Configure(array(
       'auth_mode' => 'oauth2',
@@ -92,8 +92,8 @@ class CRM_Fpptaqb_APIHelper {
     }
 
     $QBCredentials = self::getQuickBooksCredentials();
-    $logLocation = civicrm_api3('Setting', 'getvalue', array('name' => "quickbooks_log_dir"));
-    $logActivated = civicrm_api3('Setting', 'getvalue', array('name' => "quickbooks_activate_qbo_logging"));
+    $logLocation = civicrm_api3('Setting', 'getvalue', array('name' => "fpptaqb_quickbooks_log_dir"));
+    $logActivated = civicrm_api3('Setting', 'getvalue', array('name' => "fpptaqb_quickbooks_activate_qbo_logging"));
 
     $dataServiceParams = array(
       'auth_mode' => 'oauth2',
@@ -172,10 +172,10 @@ class CRM_Fpptaqb_APIHelper {
         $refreshToken = $refreshedAccessTokenObj->getRefreshToken();
 
         civicrm_api3('Setting', 'create', array(
-          'quickbooks_access_token' => $accessToken,
-          'quickbooks_refresh_token' => $refreshToken,
-          'quickbooks_access_token_expiryDate' => $tokenExpiresIn->format("Y-m-d H:i:s"),
-          'quickbooks_refresh_token_expiryDate' => $refreshTokenExpiresIn->format("Y-m-d H:i:s"),
+          'fpptaqb_quickbooks_access_token' => $accessToken,
+          'fpptaqb_quickbooks_refresh_token' => $refreshToken,
+          'fpptaqb_quickbooks_access_token_expiryDate' => $tokenExpiresIn->format("Y-m-d H:i:s"),
+          'fpptaqb_quickbooks_refresh_token_expiryDate' => $refreshTokenExpiresIn->format("Y-m-d H:i:s"),
         ));
 
       } catch (\QuickBooksOnline\API\Exception\IdsException $e) {
