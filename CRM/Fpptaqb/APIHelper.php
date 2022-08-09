@@ -131,7 +131,7 @@ class CRM_Fpptaqb_APIHelper {
    * @return mixed
    */
   private static function getRedirectUrl() {
-    return str_replace("&amp;", "&", CRM_Utils_System::url("civicrm/quickbooks/OAuth", NULL, TRUE, NULL));
+    return str_replace("&amp;", "&", CRM_Utils_System::url("civicrm/fpptaqb/OAuth", NULL, TRUE, NULL));
   }
 
   /**
