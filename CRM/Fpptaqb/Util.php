@@ -1,17 +1,25 @@
 <?php
+use CRM_Fpptaqb_ExtensionUtil as E;
 
 /**
  * Utility methods for fpptaqb extension
  */
-class CRM_Fpptaqb_Util {
+  class CRM_Fpptaqb_Util {
 
   public static function getSyncObject() {
-    if (Civi::settings()->get('fpptaqb_use_sync_mock')) {
-      return CRM_Fpptaqb_Sync_Mock::singleton();
+    $classname = Civi::settings()->get('fpptaqb_use_sync_class');
+    if (!array_key_exists($classname, self::getSyncClassOptions())) {
+      throw new CRM_Fpptaqb_Exception('Invalid sync object; check configuration for FPPTA QuickBooks Sync.');
     }
-    else {
-      return CRM_Fpptaqb_Sync_Quickbooks::singleton();
-    }
+    return $classname::singleton();
+  }
+
+  public static function getSyncClassOptions() {
+    return [
+      'CRM_Fpptaqb_Sync_Mock' => E::ts('Development mock for all actions'),
+      'CRM_Fpptaqb_Sync_QuickbooksReadonly' => E::ts('Live QuickBooks connection READ actions; Develpoment mock for WRITE actions'),
+      'CRM_Fpptaqb_Sync_Quickbooks' => E::ts('Live QuickBooks connection for all actions'),
+    ];
   }
   
   public static function getLogCallerId() {

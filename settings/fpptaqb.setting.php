@@ -3,19 +3,24 @@
 use CRM_Fpptaqb_ExtensionUtil as E;
 
 return array(
-  'fpptaqb_use_sync_mock' => array(
+  'fpptaqb_use_sync_class' => array(
     'group_name' => 'Fpptaqb Settings',
     'group' => 'fpptaqb',
-    'name' => 'fpptaqb_use_sync_mock',
+    'name' => 'fpptaqb_use_sync_class',
     'add' => '5.0',
     'is_domain' => 1,
     'is_contact' => 0,
     'description' => '',
-    'title' => E::ts('Use development mock instead of live QuickBooks sync?'),
-    'type' => 'Boolean',
-    'quick_form_type' => 'YesNo',
-    'default' => 1,
-    'html_type' => 'radio',
+    'title' => E::ts('QuickBooks sync level'),
+    'type' => 'String',
+    'quick_form_type' => 'Select',
+    'default' => 'CRM_Fpptaqb_Sync_Mock',
+    'html_type' => 'Select',
+    'html_attributes' => array(
+      'class' => 'crm-select2',
+      'style' => "width:auto;",
+    ),
+    'X_options_callback' => 'CRM_Fpptaqb_Util::getSyncClassOptions',
   ),
   'fpptaqb_sync_wait_days' => array(
     'group_name' => 'Fpptaqb Settings',

@@ -9,8 +9,8 @@ class CRM_Fpptaqb_Page_StepthruInvSync extends CRM_Core_Page {
     
     $this->assign('countItemsToSync', $statistics['countReady']);
     $this->assign('countItemsHeld', $statistics['countHeld']);
-    $this->assign('isMock', Civi::settings()->get('fpptaqb_use_sync_mock'));
-    
+    $this->assign('isMock', CRM_Fpptaqb_Util::getSyncObject()->isMock());
+
     CRM_Core_Resources::singleton()->addScriptFile('com.joineryhq.fpptaqb', 'js/CrmFpptaqbPageStepthruInvSync.js');
     CRM_Core_Resources::singleton()->addScriptFile('com.joineryhq.fpptaqb', 'js/CrmFpptaqbPageStepthru_Sync.js');
     CRM_Core_Resources::singleton()->addStyleFile('com.joineryhq.fpptaqb', 'css/CrmFpptaqbPageStepthru_Sync.css');
