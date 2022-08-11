@@ -85,7 +85,6 @@ class CRM_Fpptaqb_APIHelper {
    * @throws \QuickBooksOnline\API\Exception\SdkException
    */
   public static function getAccountingDataServiceObject($forRefreshToken = FALSE) {
-
     if (!$forRefreshToken) {
       self::refreshAccessTokenIfRequired();
     }
@@ -251,7 +250,7 @@ class CRM_Fpptaqb_APIHelper {
    * @throws \Exception
    */
   public static function isAuthorized() {
-    $QBCredentials = CRM_Quickbooks_APIHelper::getQuickBooksCredentials();
+    $QBCredentials = CRM_Fpptaqb_APIHelper::getQuickBooksCredentials();
     if (empty($QBCredentials['accessToken'])) {
       return FALSE;
     }
