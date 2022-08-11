@@ -86,7 +86,7 @@ class CRM_Fpptaqb_Sync_QuickbooksReadonly {
   }
 
   public function fetchActiveItemsList() {
-    return $this->liveSync->fetchItemsList();
+    return $this->liveSync->fetchActiveItemsList();
   }
 
 }
