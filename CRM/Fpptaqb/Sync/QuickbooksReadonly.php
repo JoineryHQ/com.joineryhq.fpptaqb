@@ -58,7 +58,7 @@ class CRM_Fpptaqb_Sync_QuickbooksReadonly {
    * @return Array
    */
   public function fetchCustomerDetails($customerId) {
-    return $this->liveSync->fetchCustomerDetails($contactId);
+    return $this->liveSync->fetchCustomerDetails($customerId);
   }
 
   /**
