@@ -88,7 +88,6 @@ class CRM_Fpptaqb_Sync_Quickbooks {
       $dataService = CRM_Fpptaqb_APIHelper::getAccountingDataServiceObject();
       $dataService->throwExceptionOnError(FALSE);
       $customer = $dataService->FindById('Customer', $customerId);
-      dsm($customer);
     }
     catch (Exception $e) {
       throw new CRM_Core_Exception('Could not get DataService Object: ' . $e->getMessage());
