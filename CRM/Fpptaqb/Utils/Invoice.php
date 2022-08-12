@@ -102,7 +102,7 @@ class CRM_Fpptaqb_Utils_Invoice {
           'id' => $organizationCid,
           'return' => 'display_name',
         ]),
-        'qbCustomerName' => $qbCustomerDetails['name'],
+        'qbCustomerName' => $qbCustomerDetails['DisplayName'],
         'qbCustomerId' => $qbCustomerId,
         'qbInvNumber' => CRM_Fpptaqb_Utils_Quickbooks::prepInvNumber($contribution['invoice_number']),
         'lineItems' => $lineItems,

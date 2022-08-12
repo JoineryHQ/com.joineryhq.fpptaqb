@@ -56,7 +56,7 @@ class CRM_Fpptaqb_Sync_Mock {
    */
   public function fetchCustomerDetails($customerId) {
     return [
-      'name' => "MOCK: Random Customer $customerId",
+      'DisplayName' => "MOCK: Random Customer $customerId",
     ];
   }
 

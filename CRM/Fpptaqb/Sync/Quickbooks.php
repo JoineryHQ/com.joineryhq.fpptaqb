@@ -85,7 +85,7 @@ class CRM_Fpptaqb_Sync_Quickbooks {
    */
   public function fetchCustomerDetails($customerId) {
     return [
-      'name' => "MOCK: Random Customer $customerId",
+      'DisplayName' => "MOCK: Random Customer $customerId",
     ];
   }
 

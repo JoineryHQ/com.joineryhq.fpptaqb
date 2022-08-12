@@ -97,7 +97,7 @@ class CRM_Fpptaqb_Utils_Payment {
           'return' => 'display_name',
         ]),
         'contributionId' => $contributionId,
-        'qbCustomerName' => $qbCustomerDetails['name'],
+        'qbCustomerName' => $qbCustomerDetails['DisplayName'],
         'qbCustomerId' => $qbCustomerId,
         'qbInvNumber' => CRM_Fpptaqb_Utils_Quickbooks::prepInvNumber($contribution['invoice_number']),
         'qbInvId' => $qbInvId,
