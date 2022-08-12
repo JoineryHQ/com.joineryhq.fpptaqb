@@ -50,10 +50,31 @@ class CRM_Fpptaqb_Sync_Quickbooks {
    * @return int
    */
   public function fetchCustomerIdForContact($contactId) {
-    $dummyData = [
-      $contactId => rand(1000, 9999),
-    ];
-    return 'MOCK-' . $dummyData[$contactId];
+    $contactGet = _fpptaqb_civicrmapi('Contact', 'get', [
+      'sequential' => 1,
+      'id' => $contactId,
+    ]);
+    $contactName = $contactGet['values'][0]['display_name'];
+
+    try {
+      $dataService = CRM_Fpptaqb_APIHelper::getAccountingDataServiceObject();
+      $dataService->throwExceptionOnError(FALSE);
+      $queryName = addslashes($contactName);
+      $customers = $dataService->Query("select * from Customer Where DisplayName = '$queryName'");
+    }
+    catch (Exception $e) {
+      throw new CRM_Core_Exception('Could not get DataService Object: ' . $e->getMessage());
+    }
+    if ($lastError = $dataService->getLastError()) {
+      $errorMessage = CRM_Fpptaqb_APIHelper::parseErrorResponse($lastError);
+      throw new Exception('QuickBooks error: "' . implode("\n", $errorMessage) . '"');
+    }
+    if (count($customers) != 1) {
+      throw new CRM_Fpptaqb_Exception('Could not find valid QuickBooks customer', 503);
+    }
+
+    $quickbooksId = $customers[0]->Id;
+    return $quickbooksId;
   }
 
   /**
@@ -129,3 +150,4 @@ class CRM_Fpptaqb_Sync_Quickbooks {
   }
 
 }
+

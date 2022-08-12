@@ -36,10 +36,13 @@ class CRM_Fpptaqb_Utils_Quickbooks {
     else {
       $sync = CRM_Fpptaqb_Util::getSyncObject();
       $customerId = $sync->fetchCustomerIdForContact($contactId);
-      _fpptaqb_civicrmapi('FpptaquickbooksContactCustomer', 'create', [
-        'contact_id' => $contactId,
-        'quickbooks_id' => $customerId,
-      ]);
+      if ($customerId) {
+        // Only cache this if an actual value is found.
+        _fpptaqb_civicrmapi('FpptaquickbooksContactCustomer', 'create', [
+          'contact_id' => $contactId,
+          'quickbooks_id' => $customerId,
+        ]);
+      }
     }
     return $customerId;
   }
