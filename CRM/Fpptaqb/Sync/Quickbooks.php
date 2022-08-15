@@ -177,9 +177,9 @@ class CRM_Fpptaqb_Sync_Quickbooks {
       "CustomerRef" => [
         "value" => $payment['qbCustomerId'],
       ],
-      "PaymentMethodRef" => [
-        "value" => "2" // TODO: must add configuration in civicrm.
-      ],
+//      "PaymentMethodRef" => [
+//        "value" => "2" // TODO: must add configuration in civicrm.
+//      ],
     //  'DepositToAccountRef' => [
     //    "value" => "2" // TODO: which account??!!
     //  ],
