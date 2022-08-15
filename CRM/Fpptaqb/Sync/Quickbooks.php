@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Mock QB sync class.
+ * Live QB sync class.
  */
 class CRM_Fpptaqb_Sync_Quickbooks {
 
@@ -45,7 +45,6 @@ class CRM_Fpptaqb_Sync_Quickbooks {
 
   /**
    * For a given contact ID, get the QB customer number.
-   * FIXME: MOCK
    *
    * @return int
    */
@@ -79,7 +78,6 @@ class CRM_Fpptaqb_Sync_Quickbooks {
 
   /**
    * For a given QuickBooks customer ID, get relevant customer details.
-   * FIXME: MOCK
    *
    * @return Array
    */

@@ -13,7 +13,6 @@ class CRM_Fpptaqb_APIHelper {
 
   /**
    * Generate random State token to verify the Access token on redirection.
-   * FIXME: BORROWED, UNTRIED
    *
    * @param $length
    * @param string $keyspace
@@ -32,7 +31,6 @@ class CRM_Fpptaqb_APIHelper {
 
   /**
    * Generate dataservice object to verify and login into QuickBooks
-   * FIXME: BORROWED, UNTRIED
    *
    * @return \QuickBooksOnline\API\DataService\DataService|null
    * @throws CiviCRM_API3_Exception
@@ -78,7 +76,6 @@ class CRM_Fpptaqb_APIHelper {
 
   /**
    * Generates data service object for accounting into QuickBooks.
-   * FIXME: BORROWED, UNTRIED
    *
    * @return \QuickBooksOnline\API\DataService\DataService|null
    * @throws CiviCRM_API3_Exception
@@ -128,7 +125,6 @@ class CRM_Fpptaqb_APIHelper {
 
   /**
    * Get redirection URL for OAuth request.
-   * FIXME: BORROWED, UNTRIED
    *
    * @return mixed
    */
@@ -138,7 +134,6 @@ class CRM_Fpptaqb_APIHelper {
 
   /**
    * Refresh QuickBooks access token if required.
-   * FIXME: BORROWED, UNTRIED
    *
    * @throws CiviCRM_API3_Exception
    * @throws \QuickBooksOnline\API\Exception\SdkException
@@ -216,7 +211,6 @@ class CRM_Fpptaqb_APIHelper {
 
   /**
    * Check if refresh/access token expired or not.
-   * FIXME: BORROWED, UNTRIED
    *
    * @param $QBCredentials
    *
@@ -244,7 +238,6 @@ class CRM_Fpptaqb_APIHelper {
 
   /**
    * Check if the API credentials are authorized.
-   * FIXME: BORROWED, UNTRIED
    *
    * @return bool
    * @throws \Exception
@@ -268,7 +261,6 @@ class CRM_Fpptaqb_APIHelper {
   /**
    * Helper Function to convert faults errors saved by the SDK into something
    *   we can store in an Account* error_data
-   * FIXME: BORROWED, UNTRIED
    *
    * @param FaultHandler $error_response
    *
