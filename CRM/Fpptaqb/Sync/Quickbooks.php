@@ -114,26 +114,24 @@ class CRM_Fpptaqb_Sync_Quickbooks {
     // Construct the array of relevant invoice data for QB invoice creation.
     // Reference: https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/invoice#create-an-invoice
     $invParams = [
-      'DocNumber' => $contribution['qbInvNumber'] . '-test-' . substr(uniqid(), 0, 5 ),
+      'DocNumber' => $contribution['qbInvNumber'],
       'TxnDate' => CRM_Utils_Date::customFormat($contribution['receive_date'], '%Y-%m-%d'),
       'CustomerMemo' => $contribution['qbNote'],
-      "CustomerRef" => [
-        "name" => $contribution['qbCustomerName'],
-        "value" => $contribution['qbCustomerId'],
+      'CustomerRef' => [
+        'value' => $contribution['qbCustomerId'],
       ],
-      "Line" => [],
+      'Line' => [],
     ];
     foreach ($contribution['qbLineItems'] as $qbLineItem) {
       $invParams['Line'][] = [
-        "DetailType" => "SalesItemLineDetail",
+        'DetailType' => 'SalesItemLineDetail',
         'Description' => $qbLineItem['label'],
         'Amount' => ($qbLineItem['unit_price'] * $qbLineItem['qty']),
-        "SalesItemLineDetail" => [
+        'SalesItemLineDetail' => [
           'Qty' => $qbLineItem['qty'],
-          "UnitPrice" => $qbLineItem['unit_price'],
-          "ItemRef" => [
-            "name" => $qbLineItem['qbItemDetails']['Name'],
-            "value" => $qbLineItem['qbItemDetails']['Id'],
+          'UnitPrice' => $qbLineItem['unit_price'],
+          'ItemRef' => [
+            'value' => $qbLineItem['qbItemDetails']['Id'],
           ],
         ],
       ];
@@ -160,7 +158,7 @@ class CRM_Fpptaqb_Sync_Quickbooks {
       throw new CRM_Fpptaqb_Exception('QuickBooks error: "' . implode("\n", $errorMessage) . '"', 503);
     }
     // Return the QB invoice ID.
-    return $invAdded['Id'];
+    return $invAdded->Id;
 
   }
 
