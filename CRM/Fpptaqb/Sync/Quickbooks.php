@@ -114,25 +114,24 @@ class CRM_Fpptaqb_Sync_Quickbooks {
     // Construct the array of relevant invoice data for QB invoice creation.
     // Reference: https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/invoice#create-an-invoice
     $invParams = [
-      'DocNumber' => $contribution['qbInvNumber'] . '-test-' . substr(uniqid(), 0, 5 ),
+      'DocNumber' => $contribution['qbInvNumber'],
       'TxnDate' => CRM_Utils_Date::customFormat($contribution['receive_date'], '%Y-%m-%d'),
       'CustomerMemo' => $contribution['qbNote'],
-      "CustomerRef" => [
-        "name" => $contribution['qbCustomerName'],
-        "value" => $contribution['qbCustomerId'],
+      'CustomerRef' => [
+        'value' => $contribution['qbCustomerId'],
       ],
-      "Line" => [],
+      'Line' => [],
     ];
     foreach ($contribution['qbLineItems'] as $qbLineItem) {
       $invParams['Line'][] = [
-        "DetailType" => "SalesItemLineDetail",
+        'DetailType' => 'SalesItemLineDetail',
         'Description' => $qbLineItem['label'],
-        "SalesItemLineDetail" => [
+        'Amount' => ($qbLineItem['unit_price'] * $qbLineItem['qty']),
+        'SalesItemLineDetail' => [
           'Qty' => $qbLineItem['qty'],
-          "UnitPrice" => $qbLineItem['unit_price'],
-          "ItemRef" => [
-            "name" => $qbLineItem['qbItemDetails']['Name'],
-            "value" => $qbLineItem['qbItemDetails']['Id'],
+          'UnitPrice' => $qbLineItem['unit_price'],
+          'ItemRef' => [
+            'value' => $qbLineItem['qbItemDetails']['Id'],
           ],
         ],
       ];
@@ -159,24 +158,70 @@ class CRM_Fpptaqb_Sync_Quickbooks {
       throw new CRM_Fpptaqb_Exception('QuickBooks error: "' . implode("\n", $errorMessage) . '"', 503);
     }
     // Return the QB invoice ID.
-    return $invAdded['Id'];
+    return $invAdded->Id;
 
   }
 
   /**
    * Given a contribution, push it to QB via api.
-   * FIXME: MOCK
    *
    * @param Array $payment
    *   Payment details as built by CRM_Fpptaqb_Utils_Pmt::getReadyToSync().
+   *
+   * @return Int QuickBooks internal payment id.
    */
   public function pushPmt($payment) {
-    // Sometimes, fail with an error.
-    if (self::failRandom(20)) {
-      throw new CRM_Fpptaqb_Exception('MOCK sync: this error happens around 20% of the time.', 503);
-    }
 
-    return rand(1000, 9999);
+    // Construct the array of relevant payment data for QB payment creation.
+    // Reference: https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/payment#create-a-payment
+    $pmtParams = [
+      'TotalAmt' => $payment['total_amount'],
+      "CustomerRef" => [
+        "value" => $payment['qbCustomerId'],
+      ],
+      "PaymentMethodRef" => [
+        "value" => "2" // TODO: must add configuration in civicrm.
+      ],
+    //  'DepositToAccountRef' => [
+    //    "value" => "2" // TODO: which account??!!
+    //  ],
+      "Line" => [
+        [
+          "Amount" => $payment['total_amount'],
+          "LinkedTxn" => [
+           [
+            "TxnId" => $payment['qbInvId'],
+            "TxnType" => "Invoice"
+           ],
+          ],
+        ]
+      ],
+      'TxnDate' => CRM_Utils_Date::customFormat($payment['trxn_date'], '%Y-%m-%d'),
+      'PaymentRefNum' => ($payment['check_number'] ?? NULL),
+    ];
+
+    // Set up the data service for QB connection.
+    try {
+      $dataService = CRM_Fpptaqb_APIHelper::getAccountingDataServiceObject();
+      $dataService->throwExceptionOnError(FALSE);
+    }
+    catch (Exception $e) {
+      throw new CRM_Fpptaqb_Exception('Could not get QuickBooks DataService Object: ' . $e->getMessage(), 503);
+    }
+    // Prep the payment object and then create payment in QuickBooks.
+    // Reference: https://intuit.github.io/QuickBooks-V3-PHP-SDK/quickstart.html#create-new-resources-post
+
+    // Create the payment entity object based on params.
+    $pmtEntity = \QuickBooksOnline\API\Facades\Payment::create($pmtParams);
+    // Send the payment entity to the data service 'add' medthod.
+    $pmtAdded = $dataService->Add($pmtEntity);
+
+    if ($lastError = $dataService->getLastError()) {
+      $errorMessage = CRM_Fpptaqb_APIHelper::parseErrorResponse($lastError);
+      throw new CRM_Fpptaqb_Exception('QuickBooks error: "' . implode("\n", $errorMessage) . '"', 503);
+    }
+    // Return the QB payment ID.
+    return $pmtAdded->Id;
   }
 
   public function fetchItemById($id) {
