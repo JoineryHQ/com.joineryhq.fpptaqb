@@ -63,7 +63,7 @@ class CRM_Fpptaqb_Sync_Quickbooks {
       $customers = $dataService->Query("select * from Customer Where DisplayName = '$queryName'");
     }
     catch (Exception $e) {
-      throw new CRM_Core_Exception('Could not get DataService Object: ' . $e->getMessage());
+      throw new CRM_Core_Exception('Could not get QuickBooks DataService Object: ' . $e->getMessage());
     }
     if ($lastError = $dataService->getLastError()) {
       $errorMessage = CRM_Fpptaqb_APIHelper::parseErrorResponse($lastError);
@@ -90,7 +90,7 @@ class CRM_Fpptaqb_Sync_Quickbooks {
       $customer = $dataService->FindById('Customer', $customerId);
     }
     catch (Exception $e) {
-      throw new CRM_Core_Exception('Could not get DataService Object: ' . $e->getMessage());
+      throw new CRM_Core_Exception('Could not get QuickBooks DataService Object: ' . $e->getMessage());
     }
     if ($lastError = $dataService->getLastError()) {
       $errorMessage = CRM_Fpptaqb_APIHelper::parseErrorResponse($lastError);
@@ -104,18 +104,64 @@ class CRM_Fpptaqb_Sync_Quickbooks {
 
   /**
    * Given a contribution, push it to QB via api.
-   * FIXME: MOCK
    *
    * @param Array $contribution
    *   Contribution details as built by CRM_Fpptaqb_Utils_Invoice::getInvToSync().
+   *
+   * @return Int QuickBooks internal invoice id.
    */
   public function pushInv($contribution) {
-    // Sometimes, fail with an error.
-    if (self::failRandom(20)) {
-      throw new CRM_Fpptaqb_Exception('MOCK sync: this error happens around 20% of the time.', 503);
+    // Construct the array of relevant invoice data for QB invoice creation.
+    // Reference: https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/invoice#create-an-invoice
+    $invParams = [
+      'DocNumber' => $contribution['qbInvNumber'] . '-test-' . substr(uniqid(), 0, 5 ),
+      'TxnDate' => CRM_Utils_Date::customFormat($contribution['receive_date'], '%Y-%m-%d'),
+      'CustomerMemo' => $contribution['qbNote'],
+      "CustomerRef" => [
+        "name" => $contribution['qbCustomerName'],
+        "value" => $contribution['qbCustomerId'],
+      ],
+      "Line" => [],
+    ];
+    foreach ($contribution['qbLineItems'] as $qbLineItem) {
+      $invParams['Line'][] = [
+        "DetailType" => "SalesItemLineDetail",
+        'Description' => $qbLineItem['label'],
+        'Amount' => ($qbLineItem['unit_price'] * $qbLineItem['qty']),
+        "SalesItemLineDetail" => [
+          'Qty' => $qbLineItem['qty'],
+          "UnitPrice" => $qbLineItem['unit_price'],
+          "ItemRef" => [
+            "name" => $qbLineItem['qbItemDetails']['Name'],
+            "value" => $qbLineItem['qbItemDetails']['Id'],
+          ],
+        ],
+      ];
     }
 
-    return rand(1000, 9999);
+    // Set up the data service for QB connection.
+    try {
+      $dataService = CRM_Fpptaqb_APIHelper::getAccountingDataServiceObject();
+      $dataService->throwExceptionOnError(FALSE);
+    }
+    catch (Exception $e) {
+      throw new CRM_Fpptaqb_Exception('Could not get QuickBooks DataService Object: ' . $e->getMessage(), 503);
+    }
+    // Prep the invoice object and then create invoice in QuickBooks.
+    // Reference: https://intuit.github.io/QuickBooks-V3-PHP-SDK/quickstart.html#create-new-resources-post
+
+    // Create the invoice entity object based on params.
+    $invEntity = \QuickBooksOnline\API\Facades\Invoice::create($invParams);
+    // Send the invoice entity to the data service 'add' medthod.
+    $invAdded = $dataService->Add($invEntity);
+
+    if ($lastError = $dataService->getLastError()) {
+      $errorMessage = CRM_Fpptaqb_APIHelper::parseErrorResponse($lastError);
+      throw new CRM_Fpptaqb_Exception('QuickBooks error: "' . implode("\n", $errorMessage) . '"', 503);
+    }
+    // Return the QB invoice ID.
+    return $invAdded['Id'];
+
   }
 
   /**
@@ -149,7 +195,7 @@ class CRM_Fpptaqb_Sync_Quickbooks {
       $items = $dataService->Query("select * from Item");
     }
     catch (Exception $e) {
-      throw new CRM_Core_Exception('Could not get DataService Object: ' . $e->getMessage());
+      throw new CRM_Core_Exception('Could not get QuickBooks DataService Object: ' . $e->getMessage());
     }
     if ($lastError = $dataService->getLastError()) {
       $errorMessage = CRM_Fpptaqb_APIHelper::parseErrorResponse($lastError);
