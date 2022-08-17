@@ -11,7 +11,7 @@ class CRM_Fpptaqb_Utils_Payment {
    */
   public static function getReadyToSyncIds() {
     static $ids;
-    if (!isset($ids)) {    
+    if (!isset($ids)) {
       $ids = [];
       $query = "
         select
@@ -72,11 +72,11 @@ class CRM_Fpptaqb_Utils_Payment {
         'id' => $financialTrxnId,
       ]);
       $contributionId = _fpptaqb_civicrmapi('EntityFinancialTrxn', 'getValue', [
-        'entity_table' => "civicrm_contribution", 
+        'entity_table' => "civicrm_contribution",
         'financial_trxn_id' => $financialTrxnId,
         'return' => 'entity_id'
       ]);
-      
+
       $contribution = _fpptaqb_civicrmapi('Contribution', 'getSingle', ['id' => $contributionId]);
 
       $organizationCid = CRM_Fpptaqb_Utils_Invoice::getAttributedContactId($contributionId);
@@ -93,9 +93,9 @@ class CRM_Fpptaqb_Utils_Payment {
         $qbInvId = $qbInvGet['values'][0]['quickbooks_id'];
       }
       else {
-        $qbInvId = E::ts('(No synced QuickBooks invoice found)');          
+        $qbInvId = E::ts('(No synced QuickBooks invoice found)');
       }
-      
+
       // Define a value for QuickBooks "Reference No." field on this payment.
       switch($financialTrxn['payment_instrument_id']) {
         // EFT
@@ -112,7 +112,7 @@ class CRM_Fpptaqb_Utils_Payment {
           $financialTrxn['qbReferenceNo'] = ($financialTrxn['pan_truncation'] ?? E::ts('(Unknown CC last-4)'));
           break;
       }
-      
+
 
       $financialTrxn += [
         'contributionCid' => $contribution['contact_id'],

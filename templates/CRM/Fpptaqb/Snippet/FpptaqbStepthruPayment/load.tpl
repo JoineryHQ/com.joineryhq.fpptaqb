@@ -11,10 +11,10 @@ Amount: {$payment.total_amount|crmMoney}
 <h4>Will create QuickBooks payment:</h4>
 <pre>
 QuickBooks customer "{$payment.qbCustomerName}" (id={$payment.qbCustomerId})
-Invoice Number: {$payment.qbInvNumber} 
+Invoice Number: {$payment.qbInvNumber}
 Invoice Id: {$payment.qbInvId}
 Reference no.: {$payment.qbReferenceNo}
-Payment Date: {$payment.trxn_date|crmDate:'%Y-%m-%d'} 
+Payment Date: {$payment.trxn_date|crmDate:'%Y-%m-%d'}
 Payment method: {$payment.paymentInstrumentLabel}
 Amount: {$payment.total_amount|crmMoney}
 </pre>

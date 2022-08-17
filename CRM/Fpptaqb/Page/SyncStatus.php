@@ -8,10 +8,10 @@ class CRM_Fpptaqb_Page_SyncStatus extends CRM_Core_Page {
     $this->assign('id', $id);
     CRM_Core_Session::singleton()->pushUserContext(CRM_Utils_System::url('civicrm/fpptaqb/syncstatus', "reset=1&id=$id", NULL, NULL, NULL, NULL, TRUE));
 
-    // Error handling: 
+    // Error handling:
     // This page is likely to run as a pop-up, which will not properly display
     // civicrm fatal errors;
-    // There are several legitimate reasons (typically lack of configuration) 
+    // There are several legitimate reasons (typically lack of configuration)
     // that errors may be thrown in building this page, and we need to communicate
     // those to the user.
     // Therefore, we wrap the whole thing in a try/catch and display any exception
@@ -64,8 +64,8 @@ class CRM_Fpptaqb_Page_SyncStatus extends CRM_Core_Page {
         $this->assign('isMock', $contributionInvoiceGet['values'][0]['is_mock']);
       }
       else {
-        // Get the 'load' text for this contribution 
-        // FIXME: because the 'load' apis use smarty, they will assign a lot of 
+        // Get the 'load' text for this contribution
+        // FIXME: because the 'load' apis use smarty, they will assign a lot of
         // variables to the page that aren't used in our template.
         $invLoad = _fpptaqb_civicrmapi('FpptaqbStepthruInvoice', 'load', ['id' => $id]);
         $this->assign('invLoadText', $invLoad['values']['text']);

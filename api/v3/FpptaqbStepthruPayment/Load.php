@@ -40,7 +40,7 @@ function civicrm_api3_fpptaqb_stepthru_payment_Load($params) {
     try {
       $payment = CRM_Fpptaqb_Utils_Payment::getReadyToSync($id);
 //      var_dump($payment); die();
-      
+
     }
     catch (CRM_Core_Exception $e) {
       $extraParams = ['values' => $params];
