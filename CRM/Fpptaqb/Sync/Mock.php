@@ -3941,4 +3941,245 @@ class CRM_Fpptaqb_Sync_Mock {
       return CRM_Utils_Array::rekey($response['QueryResponse']['Item'], 'Id');
   }
 
+  public function fetchAccountById($id) {
+    // In LIVE sync this should probably be an actual live API query, but in
+    // this mock we'll just use the static values from self::fetchActiveItemsList().
+    $items = $this->fetchActiveItemsList();
+    return $items[$id];
+  }
+
+  public function fetchActiveAccountsList() {
+    $json = '
+      {
+       "QueryResponse": {
+        "Account": [
+         {
+          "Name": "CD #2 Prime meridian",
+          "SubAccount": false,
+          "Description": "CD #2 Prime meridian",
+          "FullyQualifiedName": "CD #2 Prime meridian",
+          "Active": true,
+          "Classification": "Asset",
+          "AccountType": "Bank",
+          "AccountSubType": "Savings",
+          "AcctNum": "1126",
+          "CurrentBalance": 51634.78,
+          "CurrentBalanceWithSubAccounts": 51634.78,
+          "CurrencyRef": {
+           "value": "USD",
+           "name": "United States Dollar"
+          },
+          "domain": "QBO",
+          "sparse": false,
+          "Id": "614",
+          "SyncToken": "0",
+          "MetaData": {
+           "CreateTime": "2019-09-09T10:26:06-07:00",
+           "LastUpdatedTime": "2021-04-17T12:47:02-07:00"
+          }
+         },
+         {
+          "Name": "CD-Prime Meridian",
+          "SubAccount": false,
+          "FullyQualifiedName": "CD-Prime Meridian",
+          "Active": true,
+          "Classification": "Asset",
+          "AccountType": "Bank",
+          "AccountSubType": "Checking",
+          "AcctNum": "1010",
+          "CurrentBalance": 0,
+          "CurrentBalanceWithSubAccounts": 0,
+          "CurrencyRef": {
+           "value": "USD",
+           "name": "United States Dollar"
+          },
+          "domain": "QBO",
+          "sparse": false,
+          "Id": "138",
+          "SyncToken": "0",
+          "MetaData": {
+           "CreateTime": "2019-04-22T07:59:31-07:00",
+           "LastUpdatedTime": "2022-06-15T21:12:29-07:00"
+          }
+         },
+         {
+          "Name": "Directors Travel12.5870",
+          "SubAccount": false,
+          "FullyQualifiedName": "Directors Travel12.5870",
+          "Active": true,
+          "Classification": "Asset",
+          "AccountType": "Bank",
+          "AccountSubType": "CashOnHand",
+          "CurrentBalance": 0,
+          "CurrentBalanceWithSubAccounts": 0,
+          "CurrencyRef": {
+           "value": "USD",
+           "name": "United States Dollar"
+          },
+          "domain": "QBO",
+          "sparse": false,
+          "Id": "643",
+          "SyncToken": "0",
+          "MetaData": {
+           "CreateTime": "2021-09-27T08:27:22-07:00",
+           "LastUpdatedTime": "2022-02-15T10:03:46-08:00"
+          }
+         },
+         {
+          "Name": "NYSE Guest Fees",
+          "SubAccount": false,
+          "FullyQualifiedName": "NYSE Guest Fees",
+          "Active": true,
+          "Classification": "Asset",
+          "AccountType": "Bank",
+          "AccountSubType": "CashOnHand",
+          "CurrentBalance": 0,
+          "CurrentBalanceWithSubAccounts": 0,
+          "CurrencyRef": {
+           "value": "USD",
+           "name": "United States Dollar"
+          },
+          "domain": "QBO",
+          "sparse": false,
+          "Id": "594",
+          "SyncToken": "0",
+          "MetaData": {
+           "CreateTime": "2019-06-13T12:22:31-07:00",
+           "LastUpdatedTime": "2021-03-17T18:00:46-07:00"
+          }
+         },
+         {
+          "Name": "Petty Cash",
+          "SubAccount": false,
+          "FullyQualifiedName": "Petty Cash",
+          "Active": true,
+          "Classification": "Asset",
+          "AccountType": "Bank",
+          "AccountSubType": "Checking",
+          "AcctNum": "1299",
+          "CurrentBalance": 27.17,
+          "CurrentBalanceWithSubAccounts": 27.17,
+          "CurrencyRef": {
+           "value": "USD",
+           "name": "United States Dollar"
+          },
+          "domain": "QBO",
+          "sparse": false,
+          "Id": "470",
+          "SyncToken": "0",
+          "MetaData": {
+           "CreateTime": "2019-04-22T07:59:38-07:00",
+           "LastUpdatedTime": "2020-02-12T10:26:29-08:00"
+          }
+         },
+         {
+          "Name": "PRIME MERIDIAN - MM SAVINGS",
+          "SubAccount": false,
+          "Description": "Account changed from Savings to MM Savings",
+          "FullyQualifiedName": "PRIME MERIDIAN - MM SAVINGS",
+          "Active": true,
+          "Classification": "Asset",
+          "AccountType": "Bank",
+          "AccountSubType": "Checking",
+          "AcctNum": "1031",
+          "CurrentBalance": 305428.62,
+          "CurrentBalanceWithSubAccounts": 305428.62,
+          "CurrencyRef": {
+           "value": "USD",
+           "name": "United States Dollar"
+          },
+          "domain": "QBO",
+          "sparse": false,
+          "Id": "283",
+          "SyncToken": "0",
+          "MetaData": {
+           "CreateTime": "2019-04-22T07:59:34-07:00",
+           "LastUpdatedTime": "2022-08-15T13:41:00-07:00"
+          }
+         },
+         {
+          "Name": "PRIME MERIDIAN -MM Relief Fund",
+          "SubAccount": false,
+          "Description": "Golf Classic Relief Fund Money Market Account",
+          "FullyQualifiedName": "PRIME MERIDIAN -MM Relief Fund",
+          "Active": true,
+          "Classification": "Asset",
+          "AccountType": "Bank",
+          "AccountSubType": "Checking",
+          "AcctNum": "1040",
+          "CurrentBalance": 29665.45,
+          "CurrentBalanceWithSubAccounts": 29665.45,
+          "CurrencyRef": {
+           "value": "USD",
+           "name": "United States Dollar"
+          },
+          "domain": "QBO",
+          "sparse": false,
+          "Id": "141",
+          "SyncToken": "0",
+          "MetaData": {
+           "CreateTime": "2019-04-22T07:59:31-07:00",
+           "LastUpdatedTime": "2022-08-15T13:46:49-07:00"
+          }
+         },
+         {
+          "Name": "PRIME MERIDIAN OPERATING ACCT",
+          "SubAccount": false,
+          "Description": "Checking Account - Payroll",
+          "FullyQualifiedName": "PRIME MERIDIAN OPERATING ACCT",
+          "Active": true,
+          "Classification": "Asset",
+          "AccountType": "Bank",
+          "AccountSubType": "Checking",
+          "AcctNum": "1025",
+          "CurrentBalance": 844544.27,
+          "CurrentBalanceWithSubAccounts": 844544.27,
+          "CurrencyRef": {
+           "value": "USD",
+           "name": "United States Dollar"
+          },
+          "domain": "QBO",
+          "sparse": false,
+          "Id": "510",
+          "SyncToken": "0",
+          "MetaData": {
+           "CreateTime": "2019-04-22T07:59:39-07:00",
+           "LastUpdatedTime": "2022-08-17T12:13:04-07:00"
+          }
+         },
+         {
+          "Name": "Scholarship Fund",
+          "SubAccount": false,
+          "Description": "Scholarship fund",
+          "FullyQualifiedName": "Scholarship Fund",
+          "Active": true,
+          "Classification": "Asset",
+          "AccountType": "Bank",
+          "AccountSubType": "Checking",
+          "AcctNum": "1026",
+          "CurrentBalance": 13378.34,
+          "CurrentBalanceWithSubAccounts": 13378.34,
+          "CurrencyRef": {
+           "value": "USD",
+           "name": "United States Dollar"
+          },
+          "domain": "QBO",
+          "sparse": false,
+          "Id": "611",
+          "SyncToken": "0",
+          "MetaData": {
+           "CreateTime": "2019-08-01T09:14:04-07:00",
+           "LastUpdatedTime": "2022-08-01T11:15:13-07:00"
+          }
+         }
+        ],
+        "startPosition": 1,
+        "maxResults": 9
+       },
+       "time": "2022-08-17T13:34:09.192-07:00"
+      }    ';
+    $response = json_decode($json, TRUE);
+    return CRM_Utils_Array::rekey($response['QueryResponse']['Account'], 'Id');
+  }
+
 }

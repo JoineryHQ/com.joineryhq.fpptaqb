@@ -180,9 +180,9 @@ class CRM_Fpptaqb_Sync_Quickbooks {
 //      "PaymentMethodRef" => [
 //        "value" => "2" // TODO: must add configuration in civicrm.
 //      ],
-    //  'DepositToAccountRef' => [
-    //    "value" => "2" // TODO: which account??!!
-    //  ],
+      'DepositToAccountRef' => [
+        "value" => $payment['qbDepositToAccountId'],
+      ],
       "Line" => [
         [
           "Amount" => $payment['total_amount'],
@@ -246,6 +246,34 @@ class CRM_Fpptaqb_Sync_Quickbooks {
 
     foreach ($items as $item) {
       $ret[$item->Id] = (array)$item;
+    }
+    return $ret;
+  }
+
+  public function fetchAccountById($id) {
+    if (!isset($this->items)) {
+      $this->items = $this->fetchActiveItemsList();
+    }
+    return $this->items[$id];
+  }
+
+  public function fetchActiveAccountsList() {
+    $ret = [];
+    try {
+      $dataService = CRM_Fpptaqb_APIHelper::getAccountingDataServiceObject();
+      $dataService->throwExceptionOnError(FALSE);
+      $accounts = $dataService->Query("select * from Account where AccountType = 'Bank' and Active");
+    }
+    catch (Exception $e) {
+      throw new CRM_Core_Exception('Could not get QuickBooks DataService Object: ' . $e->getMessage());
+    }
+    if ($lastError = $dataService->getLastError()) {
+      $errorMessage = CRM_Fpptaqb_APIHelper::parseErrorResponse($lastError);
+      throw new Exception('QuickBooks error: "' . implode("\n", $errorMessage) . '"');
+    }
+
+    foreach ($accounts as $account) {
+      $ret[$account->Id] = (array)$account;
     }
     return $ret;
   }

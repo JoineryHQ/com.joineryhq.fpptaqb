@@ -17,5 +17,6 @@ Reference no.: {$payment.qbReferenceNo}
 Payment Date: {$payment.trxn_date|crmDate:'%Y-%m-%d'}
 Payment method: {$payment.paymentInstrumentLabel}
 Amount: {$payment.total_amount|crmMoney}
+Deposit to account: {$payment.qbDepositToAccountLabel}
 </pre>
 

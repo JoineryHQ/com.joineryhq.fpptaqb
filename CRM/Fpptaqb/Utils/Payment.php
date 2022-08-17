@@ -113,6 +113,7 @@ class CRM_Fpptaqb_Utils_Payment {
           break;
       }
 
+      $qbDepositToAccountId = (Civi::settings()->get('fpptaqb_pmt_deposit_to_account_id') ?? NULL);
 
       $financialTrxn += [
         'contributionCid' => $contribution['contact_id'],
@@ -126,6 +127,8 @@ class CRM_Fpptaqb_Utils_Payment {
         'qbCustomerId' => $qbCustomerId,
         'qbInvNumber' => CRM_Fpptaqb_Utils_Quickbooks::prepInvNumber($contribution['invoice_number']),
         'qbInvId' => $qbInvId,
+        'qbDepositToAccountId' => $qbDepositToAccountId,
+        'qbDepositToAccountLabel' => CRM_Fpptaqb_Utils_Quickbooks::getAccountOptions()[$qbDepositToAccountId],
         'paymentInstrumentLabel' => CRM_Core_PseudoConstant::getLabel('CRM_Core_BAO_FinancialTrxn', 'payment_instrument_id', $financialTrxn['payment_instrument_id']),
       ];
       $cache[$financialTrxnId] = $financialTrxn;

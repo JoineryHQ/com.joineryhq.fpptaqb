@@ -19,6 +19,18 @@ class CRM_Fpptaqb_Utils_Quickbooks {
     return $options;
   }
 
+  public static function getAccountOptions() {
+    $options = [
+      '' => E::ts('[None / QuickBooks default]'),
+    ];
+    $sync = CRM_Fpptaqb_Util::getSyncObject();
+    $activeAccounts = $sync->fetchActiveAccountsList();
+    foreach ($activeAccounts as $activeAccount) {
+      $options[$activeAccount['Id']] = $activeAccount['Name'];
+    }
+    return $options;
+  }
+
   public static function getItemDetails(int $financialTypeId) {
     $itemDetails = [];
 
