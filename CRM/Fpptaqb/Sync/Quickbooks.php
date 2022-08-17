@@ -195,7 +195,7 @@ class CRM_Fpptaqb_Sync_Quickbooks {
         ]
       ],
       'TxnDate' => CRM_Utils_Date::customFormat($payment['trxn_date'], '%Y-%m-%d'),
-      'PaymentRefNum' => ($payment['check_number'] ?? NULL),
+      'PaymentRefNum' => ($payment['qbReferenceNo'] ?? NULL),
     ];
 
     // Set up the data service for QB connection.

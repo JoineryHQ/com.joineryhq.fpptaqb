@@ -74,7 +74,6 @@ class CRM_Fpptaqb_Page_SyncStatus extends CRM_Core_Page {
         foreach ($financialTrxnIds as $paymentTrxnId) {
           $pmtLoad = _fpptaqb_civicrmapi('FpptaqbStepthruPayment', 'load', [
             'id' => $paymentTrxnId,
-            'ignoreQbInvoice' => TRUE,
           ]);
           $pmtLoadTexts[] = $pmtLoad['values']['text'];
         }

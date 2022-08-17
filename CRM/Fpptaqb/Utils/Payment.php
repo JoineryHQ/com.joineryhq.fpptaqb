@@ -57,7 +57,7 @@ class CRM_Fpptaqb_Utils_Payment {
    *
    * @return Array
    */
-  public static function getReadyToSync(int $financialTrxnId, $ignoreQbInvoice = FALSE) {
+  public static function getReadyToSync(int $financialTrxnId) {
     static $cache = [];
     if (!isset($cache[$financialTrxnId])) {
       $financialTrxnCount = _fpptaqb_civicrmapi('FinancialTrxn', 'getCount', [
@@ -82,12 +82,37 @@ class CRM_Fpptaqb_Utils_Payment {
       $organizationCid = CRM_Fpptaqb_Utils_Invoice::getAttributedContactId($contributionId);
       $qbCustomerId = CRM_Fpptaqb_Utils_Quickbooks::getCustomerIdForContact($organizationCid);
       $qbCustomerDetails = CRM_Fpptaqb_Utils_Quickbooks::getCustomerDetails($qbCustomerId);
-      if (!$ignoreQbInvoice) {
-        $qbInvId = _fpptaqb_civicrmapi('FpptaquickbooksContributionInvoice', 'getValue', [
-          'contribution_id' => $contributionId,
-          'return' => 'quickbooks_id',
-        ]);
+
+      // Record the synced QB invoice ID, if any.
+      $qbInvGet = _fpptaqb_civicrmapi('FpptaquickbooksContributionInvoice', 'get', [
+        'sequential' => TRUE,
+        'contribution_id' => $contributionId,
+        'return' => 'quickbooks_id',
+      ]);
+      if ($qbInvGet['count']) {
+        $qbInvId = $qbInvGet['values'][0]['quickbooks_id'];
       }
+      else {
+        $qbInvId = E::ts('(No synced QuickBooks invoice found)');          
+      }
+      
+      // Define a value for QuickBooks "Reference No." field on this payment.
+      switch($financialTrxn['payment_instrument_id']) {
+        // EFT
+        case '5';
+          $financialTrxn['qbReferenceNo'] = ($financialTrxn['trxn_id'] ?? E::ts('(Unknown EFT Transaction ID)'));
+          break;
+        // Check
+        case '4';
+          $financialTrxn['qbReferenceNo'] = ($financialTrxn['check_number'] ?? E::ts('(Unknown check number)'));
+          break;
+        // Credit card or Debit card:
+        case '1';
+        case '2';
+          $financialTrxn['qbReferenceNo'] = ($financialTrxn['pan_truncation'] ?? E::ts('(Unknown CC last-4)'));
+          break;
+      }
+      
 
       $financialTrxn += [
         'contributionCid' => $contribution['contact_id'],

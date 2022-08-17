@@ -38,7 +38,7 @@ function civicrm_api3_fpptaqb_stepthru_payment_Load($params) {
   }
   else {
     try {
-      $payment = CRM_Fpptaqb_Utils_Payment::getReadyToSync($id, $params['ignoreQbInvoice']);
+      $payment = CRM_Fpptaqb_Utils_Payment::getReadyToSync($id);
 //      var_dump($payment); die();
       
     }
