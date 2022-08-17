@@ -46,7 +46,7 @@ function fpptaqb_civicrm_buildForm($formName, &$form) {
     // For the form CRM_Financial_Form_FinancialType, we'll add a 'quickbooks item'
     // field for linking to the correct QB item.
     // First get the list of QB Item options and add the select element.
-    $options = CRM_Fpptaqb_Utils_FinancialType::getItemOptions();
+    $options = CRM_Fpptaqb_Utils_Quickbooks::getItemOptions();
     $form->addElement(
       'select',
       'fpptaqb_quickbooks_id',
