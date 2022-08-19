@@ -20,9 +20,6 @@
   <compatibility>
     <ver>5.0</ver>
   </compatibility>
-  <requires>
-    <ext>com.joineryhq.fpptaqbhelper</ext>
-  </requires>
   <comments>Developed by Joinery for FPPTA.</comments>
   <classloader>
     <psr4 prefix="Civi\" path="Civi"/>

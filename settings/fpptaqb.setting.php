@@ -3,6 +3,44 @@
 use CRM_Fpptaqb_ExtensionUtil as E;
 
 return array(
+  'fpptaqb_cf_id_contribution' => array(
+    'group_name' => 'FPPTA QuickBooks Helper Settings',
+    'group' => 'fpptaqb',
+    'name' => 'fpptaqb_cf_id_contribution',
+    'add' => '5.0',
+    'is_domain' => 1,
+    'is_contact' => 0,
+    'description' => 'Every contribution page will need this field to allow the user to indicate the donating organization. (This setting only offers Contact Reference custom fields, on custom groups extending contributions, which are filtered for contact_type=organization.)',
+    'title' => E::ts('Custom "Donating Organization" field for contributions'),
+    'type' => 'Int',
+    'quick_form_type' => 'Element',
+    'default' => 0,
+    'html_type' => 'Select',
+    'html_attributes' => array(
+      'class' => 'crm-select2',
+      'style' => "width:auto;",
+    ),
+    'X_options_callback' => 'CRM_Fpptaqb_Form_Settings::getCustomFieldsContribution',
+  ),
+  'fpptaqb_cf_id_participant' => array(
+    'group_name' => 'FPPTA QuickBooks Helper Settings',
+    'group' => 'fpptaqb',
+    'name' => 'fpptaqb_cf_id_participant',
+    'add' => '5.0',
+    'is_domain' => 1,
+    'is_contact' => 0,
+    'description' => 'Every event registration page will need this field to allow the user to indicate the donating organization. (This setting only offers Contact Reference custom fields, on custom groups extending participants, which are filtered for contact_type=organization.)',
+    'title' => E::ts('Custom "Donating Organization" field for participants'),
+    'type' => 'Int',
+    'quick_form_type' => 'Element',
+    'default' => 0,
+    'html_type' => 'Select',
+    'html_attributes' => array(
+      'class' => 'crm-select2',
+      'style' => "width:auto;",
+    ),
+    'X_options_callback' => 'CRM_Fpptaqb_Form_Settings::getCustomFieldsParticipant',
+  ),
   'fpptaqb_use_sync_class' => array(
     'group_name' => 'Fpptaqb Settings',
     'group' => 'fpptaqb',

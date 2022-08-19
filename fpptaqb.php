@@ -87,24 +87,23 @@ function fpptaqb_civicrm_buildForm($formName, &$form) {
     ];
     CRM_Core_Resources::singleton()->addVars('fpptaqb', $jsvars);
   }
-  elseif ($formName == "CRM_Fpptaqbhelper_Form_Settings") {
-    $QBCredentials = CRM_Fpptaqb_APIHelper::getQuickBooksCredentials();
-    $isRefreshTokenExpired = CRM_Fpptaqb_APIHelper::isTokenExpired($QBCredentials, TRUE);
-
-    if ((!empty($QBCredentials['clientID']) && !empty($QBCredentials['clientSecret']) && empty($QBCredentials['accessToken']) && empty($QBCredentials['refreshToken']) && empty($QBCredentials['realMId'])) || $isRefreshTokenExpired) {
-      $url = str_replace("&amp;", "&", CRM_Utils_System::url("civicrm/fpptaqb/OAuth", NULL, TRUE, NULL));
-      $form->assign('redirect_url', $url);
+  else {
+    $customFieldId = NULL;
+    if ($formName == 'CRM_Contribute_Form_Contribution_Main') {
+      $customFieldId = Civi::settings()->get('fpptaqb_cf_id_contribution');
     }
-
-    $form->assign('isRefreshTokenExpired', $isRefreshTokenExpired);
-
-    $showClientKeysMessage = TRUE;
-    if (!empty($QBCredentials['clientID']) && !empty($QBCredentials['clientSecret'])) {
-      $showClientKeysMessage = FALSE;
+    if ($formName == 'CRM_Event_Form_Registration_Register') {
+      $customFieldId = Civi::settings()->get('fpptaqb_cf_id_participant');
     }
-
-    $form->assign('showClientKeysMessage', $showClientKeysMessage);
-    
+    if (!empty($customFieldId)) {
+      if (array_key_exists("custom_{$customFieldId}", $form->_elementIndex)) {
+        $jsVars = [
+          'contactRefCustomFieldId' => $customFieldId,
+        ];
+        CRM_Core_Resources::singleton()->addVars('fpptaqb', $jsVars);
+        CRM_Core_Resources::singleton()->addScriptFile('com.joineryhq.fpptaqb', 'js/alterContactRef.js');
+      }
+    }  
   }
 }
 
@@ -146,6 +145,16 @@ function fpptaqb_civicrm_postProcess($formName, $form) {
  * Implements hook_civicrm_apiWrappers().
  */
 function fpptaqb_civicrm_apiWrappers(&$wrappers, $apiRequest) {
+  if (
+    strtolower($apiRequest['entity']) == 'contact'
+    && strtolower($apiRequest['action']) == 'get'
+    && (($apiRequest['params']['isFpptaqbContactRef'] ?? 0) == 1)
+  ) {
+    // On contact.get where isFpptaqbContactRef, add wrappers to limit the 
+    // contacts returned (see comments in wrapper class).
+    $wrappers[] = new CRM_Fpptaqb_APIWrappers_Contact_IsFpptaqbContactRef();
+  }
+
   // The APIWrapper is conditionally registered so that it runs only when appropriate
   $loggedApiEntities = [
     'fpptaquickbooksfinancialtypeitem' => ['create'],
@@ -162,31 +171,6 @@ function fpptaqb_civicrm_apiWrappers(&$wrappers, $apiRequest) {
   ) {
     if ($apiRequest['version'] == 3) {
       $wrappers[] = new CRM_Fpptaqb_APIWrappers_Log();
-    }
-  }
-}
-
-/**
- * Implements hook_civicrm_fpptaqb_settings().
- */
-function fpptaqb_civicrm_fpptaqbhelper_settings(&$settingsGroups) {
-  $settingsGroups[] = 'fpptaqb';
-}
-
-/**
- * Implements hook_civicrm_validateForm().
- * 
- * This extension uses fpptaqbhelper to manage settings, so it must use this
- * hook to validate its settings in that form.
- */
-function fpptaqb_civicrm_validateForm($formName, &$fields, &$files, &$form, &$errors) {
-  if ($formName == 'CRM_Fpptaqbhelper_Form_Settings') {
-    if (!empty($fields['fpptaqb_minimum_date'])) {
-      $yyyymmdd = CRM_Utils_Date::customFormat($fields['fpptaqb_minimum_date'], '%Y-%m-%d');
-      if ($yyyymmdd != $fields['fpptaqb_minimum_date']) {
-        $thisYear = CRM_Utils_Date::getToday(NULL, 'Y');
-        $errors['fpptaqb_minimum_date'] = E::ts('Please specify a date in the format "YYYY-MM-DD" (e.g. "%1-12-01" for Dec. 1 this year.)', ['1' => $thisYear]);
-      }
     }
   }
 }
@@ -297,25 +281,6 @@ function fpptaqb_civicrm_entityTypes(&$entityTypes) {
  *
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_navigationMenu
  */
-//function fpptaqb_civicrm_navigationMenu(&$menu) {
-//  _fpptaqb_civix_insert_navigation_menu($menu, 'Mailings', [
-//    'label' => E::ts('New subliminal message'),
-//    'name' => 'mailing_subliminal_message',
-//    'url' => 'civicrm/mailing/subliminal',
-//    'permission' => 'access CiviMail',
-//    'operator' => 'OR',
-//    'separator' => 0,
-//  ]);
-//  _fpptaqb_civix_navigationMenu($menu);
-//}
-
-
-
-/**
- * Implements hook_civicrm_navigationMenu().
- *
- * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_navigationMenu
- */
 /**
  * Implements hook_civicrm_navigationMenu().
  *
@@ -333,6 +298,19 @@ function fpptaqb_civicrm_navigationMenu(&$menu) {
     'navID' => ++$max_navID,
   ));
   _fpptaqb_civix_navigationMenu($menu);
+
+
+  _fpptaqb_get_max_navID($menu, $max_navID);
+  _fpptaqb_civix_insert_navigation_menu($menu, 'Administer/CiviContribute', array(
+    'label' => E::ts('FPPTA QuickBooks Settings'),
+    'name' => 'FPPTA QuickBooks Settings',
+    'url' => 'civicrm/admin/fpptaqb/settings?reset=1',
+    'permission' => 'administer CiviCRM',
+    'operator' => 'AND',
+    'separator' => NULL,
+    'navID' => ++$max_navID,
+  ));
+  _fpptaqb_civix_navigationMenu($menu);  
 }
 
 /**

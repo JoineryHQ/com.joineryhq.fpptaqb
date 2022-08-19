@@ -5,9 +5,6 @@ Custom QuickBooks Online integration for FPPTA.
 
 The extension is licensed under [GPL-3.0](LICENSE.txt).
 
-## Requirements
-This extension requires the extension [FPPTA QuickBooks Helper](https://github.com/JoineryHQ/com.joineryhq.fpptaqbhelper).
-
 ## Configuration
 After installation, you'll need to perform a few important configuration steps
 to get this working:

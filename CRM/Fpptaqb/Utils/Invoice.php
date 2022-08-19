@@ -234,7 +234,7 @@ class CRM_Fpptaqb_Utils_Invoice {
   /**
    * For a given contributionId, return the contact ID of the contact to whom
    * the contribution should be attributed (per the field specified in 
-   * fpptaqbhelper settings fpptaqbhelper_cf_id_contribution or fpptaqbhelper_cf_id_participant)
+   * settings fpptaqb_cf_id_contribution or fpptaqb_cf_id_participant)
    * 
    * @param int $contributionId
    * 
@@ -242,7 +242,7 @@ class CRM_Fpptaqb_Utils_Invoice {
    */
   public static function getAttributedContactId($contributionId) {    
     $contribution = _fpptaqb_civicrmapi('Contribution', 'getSingle', ['id' => $contributionId]);
-    $contributionOrgCustomFieldId = Civi::settings()->get('fpptaqbhelper_cf_id_contribution');
+    $contributionOrgCustomFieldId = Civi::settings()->get('fpptaqb_cf_id_contribution');
     // Return the org attributed for this contribution, if any.
     $contributionOrgCid = $contribution['custom_' . $contributionOrgCustomFieldId];
     if ($contributionOrgCid) {
@@ -252,7 +252,7 @@ class CRM_Fpptaqb_Utils_Invoice {
     // If we're still here, that means no "attributed organization" value was set 
     // on the contribution. Perhaps it's a participant payment, so we'll check the
     // participant record for an "attributed organization".
-    $participantOrgCustomFieldId = Civi::settings()->get('fpptaqbhelper_cf_id_participant');
+    $participantOrgCustomFieldId = Civi::settings()->get('fpptaqb_cf_id_participant');
     $participantPaymentGet = _fpptaqb_civicrmapi('participantPayment', 'get', [
       'sequential' => TRUE,
       'contribution_id' => $contributionId,

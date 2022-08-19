@@ -100,7 +100,7 @@ class CRM_Fpptaqb_Page_OAuthQBO extends CRM_Core_Page {
           // Successfully tokens and Company details stored in database.
           $this->output = array(
             'message' => "Access token info retrieved and stored successfully!",
-            'redirect_url' => '<a href="' . str_replace("&amp;", "&", CRM_Utils_System::url("civicrm/admin/fpptaqbhelper/settings", 'reset=1', TRUE, NULL)) . '">Click here to go back to FPPTA Quickbooks settings page to see the new expiry date of your new access token and key</a>',
+            'redirect_url' => '<a href="' . str_replace("&amp;", "&", CRM_Utils_System::url("civicrm/admin/fpptaqb/settings", 'reset=1', TRUE, NULL)) . '">Click here to go back to FPPTA Quickbooks settings page to see the new expiry date of your new access token and key</a>',
           );
 
         } catch (\QuickBooksOnline\API\Exception\IdsException $e) {
@@ -109,7 +109,7 @@ class CRM_Fpptaqb_Page_OAuthQBO extends CRM_Core_Page {
 
           $this->output = array(
             'message' => $e->getMessage(),
-            'redirect_url' => '<a href="' . str_replace("&amp;", "&", CRM_Utils_System::url("civicrm/admin/fpptaqbhelper/settings", 'reset=1', TRUE, NULL)) . '">Click here to go back to FPPTA Quickbooks settings page and try again.</a>',
+            'redirect_url' => '<a href="' . str_replace("&amp;", "&", CRM_Utils_System::url("civicrm/admin/fpptaqb/settings", 'reset=1', TRUE, NULL)) . '">Click here to go back to FPPTA Quickbooks settings page and try again.</a>',
           );
         }
       }
@@ -123,7 +123,7 @@ class CRM_Fpptaqb_Page_OAuthQBO extends CRM_Core_Page {
         // Output error if User denied the access.
         $this->output = array(
           'message' => 'You\'ve not authorize the request. Please authorize it to sync CiviCRM with QuickBooks',
-          'redirect_url' => '<a href="' . str_replace("&amp;", "&", CRM_Utils_System::url("civicrm/admin/fpptaqbhelper/settings", 'reset=1', TRUE, NULL)) . '">Click here to go back to FPPTA Quickbooks settings page to authorise the App</a>',
+          'redirect_url' => '<a href="' . str_replace("&amp;", "&", CRM_Utils_System::url("civicrm/admin/fpptaqb/settings", 'reset=1', TRUE, NULL)) . '">Click here to go back to FPPTA Quickbooks settings page to authorise the App</a>',
         );
       }
     }

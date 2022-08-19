@@ -1,4 +1,4 @@
-<h3>Settings <a style="margin-left: 3em" class="action-item crm-hover-button" href="{crmURL fb=1 p="civicrm/admin/fpptaqbhelper/settings" q="reset=1"}">Edit settings</a></h3>
+<h3>Settings <a style="margin-left: 3em" class="action-item crm-hover-button" href="{crmURL fb=1 p="civicrm/admin/fpptaqb/settings" q="reset=1"}">Edit settings</a></h3>
 <table class="report-layout statistics-table">
   {if $isMock}
     <tr>

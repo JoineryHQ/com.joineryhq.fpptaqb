@@ -56,17 +56,24 @@ class CRM_Fpptaqb_Upgrader extends CRM_Fpptaqb_Upgrader_Base {
   // }
 
   /**
-   * Example: Run a couple simple queries.
+   * Co-opt settings from (now defunct) fpptaqbhelper extension.
    *
    * @return TRUE on success
    * @throws Exception
    */
-  // public function upgrade_4200(): bool {
-  //   $this->ctx->log->info('Applying update 4200');
-  //   CRM_Core_DAO::executeQuery('UPDATE foo SET bar = "whiz"');
-  //   CRM_Core_DAO::executeQuery('DELETE FROM bang WHERE willy = wonka(2)');
-  //   return TRUE;
-  // }
+  public function upgrade_4201(): bool {
+    $values = [];
+    if ($fpptaqbhelper_cf_id_contribution = Civi::settings()->get('fpptaqbhelper_cf_id_contribution')) {
+      $values['fpptaqb_cf_id_contribution'] = $fpptaqbhelper_cf_id_contribution;
+    }
+    if ($fpptaqbhelper_cf_id_participant = Civi::settings()->get('fpptaqbhelper_cf_id_participant')) {
+      $values['fpptaqb_cf_id_participant'] = $fpptaqbhelper_cf_id_participant;
+    }
+    if (!empty($values)) {
+      civicrm_api3('setting', 'create', $values);
+    }
+    return TRUE;
+  }
 
 
   /**
