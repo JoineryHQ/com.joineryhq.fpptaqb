@@ -36,6 +36,8 @@ class CRM_Fpptaqb_Form_Settings extends CRM_Core_Form {
   }
 
   public function buildQuickForm() {
+    CRM_Core_Session::singleton()->pushUserContext(CRM_Utils_System::url('civicrm/admin/fpptaqb/settings', "reset=1&id=$id", NULL, NULL, NULL, NULL, TRUE));
+    
     $this->controller->_destination = $this->controller->_entryURL; // Ensure redirection to self after submit.
     $settings = $this->_settings;
 

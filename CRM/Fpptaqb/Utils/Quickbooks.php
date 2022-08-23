@@ -31,6 +31,15 @@ class CRM_Fpptaqb_Utils_Quickbooks {
     return $options;
   }
 
+  public static function getPaymentMethodOptions() {
+    $sync = CRM_Fpptaqb_Util::getSyncObject();
+    $activePaymentMethods = $sync->fetchActivePaymentMethodsList();
+    foreach ($activePaymentMethods as $activePaymentMethod) {
+      $options[$activePaymentMethod['Id']] = $activePaymentMethod['Name'];
+    }
+    return $options;
+  }
+
   public static function getItemDetails(int $financialTypeId) {
     $itemDetails = [];
 

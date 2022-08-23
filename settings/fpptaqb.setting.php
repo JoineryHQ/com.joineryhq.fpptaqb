@@ -251,4 +251,18 @@ return array(
     // Omit 'quick_form_type' property to hide from settings form.
     'quick_form_type' => NULL,
   ),
+  'fpptaqb_qb_payment_method_rules' => array(
+    'group_name' => E::ts('QuickBooks Online Settings'),
+    'group' => 'fpptaqb',
+    'name' => 'fpptaqb_qb_payment_method_rules',
+    'type' => 'String',
+    'html_type' => NULL,
+    'add' => '4.7',
+    'default' => '',
+    'title' => E::ts('QB Payment Method Rules'),
+    'is_domain' => 1,
+    'is_contact' => 0,
+    // Omit 'quick_form_type' property to hide from settings form.
+    'quick_form_type' => NULL,
+  ),
 );

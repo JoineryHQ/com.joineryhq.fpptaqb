@@ -4181,5 +4181,190 @@ class CRM_Fpptaqb_Sync_Mock {
     $response = json_decode($json, TRUE);
     return CRM_Utils_Array::rekey($response['QueryResponse']['Account'], 'Id');
   }
+  
+  public function fetchActivePaymentMethodsList() {
+    $json = '
+      {
+       "QueryResponse": {
+        "PaymentMethod": [
+         {
+          "Name": "ACH E-check",
+          "Active": true,
+          "Type": "CREDIT_CARD",
+          "domain": "QBO",
+          "sparse": false,
+          "Id": "24",
+          "SyncToken": "0",
+          "MetaData": {
+           "CreateTime": "2019-04-22T07:57:54-07:00",
+           "LastUpdatedTime": "2019-04-22T07:57:54-07:00"
+          }
+         },
+         {
+          "Name": "American Express",
+          "Active": true,
+          "Type": "CREDIT_CARD",
+          "domain": "QBO",
+          "sparse": false,
+          "Id": "7",
+          "SyncToken": "0",
+          "MetaData": {
+           "CreateTime": "2019-04-22T07:57:54-07:00",
+           "LastUpdatedTime": "2019-04-22T07:57:54-07:00"
+          }
+         },
+         {
+          "Name": "AmEx",
+          "Active": true,
+          "Type": "CREDIT_CARD",
+          "domain": "QBO",
+          "sparse": false,
+          "Id": "13",
+          "SyncToken": "0",
+          "MetaData": {
+           "CreateTime": "2019-04-22T07:57:54-07:00",
+           "LastUpdatedTime": "2019-04-22T07:57:54-07:00"
+          }
+         },
+         {
+          "Name": "Cash",
+          "Active": true,
+          "Type": "NON_CREDIT_CARD",
+          "domain": "QBO",
+          "sparse": false,
+          "Id": "4",
+          "SyncToken": "0",
+          "MetaData": {
+           "CreateTime": "2019-04-22T07:57:54-07:00",
+           "LastUpdatedTime": "2019-04-22T07:57:54-07:00"
+          }
+         },
+         {
+          "Name": "ch",
+          "Active": true,
+          "Type": "NON_CREDIT_CARD",
+          "domain": "QBO",
+          "sparse": false,
+          "Id": "26",
+          "SyncToken": "0",
+          "MetaData": {
+           "CreateTime": "2019-10-22T12:45:05-07:00",
+           "LastUpdatedTime": "2019-10-22T12:45:05-07:00"
+          }
+         },
+         {
+          "Name": "Check",
+          "Active": true,
+          "Type": "NON_CREDIT_CARD",
+          "domain": "QBO",
+          "sparse": false,
+          "Id": "25",
+          "SyncToken": "0",
+          "MetaData": {
+           "CreateTime": "2019-04-22T07:57:54-07:00",
+           "LastUpdatedTime": "2019-04-22T07:57:54-07:00"
+          }
+         },
+         {
+          "Name": "Check/Money Order",
+          "Active": true,
+          "Type": "CREDIT_CARD",
+          "domain": "QBO",
+          "sparse": false,
+          "Id": "5",
+          "SyncToken": "0",
+          "MetaData": {
+           "CreateTime": "2019-04-22T07:57:54-07:00",
+           "LastUpdatedTime": "2019-04-22T07:57:54-07:00"
+          }
+         },
+         {
+          "Name": "discover",
+          "Active": true,
+          "Type": "CREDIT_CARD",
+          "domain": "QBO",
+          "sparse": false,
+          "Id": "27",
+          "SyncToken": "0",
+          "MetaData": {
+           "CreateTime": "2020-10-27T11:29:59-07:00",
+           "LastUpdatedTime": "2020-10-27T11:29:59-07:00"
+          }
+         },
+         {
+          "Name": "MasterCard",
+          "Active": true,
+          "Type": "CREDIT_CARD",
+          "domain": "QBO",
+          "sparse": false,
+          "Id": "9",
+          "SyncToken": "0",
+          "MetaData": {
+           "CreateTime": "2019-04-22T07:57:54-07:00",
+           "LastUpdatedTime": "2019-04-22T07:57:54-07:00"
+          }
+         },
+         {
+          "Name": "OL CREDIT CARD",
+          "Active": true,
+          "Type": "CREDIT_CARD",
+          "domain": "QBO",
+          "sparse": false,
+          "Id": "6",
+          "SyncToken": "0",
+          "MetaData": {
+           "CreateTime": "2019-04-22T07:57:54-07:00",
+           "LastUpdatedTime": "2019-04-22T07:57:54-07:00"
+          }
+         },
+         {
+          "Name": "TRANSFER",
+          "Active": true,
+          "Type": "CREDIT_CARD",
+          "domain": "QBO",
+          "sparse": false,
+          "Id": "11",
+          "SyncToken": "0",
+          "MetaData": {
+           "CreateTime": "2019-04-22T07:57:54-07:00",
+           "LastUpdatedTime": "2019-04-22T07:57:54-07:00"
+          }
+         },
+         {
+          "Name": "Visa",
+          "Active": true,
+          "Type": "CREDIT_CARD",
+          "domain": "QBO",
+          "sparse": false,
+          "Id": "8",
+          "SyncToken": "0",
+          "MetaData": {
+           "CreateTime": "2019-04-22T07:57:54-07:00",
+           "LastUpdatedTime": "2019-04-22T07:57:54-07:00"
+          }
+         },
+         {
+          "Name": "VISA-OL",
+          "Active": true,
+          "Type": "CREDIT_CARD",
+          "domain": "QBO",
+          "sparse": false,
+          "Id": "14",
+          "SyncToken": "0",
+          "MetaData": {
+           "CreateTime": "2019-04-22T07:57:54-07:00",
+           "LastUpdatedTime": "2019-04-22T07:57:54-07:00"
+          }
+         }
+        ],
+        "startPosition": 1,
+        "maxResults": 13
+       },
+       "time": "2022-08-23T09:34:13.697-07:00"
+      }
+    ';
+    $response = json_decode($json, TRUE);
+    return CRM_Utils_Array::rekey($response['QueryResponse']['PaymentMethod'], 'Id');
+  }
 
 }

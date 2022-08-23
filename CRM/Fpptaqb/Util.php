@@ -59,7 +59,18 @@ use CRM_Fpptaqb_ExtensionUtil as E;
       'properties' => [
         'label' => E::ts('Financial Types: Linked to QuickBooks Items'),
         'name' => 'Financial Types: Linked to QuickBooks Items',
-        'url' => 'civicrm/admin/fpptaqb/financialType',
+        'url' => 'civicrm/admin/fpptaqb/financialType?reset=1',
+        'permission' => 'fpptaqb_administer_quickbooks_configuration',
+        'operator' => 'AND',
+        'separator' => NULL,
+      ]
+    ];
+    $items[] = [
+      'parent' => 'Administer/CiviContribute/' . E::ts('FPPTA QuickBooks Settings'),
+      'properties' => [
+        'label' => E::ts('QuickBooks Payment Method: Rules'),
+        'name' => 'QuickBooks Payment Method: Rules',
+        'url' => 'civicrm/admin/fpptaqb/qbPaymentMethodRules?reset=1',
         'permission' => 'fpptaqb_administer_quickbooks_configuration',
         'operator' => 'AND',
         'separator' => NULL,
