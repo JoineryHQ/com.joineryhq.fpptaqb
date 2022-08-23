@@ -2,11 +2,9 @@
 CRM.$(function ($) {
 
   fpptaqbQbPaymentMethodRules = {
-    ruleCount: 0,
 
-    // On load, we store the saved rules in this var. We'll modify this on-page
-    // per user actions.
-    liveRules: CRM.vars.fpptaqb.fpptaqb_qb_payment_method_rules,
+    // Counter to help ensure unique row id.
+    ruleCounter: 0,
 
     formatRows: function formatRows() {
       $('table#qbPaymentMethodRules tbody tr:visible').each(function(idx, tr) {
@@ -36,7 +34,7 @@ CRM.$(function ($) {
 
     appendRuleRow: function appendRuleRow() {
       var tr = $('tr#qbPaymentMethodRule-template').clone(true, true).show();
-      tr.attr('id', 'qbPaymentMethodRule-' + i);
+      tr.attr('id', 'qbPaymentMethodRule-' + (++fpptaqbQbPaymentMethodRules.ruleCounter) );
 
       tr.find('select#crmPaymentMethod').addClass('crmPaymentMethod');
       tr.find('select#cardType').addClass('cardType');
@@ -50,38 +48,39 @@ CRM.$(function ($) {
     },
 
     renderRules: function renderRules() {
-      i = 0;
-
-      for (i in this.liveRules) {
-
+      var i = 0;
+      var rules = JSON.parse($('#fpptaqb_qb_payment_method_rules').val());
+      for (i in rules) {
+        // Append one rule to represent this row.
         var tr = fpptaqbQbPaymentMethodRules.appendRuleRow();
-
+        // Set attributes and values for fields in this row.
+        // crmPaymentMethod:
         tr.find('select#crmPaymentMethod')
           .attr({
             name: 'crmPaymentMethod[' + i + ']',
             id: 'crmPaymentMethod-' + i
           })
-          .val(this.liveRules[i]['crmPaymentMethod'])
+          .val(rules[i].crmPaymentMethod)
           .change(this.updateRules);
-
+        // cardType:
         tr.find('select#cardType')
           .attr({
             name: 'cardType[' + i + ']',
             id: 'cardType-' + i
           })
-          .val(this.liveRules[i]['cardType'])
+          .val(rules[i].cardType)
           .change(this.updateRules);
-
+        // qbPaymentMethod
         tr.find('select#qbPaymentMethod')
           .attr({
             name: 'qbPaymentMethod[' + i + ']',
             id: 'qbPaymentMethod-' + i,
           })
           .addClass('qbPaymentMethod')
-          .val(this.liveRules[i]['qbPaymentMethod'])
+          .val(rules[i].qbPaymentMethod)
           .change(this.updateRules);
       }
-      fpptaqbQbPaymentMethodRules.rulesCount = ( (i *  1) + 1);
+      fpptaqbQbPaymentMethodRules.ruleCounter = rules.length;
     },
 
     updateRules: function updateRules() {
@@ -93,7 +92,6 @@ CRM.$(function ($) {
           qbPaymentMethod: $(tr).find('select.qbPaymentMethod').val()
         });
       });
-      this.liveRules = updatedRules;
       $('#fpptaqb_qb_payment_method_rules').val(JSON.stringify(updatedRules));
     },
 

@@ -1,8 +1,10 @@
 <div class="help">
 <p>{ts}Configure rules to determine the correct QuickBooks Payment Method when syncing payments.{/ts}</p>
-<p>{ts}Rules are processed in order as configured here.{/ts}</p>
+<p>{ts}Rules are processed in order from top to bottom, as configured here. The first matching rule will be used.{/ts}</p>
 </div>
+
 <div id="fpptaqb-no-rules-message" class="status message">No rules found.</div>
+
 <table id="qbPaymentMethodRules">
 <thead>
 <tr>
