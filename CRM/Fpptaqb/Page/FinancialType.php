@@ -9,6 +9,10 @@ class CRM_Fpptaqb_Page_FinancialType extends CRM_Core_Page {
   var $useLivePageJS = TRUE;
   
   public function run() {
+    $url = CRM_Utils_System::url('civicrm/admin/fpptaqb/settings', "reset=1");
+    $breadCrumb = [['title' => ts('FPPTA QuickBooks Sync: Settings'), 'url' => $url]];
+    CRM_Utils_System::appendBreadCrumb($breadCrumb);
+
     // Build one row per financial type, with linked QB Item data.
     $financialTypeGet = _fpptaqb_civicrmapi('FinancialType', 'get', [
       'sequential' => 1,

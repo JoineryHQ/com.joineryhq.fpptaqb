@@ -30,4 +30,41 @@ use CRM_Fpptaqb_ExtensionUtil as E;
     return Civi::$statics[__METHOD__]['logCallerId'];
   }
 
+  public static function getNavigationMenuItems() {
+    $items = [];
+    $items[] = [
+      'parent' => 'Contributions',
+      'properties' => [
+        'label' => E::ts('FPPTA QuickBooks Sync'),
+        'name' => 'FPPTA QuickBooks Sync',
+        'url' => 'civicrm/fpptaqb/stepthru',
+        'permission' => 'fpptaqb_sync_to_quickbooks',
+        'operator' => 'AND',
+        'separator' => NULL,
+      ]
+    ];
+    $items[] = [
+      'parent' => 'Administer/CiviContribute',
+      'properties' => [
+        'label' => E::ts('FPPTA QuickBooks Settings'),
+        'name' => 'FPPTA QuickBooks Settings',
+        'url' => 'civicrm/admin/fpptaqb/settings?reset=1',
+        'permission' => 'administer CiviCRM',
+        'operator' => 'AND',
+        'separator' => NULL,
+      ]
+    ];
+    $items[] = [
+      'parent' => 'Administer/CiviContribute/' . E::ts('FPPTA QuickBooks Settings'),
+      'properties' => [
+        'label' => E::ts('Financial Types: Linked to QuickBooks Items'),
+        'name' => 'Financial Types: Linked to QuickBooks Items',
+        'url' => 'civicrm/admin/fpptaqb/financialType',
+        'permission' => 'fpptaqb_administer_quickbooks_configuration',
+        'operator' => 'AND',
+        'separator' => NULL,
+      ]
+    ];
+    return $items;
+  }
 }

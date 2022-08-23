@@ -1,4 +1,14 @@
 {* HEADER *}
+{if $moreSettingsLinks}
+<div class="help">
+  More settings:
+  <ul>
+    {foreach from=$moreSettingsLinks item=moreSettingsLink}
+    <li><a href="{$moreSettingsLink.url}">{$moreSettingsLink.label}</a></li>
+    {/foreach}
+  </ul>
+</div>
+{/if}
 {* Display top submit button only if there are more than three elements on the page *}
 {if ($elementNames|@count) gt 3}
   <div class="crm-submit-buttons">

@@ -37,7 +37,7 @@
     <access_arguments>fpptaqb_sync_to_quickbooks</access_arguments>
   </item>
   <item>
-    <path>civicrm/fpptaqb/financialType</path>
+    <path>civicrm/admin/fpptaqb/financialType</path>
     <page_callback>CRM_Fpptaqb_Page_FinancialType</page_callback>
     <title>Financial Types: Linked to QuickBooks Items</title>
     <access_arguments>fpptaqb_administer_quickbooks_configuration</access_arguments>
@@ -59,7 +59,7 @@
   <item>
     <path>civicrm/admin/fpptaqb/settings</path>
     <page_callback>CRM_Fpptaqb_Form_Settings</page_callback>
-    <title>Settings</title>
+    <title>FPPTA QuickBooks Sync: Settings</title>
     <access_arguments>administer CiviCRM</access_arguments>
   </item>
 </menu>

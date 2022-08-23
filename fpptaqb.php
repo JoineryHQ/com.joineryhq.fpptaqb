@@ -15,7 +15,7 @@ function fpptaqb_civicrm_pageRun(&$page) {
   // On browse financial types, display a link to browse FT/QB linkage.
   if ($pageName == 'CRM_Financial_Page_FinancialType' && $action == CRM_Core_Action::BROWSE) {
     $ext = CRM_Extension_Info::loadFromFile(E::path('info.xml'));
-    $url = CRM_Utils_System::url('civicrm/fpptaqb/financialType', 'reset=1', NULL, NULL, NULL, NULL, TRUE);
+    $url = CRM_Utils_System::url('civicrm/admin/fpptaqb/financialType', 'reset=1', NULL, NULL, NULL, NULL, TRUE);
     $message = E::ts('All Financial Types should be linked to a QuickBooks Product/Service. <a href="%1">View linkage for all Financial Types.</a>', [
       '%1' => $url,
     ]);
@@ -288,29 +288,12 @@ function fpptaqb_civicrm_entityTypes(&$entityTypes) {
  */
 function fpptaqb_civicrm_navigationMenu(&$menu) {
   _fpptaqb_get_max_navID($menu, $max_navID);
-  _fpptaqb_civix_insert_navigation_menu($menu, 'Contributions', array(
-    'label' => E::ts('FPPTA QuickBooks Sync'),
-    'name' => 'FPPTA QuickBooks Sync',
-    'url' => 'civicrm/fpptaqb/stepthru',
-    'permission' => 'fpptaqb_sync_to_quickbooks',
-    'operator' => 'AND',
-    'separator' => NULL,
-    'navID' => ++$max_navID,
-  ));
-  _fpptaqb_civix_navigationMenu($menu);
-
-
-  _fpptaqb_get_max_navID($menu, $max_navID);
-  _fpptaqb_civix_insert_navigation_menu($menu, 'Administer/CiviContribute', array(
-    'label' => E::ts('FPPTA QuickBooks Settings'),
-    'name' => 'FPPTA QuickBooks Settings',
-    'url' => 'civicrm/admin/fpptaqb/settings?reset=1',
-    'permission' => 'administer CiviCRM',
-    'operator' => 'AND',
-    'separator' => NULL,
-    'navID' => ++$max_navID,
-  ));
-  _fpptaqb_civix_navigationMenu($menu);  
+  $items = CRM_Fpptaqb_Util::getNavigationMenuItems();
+  foreach ($items as $item) {
+    $item['properties']['navID'] = ++$max_navID;
+    _fpptaqb_civix_insert_navigation_menu($menu, $item['parent'], $item['properties']);
+    _fpptaqb_civix_navigationMenu($menu);
+  }
 }
 
 /**
