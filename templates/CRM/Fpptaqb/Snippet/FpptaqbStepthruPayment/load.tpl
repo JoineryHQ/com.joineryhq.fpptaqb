@@ -4,6 +4,7 @@ Payment on contribution ID: {$payment.contributionId} <a target="_blank" href="{
 Attributed to Organization: {$payment.organizationName} (id={$payment.organizationCid})   <a target="_blank" href="{crmURL fb=1 p="civicrm/contact/view" q="reset=1&cid=`$payment.organizationCid`"}">View</a>
 Found QuickBooks customer "{$payment.qbCustomerName}" (id={$payment.qbCustomerId})
 Payment method: {$payment.paymentInstrumentLabel}
+Card Type: {$payment.cardTypeLabel}
 Payment date: {$payment.trxn_date}
 Amount: {$payment.total_amount|crmMoney}
 </pre>
@@ -15,7 +16,7 @@ Invoice Number: {$payment.qbInvNumber}
 Invoice Id: {$payment.qbInvId}
 Reference no.: {$payment.qbReferenceNo}
 Payment Date: {$payment.trxn_date|crmDate:'%Y-%m-%d'}
-Payment method: {$payment.paymentInstrumentLabel}
+Payment method: {if $payment.qbPaymentMethodId}{$payment.qbPaymentMethodLabel}{else}<strong>{ts}WARNING: NONE FOUND{/ts}</strong>{/if} 
 Amount: {$payment.total_amount|crmMoney}
 Deposit to account: {$payment.qbDepositToAccountLabel}
 </pre>

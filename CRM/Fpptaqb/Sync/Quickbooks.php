@@ -278,6 +278,30 @@ class CRM_Fpptaqb_Sync_Quickbooks {
     return $ret;
   }
 
+  public function fetchPaymentMethodById($id) {
+    $paymentMethods = $this->fetchActivePaymentMethodsList();
+    return $paymentMethods[$id];
+  }
+
+  public function fetchActivePaymentMethodsList() {
+    $ret = [];
+    try {
+      $dataService = CRM_Fpptaqb_APIHelper::getAccountingDataServiceObject();
+      $dataService->throwExceptionOnError(FALSE);
+      $paymentMethods = $dataService->Query("select * from PaymentMethod where Active");
+    }
+    catch (Exception $e) {
+      throw new CRM_Core_Exception('Could not get QuickBooks DataService Object: ' . $e->getMessage());
+    }
+    if ($lastError = $dataService->getLastError()) {
+      $errorMessage = CRM_Fpptaqb_APIHelper::parseErrorResponse($lastError);
+      throw new Exception('QuickBooks error: "' . implode("\n", $errorMessage) . '"');
+    }
+
+    foreach ($paymentMethods as $paymentMethod) {
+      $ret[$paymentMethod->Id] = (array)$paymentMethod;
+    }
+    return $ret;
+  }
+
 }
-
-

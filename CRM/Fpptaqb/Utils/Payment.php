@@ -130,10 +130,40 @@ class CRM_Fpptaqb_Utils_Payment {
         'qbDepositToAccountId' => $qbDepositToAccountId,
         'qbDepositToAccountLabel' => CRM_Fpptaqb_Utils_Quickbooks::getAccountOptions()[$qbDepositToAccountId],
         'paymentInstrumentLabel' => CRM_Core_PseudoConstant::getLabel('CRM_Core_BAO_FinancialTrxn', 'payment_instrument_id', $financialTrxn['payment_instrument_id']),
+        'cardTypeLabel' => CRM_Core_PseudoConstant::getLabel('CRM_Financial_BAO_FinancialTrxn', 'card_type_id', $financialTrxn['card_type_id']) ?? E::ts('[N/A]'), 
       ];
+      self::appendQbPaymentMethod($financialTrxn);
       $cache[$financialTrxnId] = $financialTrxn;
     }
     return $cache[$financialTrxnId];
+  }
+
+  public static function appendQbPaymentMethod(&$financialTrxn) {
+    $cardType = ($financialTrxn['card_type_id'] ?? NULL);
+    $crmPaymentMethodId = ($financialTrxn['payment_instrument_id'] ?? NULL);
+    $paymentMethodRules = (json_decode(Civi::settings()->get('fpptaqb_qb_payment_method_rules'), TRUE) ?? []);
+
+    foreach ($paymentMethodRules as $paymentMethodRule) {
+      if (
+        (
+          $paymentMethodRule['crmPaymentMethod'] == 0
+          || $paymentMethodRule['crmPaymentMethod'] == $crmPaymentMethodId
+        )
+        && (
+          $paymentMethodRule['cardType'] == 0
+          || $paymentMethodRule['cardType'] == $cardType
+        )
+      ) {
+        $qbPaymentMethodId = $paymentMethodRule['qbPaymentMethod'];
+        $sync = CRM_Fpptaqb_Util::getSyncObject();
+        $qbPaymentMethod = $sync->fetchPaymentMethodById($qbPaymentMethodId);
+        if ($qbPaymentMethod) {
+          $financialTrxn['qbPaymentMethodId'] = $qbPaymentMethodId;
+          $financialTrxn['qbPaymentMethodLabel'] = $qbPaymentMethod['Name'];
+        }
+        break;
+      }
+    }
   }
 
   /**

@@ -3944,7 +3944,7 @@ class CRM_Fpptaqb_Sync_Mock {
   public function fetchAccountById($id) {
     // In LIVE sync this should probably be an actual live API query, but in
     // this mock we'll just use the static values from self::fetchActiveItemsList().
-    $items = $this->fetchActiveItemsList();
+    $items = $this->fetchActiveAccountsList();
     return $items[$id];
   }
 
@@ -4180,6 +4180,11 @@ class CRM_Fpptaqb_Sync_Mock {
       }    ';
     $response = json_decode($json, TRUE);
     return CRM_Utils_Array::rekey($response['QueryResponse']['Account'], 'Id');
+  }
+
+  public function fetchPaymentMethodById($id) {
+    $paymentMethods = $this->fetchActivePaymentMethodsList();
+    return $paymentMethods[$id];
   }
   
   public function fetchActivePaymentMethodsList() {
