@@ -89,4 +89,20 @@ class CRM_Fpptaqb_Sync_QuickbooksReadonly {
     return $this->liveSync->fetchActiveItemsList();
   }
 
+
+  public function fetchAccountById($id) {
+    return $this->liveSync->fetchAccountById($id);
+  }
+
+  public function fetchActiveAccountsList() {
+    return $this->liveSync->fetchActiveAccountsList();
+  }
+
+  public function fetchPaymentMethodById($id) {
+    return $this->liveSync->fetchPaymentMethodById($id);
+  }
+
+  public function fetchActivePaymentMethodsList() {
+    return $this->liveSync->fetchActivePaymentMethodsList();
+  }
 }
