@@ -258,8 +258,9 @@ return array(
     'type' => 'String',
     'html_type' => NULL,
     'add' => '4.7',
-    'default' => '',
+    'default' => '[]',
     'title' => E::ts('QB Payment Method Rules'),
+    'description' => 'QB Payment Method Rules, stored as JSON array',
     'is_domain' => 1,
     'is_contact' => 0,
     // Omit 'quick_form_type' property to hide from settings form.
