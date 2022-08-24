@@ -244,7 +244,7 @@ class CRM_Fpptaqb_Utils_Invoice {
     $contribution = _fpptaqb_civicrmapi('Contribution', 'getSingle', ['id' => $contributionId]);
     $contributionOrgCustomFieldId = Civi::settings()->get('fpptaqb_cf_id_contribution');
     // Return the org attributed for this contribution, if any.
-    $contributionOrgCid = $contribution['custom_' . $contributionOrgCustomFieldId];
+    $contributionOrgCid = ($contribution['custom_' . $contributionOrgCustomFieldId] ?? NULL);
     if ($contributionOrgCid) {
       return $contributionOrgCid;
     }
@@ -296,7 +296,7 @@ class CRM_Fpptaqb_Utils_Invoice {
       'sequential' => 1,
       'contribution_id' => $contributionId,
     ]);
-    $primaryParticipantId = $participantPaymentGet['values'][0]['participant_id'];
+    $primaryParticipantId = ($participantPaymentGet['values'][0]['participant_id'] ?? NULL);
     if ($participantPaymentGet['count']) {
       // Get the primary participant record.
       $primaryParticipantGet = _fpptaqb_civicrmapi('Participant', 'get', [
