@@ -100,16 +100,16 @@ class CRM_Fpptaqb_Utils_Payment {
       switch($financialTrxn['payment_instrument_id']) {
         // EFT
         case '5';
-          $financialTrxn['qbReferenceNo'] = ($financialTrxn['trxn_id'] ?? E::ts('(Unknown EFT Transaction ID)'));
+          $financialTrxn['qbReferenceNo'] = ($financialTrxn['trxn_id'] ?? '');
           break;
         // Check
         case '4';
-          $financialTrxn['qbReferenceNo'] = ($financialTrxn['check_number'] ?? E::ts('(Unknown check number)'));
+          $financialTrxn['qbReferenceNo'] = ($financialTrxn['check_number'] ?? '');
           break;
         // Credit card or Debit card:
         case '1';
         case '2';
-          $financialTrxn['qbReferenceNo'] = ($financialTrxn['pan_truncation'] ?? E::ts('(Unknown CC last-4)'));
+          $financialTrxn['qbReferenceNo'] = ($financialTrxn['pan_truncation'] ?? '');
           break;
       }
 
