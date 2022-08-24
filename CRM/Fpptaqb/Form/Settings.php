@@ -93,7 +93,7 @@ class CRM_Fpptaqb_Form_Settings extends CRM_Core_Form {
           $element->freeze();
         }
       }
-      $descriptions[$setting['name']] = E::ts($setting['description']);
+      $descriptions[$setting['name']] = E::ts($setting['description'] ?? NULL);
 
       if (!empty($setting['X_form_rules_args'])) {
         $rules_args = (array) $setting['X_form_rules_args'];

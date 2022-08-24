@@ -37,7 +37,7 @@ class CRM_Fpptaqb_Form_QbPaymentMethodRules extends CRM_Core_Form {
     );
 
     // Template field for civi credit card type
-    $cardTypeOptions = CRM_Financial_BAO_FinancialTrxn::buildOptions('card_type_id');
+    $cardTypeOptions = CRM_Core_BAO_FinancialTrxn::buildOptions('card_type_id');
     array_unshift($cardTypeOptions, E::ts('[N/A]'));
     $this->add(
       // field type

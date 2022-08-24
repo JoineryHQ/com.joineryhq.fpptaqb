@@ -130,7 +130,7 @@ class CRM_Fpptaqb_Utils_Payment {
         'qbDepositToAccountId' => $qbDepositToAccountId,
         'qbDepositToAccountLabel' => CRM_Fpptaqb_Utils_Quickbooks::getAccountOptions()[$qbDepositToAccountId],
         'paymentInstrumentLabel' => CRM_Core_PseudoConstant::getLabel('CRM_Core_BAO_FinancialTrxn', 'payment_instrument_id', $financialTrxn['payment_instrument_id']),
-        'cardTypeLabel' => CRM_Core_PseudoConstant::getLabel('CRM_Financial_BAO_FinancialTrxn', 'card_type_id', $financialTrxn['card_type_id']) ?? E::ts('[N/A]'), 
+        'cardTypeLabel' => CRM_Core_PseudoConstant::getLabel('CRM_Financial_DAO_FinancialTrxn', 'card_type_id', $financialTrxn['card_type_id']),
       ];
       self::appendQbPaymentMethod($financialTrxn);
       $cache[$financialTrxnId] = $financialTrxn;
