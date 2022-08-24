@@ -177,12 +177,6 @@ class CRM_Fpptaqb_Sync_Quickbooks {
       "CustomerRef" => [
         "value" => $payment['qbCustomerId'],
       ],
-      "PaymentMethodRef" => [
-        "value" => $payment['qbPaymentMethodId'],
-      ],
-      'DepositToAccountRef' => [
-        "value" => $payment['qbDepositToAccountId'],
-      ],
       "Line" => [
         [
           "Amount" => $payment['total_amount'],
@@ -197,6 +191,18 @@ class CRM_Fpptaqb_Sync_Quickbooks {
       'TxnDate' => CRM_Utils_Date::customFormat($payment['trxn_date'], '%Y-%m-%d'),
       'PaymentRefNum' => ($payment['qbReferenceNo'] ?? NULL),
     ];
+    // Set PaymentMethodRef if one has been determined.
+    if ($payment['qbPaymentMethodId']) {
+      $pmtParams["PaymentMethodRef"] = [
+        "value" => $payment['qbPaymentMethodId'],
+      ];
+    }
+    // Set DepositToAccountRef if one has been determined.
+    if ($payment['qbDepositToAccountId']) {
+      $pmtParams["DepositToAccountRef"] = [
+        "value" => $payment['qbDepositToAccountId'],
+      ];
+    }
 
     // Set up the data service for QB connection.
     try {
