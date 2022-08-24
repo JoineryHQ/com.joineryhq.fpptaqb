@@ -58,7 +58,7 @@ class CRM_Fpptaqb_Form_QbPaymentMethodRules extends CRM_Core_Form {
       // field label
       E::ts('Use QB Payment Method'),
       // Options
-      CRM_Fpptaqb_Utils_Quickbooks::getPaymentMethodOptions(),
+      CRM_Fpptaqb_Utils_Quickbooks::getPaymentMethodOptions()
     );
 
     $this->addButtons(array(
