@@ -4,7 +4,14 @@ Payment on contribution ID: {$payment.contributionId} <a target="_blank" href="{
 Attributed to Organization: {$payment.organizationName} (id={$payment.organizationCid})   <a target="_blank" href="{crmURL fb=1 p="civicrm/contact/view" q="reset=1&cid=`$payment.organizationCid`"}">View</a>
 Found QuickBooks customer "{$payment.qbCustomerName}" (id={$payment.qbCustomerId})
 Payment method: {$payment.paymentInstrumentLabel}
+{if $payment.payment_instrument_id == 5}{* EFT *}
+EFT Transaction ID: {$payment.trxn_id}
+{elseif $payment.payment_instrument_id == 4}{* check *}
+Check Number: {$payment.check_number}
+{elseif $payment.payment_instrument_id == 1 || $payment.payment_instrument_id == 2}{* Credit Card or Debit Card *}
 Card Type: {$payment.cardTypeLabel}
+Card Last-4: {$payment.pan_truncation}
+{/if}
 Payment date: {$payment.trxn_date}
 Amount: {$payment.total_amount|crmMoney}
 </pre>
