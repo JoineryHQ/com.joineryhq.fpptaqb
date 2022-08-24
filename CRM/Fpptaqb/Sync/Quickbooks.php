@@ -69,7 +69,7 @@ class CRM_Fpptaqb_Sync_Quickbooks {
       throw new Exception('QuickBooks error: "' . implode("\n", $errorMessage) . '"');
     }
     if (count($customers) != 1) {
-      throw new CRM_Fpptaqb_Exception('Could not find valid QuickBooks customer', 503);
+      throw new CRM_Fpptaqb_Exception('Could not find valid QuickBooks customer with name "'. $contactName .'".', 503);
     }
 
     $quickbooksId = $customers[0]->Id;
