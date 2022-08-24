@@ -77,7 +77,7 @@ return array(
       'class' => 'crm-select2',
       'style' => "width:auto;",
     ),
-    'X_options_callback' => 'CRM_Fpptaqb_Utils_Quickbooks::getAccountOptions',
+    'X_options_callback' => 'CRM_Fpptaqb_Form_Settings::getSettingsAccountOptions',
   ),
   'fpptaqb_sync_wait_days' => array(
     'group_name' => 'Fpptaqb Settings',

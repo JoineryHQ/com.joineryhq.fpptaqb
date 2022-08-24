@@ -36,7 +36,7 @@ class CRM_Fpptaqb_Form_Settings extends CRM_Core_Form {
   }
 
   public function buildQuickForm() {
-    CRM_Core_Session::singleton()->pushUserContext(CRM_Utils_System::url('civicrm/admin/fpptaqb/settings', "reset=1&id=$id", NULL, NULL, NULL, NULL, TRUE));
+    CRM_Core_Session::singleton()->pushUserContext(CRM_Utils_System::url('civicrm/admin/fpptaqb/settings', "reset=1", NULL, NULL, NULL, NULL, TRUE));
     
     $this->controller->_destination = $this->controller->_entryURL; // Ensure redirection to self after submit.
     $settings = $this->_settings;
@@ -153,7 +153,7 @@ class CRM_Fpptaqb_Form_Settings extends CRM_Core_Form {
    * You need to write custom code for this function to validate the data in your settings fields
    */
   public function validate() {
-    $this->_errors = parent::validate();
+    $errors = parent::validate();
     $fields = $this->exportValues();
 
     if (!empty($fields['fpptaqb_minimum_date'])) {
@@ -233,13 +233,54 @@ class CRM_Fpptaqb_Form_Settings extends CRM_Core_Form {
   public function saveSettings() {
     $settings = $this->_settings;
     $values = array_intersect_key($this->_submittedValues, $settings);
+
+    // Compare new values to saved values for clientID and clientSecret, and note
+    // whether either one has changed.
+    $previousCredentials = CRM_Fpptaqb_APIHelper::getQuickBooksCredentials();
+    $clientIDChanged = $previousCredentials['clientID'] != $values['fpptaqb_quickbooks_consumer_key'];
+    $clientSecretChanged = $previousCredentials['clientSecret'] != $values['fpptaqb_quickbooks_shared_secret'];
+
+    // Save all settings as given.
     _fpptaqb_civicrmapi('setting', 'create', $values);
 
+    // If clientID or clientSecret chaned, invalidate anything that depended on the old Client ID or Shared Secret
+    if ($clientIDChanged || $clientSecretChanged) {
+      civicrm_api3(
+        'setting', 'create', array(
+          "fpptaqb_quickbooks_access_token" => '',
+          "fpptaqb_quickbooks_refresh_token" => '',
+          "fpptaqb_quickbooks_realmId" => '',
+          "fpptaqb_quickbooks_access_token_expiryDate" => '',
+          "fpptaqb_quickbooks_refresh_token_expiryDate" => '',
+        )
+      );
+    }
+
     // Save any that are not submitted, as well (e.g., checkboxes that aren't checked).
-    $unsettings = array_fill_keys(array_keys(array_diff_key($settings, $this->_submittedValues)), NULL);
+    $settingsEditable = $this->filterEditableSettings();
+    $unsettings = array_fill_keys(array_keys(array_diff_key($settingsEditable, $this->_submittedValues)), NULL);
     _fpptaqb_civicrmapi('setting', 'create', $unsettings);
 
     CRM_Core_Session::setStatus(" ", E::ts('Settings saved.'), "success");
+  }
+
+  /**
+   * From all settings, get only the ones that are editable in the form.
+   * (E.g. settings are not shown in the form if 'quick_form_type' is NULL;
+   * settings are not editable in the form if ['html_attributes']['readonly'] is set.)
+   */
+  private function filterEditableSettings() {
+    $ret = [];
+    foreach ($this->_settings as $name => $setting) {
+      if (
+        !isset($setting['quick_form_type'])
+        || ($setting['html_attributes']['readonly'] ?? NULL)
+      ) {
+        continue;
+      }
+      $ret[$name] = $setting;
+    }
+    return $ret;
   }
 
   /**
@@ -327,4 +368,15 @@ class CRM_Fpptaqb_Form_Settings extends CRM_Core_Form {
     return $options;
   }
 
+  public static function getSettingsAccountOptions() {
+    try {
+      return CRM_Fpptaqb_Utils_Quickbooks::getAccountOptions();
+    }
+    catch (Exception $e) {
+      CRM_Core_Session::setStatus('Error getting Account options for '. E::ts('QuickBook account for Payments') . ' field: ' . $e->getMessage(), E::ts('Error'), 'error');
+      return [];
+    }
+  }
+
 }
+
