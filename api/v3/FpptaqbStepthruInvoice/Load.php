@@ -27,10 +27,12 @@ function _civicrm_api3_fpptaqb_stepthru_invoice_Load_spec(&$spec) {
  *
  * @see civicrm_api3_create_success
  *
- * @throws API_Exception
  */
 function civicrm_api3_fpptaqb_stepthru_invoice_Load($params) {
   $id = ($params['id'] ?? CRM_Fpptaqb_Utils_Invoice::getReadyToSyncIdNext());
+  $extraParams = ['values' => $params];
+  $extraParams['values']['id'] = $id;
+
   if (!$id) {
     // No "next" contribution id was found; there must be none ready.
     // This is not an error; just inform the user.
@@ -41,15 +43,16 @@ function civicrm_api3_fpptaqb_stepthru_invoice_Load($params) {
     try {
       $contribution = CRM_Fpptaqb_Utils_Invoice::getReadyToSync($id);
     }
-    catch (CRM_Core_Exception $e) {
-      $extraParams = ['values' => $params];
-      $extraParams['values']['id'] = $id;
+    catch (Exception $e) {
       if ($e->getErrorCode()) {
-        throw new API_Exception($e->getMessage(), 'fpptaqb-' . $e->getErrorCode(), $extraParams);
+        $errorCode = 'fpptaqb-' . $e->getErrorCode();
+        $errorMessage = $e->getMessage();
       }
       else {
-        throw new API_Exception("Unknown error: " . $e->getMessage(), 'fpptaqb-500', $extraParams);
+        $errorCode = 'fpptaqb-500';
+        $errorMessage = "Unknown error: " . $e->getMessage();
       }
+      return CRM_Fpptaqb_Util::composeApiError($errorMessage, $errorCode, $extraParams);
     }
 
     $smarty = CRM_Core_Smarty::singleton();

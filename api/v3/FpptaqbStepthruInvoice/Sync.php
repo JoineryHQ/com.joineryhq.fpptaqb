@@ -36,26 +36,29 @@ function _civicrm_api3_fpptaqb_stepthru_invoice_Sync_spec(&$spec) {
  */
 function civicrm_api3_fpptaqb_stepthru_invoice_Sync($params) {
   $id = CRM_Fpptaqb_Utils_Invoice::validateId($params['id']);
+  $extraParams = ['values' => $params];
 
   if ($id === FALSE) {
-    throw new API_Exception('Could not find contribution with id '. $params['id'], 'fpptaqb-404');
+    return CRM_Fpptaqb_Util::composeApiError('Could not find contribution with id '. $params['id'], 'fpptaqb-404', $extraParams);
   }
 
   if ($params['hash'] != CRM_Fpptaqb_Utils_Invoice::getHash($id)) {
-    throw new API_Exception('This contribution has changed since you viewed it. Please reload it before continuing.', 'fpptaqb-409');
+    return CRM_Fpptaqb_Util::composeApiError('This contribution has changed since you viewed it. Please reload it before continuing.', 'fpptaqb-409', $extraParams);
   }
   
   try {
     $qbInvId = CRM_Fpptaqb_Utils_Invoice::sync($id);
   }
-  catch (CRM_Core_Exception $e) {
-    $extraParams = ['values' => $params];
+  catch (Exception $e) {
     if ($e->getErrorCode()) {
-      throw new API_Exception($e->getMessage(), 'fpptaqb-'. $e->getErrorCode(), $extraParams);
+      $errorCode = 'fpptaqb-' . $e->getErrorCode();
+      $errorMessage = $e->getMessage();
     }
     else {
-      throw new API_Exception("Unknown error: ". $e->getMessage(), 'fpptaqb-500', $extraParams);
+      $errorCode = 'fpptaqb-500';
+      $errorMessage = "Unknown error: " . $e->getMessage();
     }
+    return CRM_Fpptaqb_Util::composeApiError($errorMessage, $errorCode, $extraParams);
   }
 
   $returnValues = array(

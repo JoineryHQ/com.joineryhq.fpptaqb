@@ -78,4 +78,21 @@ use CRM_Fpptaqb_ExtensionUtil as E;
     ];
     return $items;
   }
+
+  /**
+   * Create an array suitable for returning as an error from an api function.
+   *
+   * This is really just a wrapper around civicrm_api3_create_error(), with
+   * slightly easier defining of the 'error_code' value through a function parameter.
+   *
+   * @param String $errorMessage
+   * @param String $errorCode
+   * @param Array $extraParams
+   * @return Array
+   */
+  function composeApiError($errorMessage, $errorCode, $extraParams) {
+    $error = civicrm_api3_create_error($errorMessage, $extraParams);
+    $error['error_code'] = $errorCode;
+    return $error;
+  }
 }

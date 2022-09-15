@@ -27,25 +27,28 @@ function _civicrm_api3_fpptaqb_stepthru_invoice_Hold_spec(&$spec) {
  *
  * @see civicrm_api3_create_success
  *
- * @throws API_Exception
  */
 function civicrm_api3_fpptaqb_stepthru_invoice_Hold($params) {
   $id = CRM_Fpptaqb_Utils_Invoice::validateId($params['id']);
+  $extraParams = ['values' => $params];
 
   if ($id === FALSE) {
-    throw new API_Exception('Could not find contribution with id '. $params['id'], 'fpptaqb-404');
+    return CRM_Fpptaqb_Util::composeApiError('Could not find contribution with id '. $params['id'], 'fpptaqb-404', $extraParams);
   }
   
   try {
     CRM_Fpptaqb_Utils_Invoice::hold($id);
   }
-  catch (CRM_Core_Exception $e) {
+  catch (Exception $e) {
     if ($e->getErrorCode()) {
-      throw new API_Exception($e->getMessage(), 'fpptaqb-'. $e->getErrorCode());
+      $errorCode = 'fpptaqb-' . $e->getErrorCode();
+      $errorMessage = $e->getMessage();
     }
     else {
-      throw new API_Exception("Unknown error: ". $e->getMessage(), 'fpptaqb-500');
+      $errorCode = 'fpptaqb-500';
+      $errorMessage = "Unknown error: " . $e->getMessage();
     }
+    return CRM_Fpptaqb_Util::composeApiError($errorMessage, $errorCode, $extraParams);
   }
 
   $returnValues = array(
