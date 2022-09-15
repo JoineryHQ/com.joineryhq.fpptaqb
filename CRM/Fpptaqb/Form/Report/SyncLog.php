@@ -62,6 +62,9 @@ class CRM_Fpptaqb_Form_Report_SyncLog extends CRM_Report_Form {
           'api_output_error_code' => array(
             'title' => E::ts('Error Code'),
           ),
+          'reason' => array(
+            'title' => E::ts('Reason for action'),
+          ),
         ),
         'filters' => array(
           'created' => array(
@@ -86,6 +89,14 @@ class CRM_Fpptaqb_Form_Report_SyncLog extends CRM_Report_Form {
           'api_output_error_code' => array(
             'title' => E::ts('Error Code'),
             'type' => CRM_Utils_Type::T_STRING,
+          ),
+        ),
+        'order_bys' => array(
+          'created' => array(
+            'title' => E::ts('Created'),
+            'default' => TRUE,
+            'default_weight' => 0,
+            'default_order' => 'DESC',
           ),
         ),
       ),

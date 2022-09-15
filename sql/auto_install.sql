@@ -103,6 +103,7 @@ CREATE TABLE `civicrm_fpptaquickbooks_log` (
   `api_output` text COMMENT 'API call ouptut, as JSON, for the api call which triggered this log entry',
   `api_output_text` varchar(2550) COMMENT 'Text or error message extracted from API call output',
   `api_output_error_code` varchar(64) COMMENT 'Error code, if any, extracted from API call output',
+  `reason` varchar(255) COMMENT 'Reason for this action, as given by the API caller',
   PRIMARY KEY (`id`),
   CONSTRAINT FK_civicrm_fpptaquickbooks_log_contact_id FOREIGN KEY (`contact_id`) REFERENCES `civicrm_contact`(`id`) ON DELETE CASCADE
 )

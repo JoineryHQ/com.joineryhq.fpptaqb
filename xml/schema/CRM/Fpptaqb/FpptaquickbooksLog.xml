@@ -126,4 +126,12 @@
     <comment>Error code, if any, extracted from API call output</comment>
   </field>
 
+  <field>
+    <name>reason</name>
+    <title>Reason</title>
+    <type>varchar</type>
+    <length>255</length>
+    <comment>Reason for this action, as given by the API caller</comment>
+  </field>
+
 </table>

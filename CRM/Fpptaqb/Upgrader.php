@@ -76,14 +76,13 @@ class CRM_Fpptaqb_Upgrader extends CRM_Fpptaqb_Upgrader_Base {
   }
 
   /**
-   * Example: Run an upgrade with a query that touches many (potentially
-   * millions) of records by breaking it up into smaller chunks.
+   * Run an upgrade to add columns to civicrm_fpptaquickbooks_log table, and
+   * to populate those columns where possible.
    *
    * @return TRUE on success
    * @throws Exception
    */
   public function upgrade_4202(): bool {
-    $this->ctx->log->info('Planning update 4203'); // PEAR Log interface
     $alterQuery = "ALTER TABLE `civicrm_fpptaquickbooks_log`
       ADD `sync_session_id` varchar(64) COMMENT 'Unique ID per sync session, e.g. Step-thru sync page load or Scheduled Job run.' AFTER `unique_request_id`,
       ADD `api_output_text` varchar(2550) COMMENT 'Text or error message extracted from API call output.' AFTER `api_output`,
@@ -127,6 +126,20 @@ class CRM_Fpptaqb_Upgrader extends CRM_Fpptaqb_Upgrader_Base {
       ];
       $this->addTask("Update civicrm_fpptaquickbooks_log for entry id={$dao->id}", 'executeSql', $updateQuery, $updateQueryParams);
     }
+    return TRUE;
+  }
+
+  /**
+   * Run an upgrade to add a column to civicrm_fpptaquickbooks_log table.
+   *
+   * @return TRUE on success
+   * @throws Exception
+   */
+  public function upgrade_4203(): bool {
+    $alterQuery = "ALTER TABLE `civicrm_fpptaquickbooks_log`
+      ADD `reason` varchar(255) COMMENT 'Reason for this action, as given by the API caller' AFTER `api_output_error_code`
+    ";
+    $this->addTask("Add column in civicrm_fpptaquickbooks_log table.", 'executeSql', $alterQuery);
     return TRUE;
   }
 
