@@ -53,6 +53,14 @@
   </field>
 
   <field>
+    <name>sync_session_id</name>
+    <title>Unique ID per sync session</title>
+    <type>varchar</type>
+    <length>64</length>
+    <comment>Unique ID per sync session, e.g. Step-thru sync page load or Scheduled Job run.</comment>
+  </field>
+
+  <field>
     <name>entity_id_param</name>
     <title>Entity ID Param</title>
     <type>varchar</type>
@@ -87,14 +95,14 @@
     <title>API parameters</title>
     <type>varchar</type>
     <length>2550</length>
-    <comment>API parameters for the api call which triggered this log entry</comment>
+    <comment>API parameters, as JSON, for the api call which triggered this log entry</comment>
   </field>
 
   <field>
     <name>api_output</name>
-    <title>Note</title>
+    <title>API output</title>
     <type>text</type>
-    <comment>API parameters for the api call which triggered this log entry</comment>
+    <comment>API call ouptut, as JSON, for the api call which triggered this log entry</comment>
     <html>
       <type>TextArea</type>
       <rows>4</rows>
@@ -102,5 +110,20 @@
     </html>
   </field>
 
+  <field>
+    <name>api_output_text</name>
+    <title>Text from API output</title>
+    <type>varchar</type>
+    <length>2550</length>
+    <comment>Text or error message extracted from API call output</comment>
+  </field>
+
+  <field>
+    <name>api_output_error_code</name>
+    <title>Error code from API output</title>
+    <type>varchar</type>
+    <length>64</length>
+    <comment>Error code, if any, extracted from API call output</comment>
+  </field>
 
 </table>

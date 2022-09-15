@@ -75,6 +75,60 @@ class CRM_Fpptaqb_Upgrader extends CRM_Fpptaqb_Upgrader_Base {
     return TRUE;
   }
 
+  /**
+   * Example: Run an upgrade with a query that touches many (potentially
+   * millions) of records by breaking it up into smaller chunks.
+   *
+   * @return TRUE on success
+   * @throws Exception
+   */
+  public function upgrade_4202(): bool {
+    $this->ctx->log->info('Planning update 4203'); // PEAR Log interface
+    $alterQuery = "ALTER TABLE `civicrm_fpptaquickbooks_log`
+      ADD `sync_session_id` varchar(64) COMMENT 'Unique ID per sync session, e.g. Step-thru sync page load or Scheduled Job run.' AFTER `unique_request_id`,
+      ADD `api_output_text` varchar(2550) COMMENT 'Text or error message extracted from API call output.' AFTER `api_output`,
+      ADD `api_output_error_code` varchar(64) COMMENT 'Error code, if any, extracted from API call output.' AFTER `api_output_text`
+    ";
+    $this->addTask("Add columns in civicrm_fpptaquickbooks_log table.", 'executeSql', $alterQuery);
+
+    $dao = CRM_Core_DAO::executeQuery('
+      select id, api_output
+      from civicrm_fpptaquickbooks_log
+      where
+        api_output is not null
+      order by id
+    ');
+
+    while ($dao->fetch()) {
+
+      $api_output = json_decode($dao->api_output, TRUE);
+
+      if (empty($api_output)) {
+        continue;
+      }
+
+      $apiOutputText = ($api_output['is_error'] ? $api_output['error_message'] : $api_output['values']['text']) ?? '';
+      $apiOutputErrorCode = $api_output['error_code'] ?? '';
+      if (empty($apiOutputText) && empty($apiOutputErrorCode)) {
+        // Nothing to update on this row, so continue to next.
+        continue;
+      }
+      $updateQuery = '
+        update civicrm_fpptaquickbooks_log
+        set
+          api_output_text = if(%1 > "", %1, NULL),
+          api_output_error_code = if(%2 > "", %2, NULL)
+        where id = %3
+      ';
+      $updateQueryParams = [
+        1 => [$apiOutputText, 'String'],
+        2 => [$apiOutputErrorCode, 'String'],
+        3 => [$dao->id, 'Int'],
+      ];
+      $this->addTask("Update civicrm_fpptaquickbooks_log for entry id={$dao->id}", 'executeSql', $updateQuery, $updateQueryParams);
+    }
+    return TRUE;
+  }
 
   /**
    * Example: Run an external SQL script.

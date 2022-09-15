@@ -94,12 +94,15 @@ CREATE TABLE `civicrm_fpptaquickbooks_log` (
   `created` datetime COMMENT 'When was the log entry created.',
   `contact_id` int unsigned COMMENT 'Contact who created this log entry; FK to civicrm_contact',
   `unique_request_id` varchar(64) COMMENT 'Unique identifier for a single php invocation.',
+  `sync_session_id` varchar(64) COMMENT 'Unique ID per sync session, e.g. Step-thru sync page load or Scheduled Job run.',
   `entity_id_param` varchar(64) COMMENT 'Name of api parameter identifying the relevant entity.',
   `entity_id` int unsigned COMMENT 'Foreign key to the referenced item.',
   `api_entity` varchar(64) COMMENT 'API entity for the api call which triggered this log entry',
   `api_action` varchar(64) COMMENT 'API action for the api call which triggered this log entry',
-  `api_params` varchar(2550) COMMENT 'API parameters for the api call which triggered this log entry',
-  `api_output` text COMMENT 'API parameters for the api call which triggered this log entry',
+  `api_params` varchar(2550) COMMENT 'API parameters, as JSON, for the api call which triggered this log entry',
+  `api_output` text COMMENT 'API call ouptut, as JSON, for the api call which triggered this log entry',
+  `api_output_text` varchar(2550) COMMENT 'Text or error message extracted from API call output',
+  `api_output_error_code` varchar(64) COMMENT 'Error code, if any, extracted from API call output',
   PRIMARY KEY (`id`),
   CONSTRAINT FK_civicrm_fpptaquickbooks_log_contact_id FOREIGN KEY (`contact_id`) REFERENCES `civicrm_contact`(`id`) ON DELETE CASCADE
 )

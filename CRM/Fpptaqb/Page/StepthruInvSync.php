@@ -20,6 +20,9 @@ class CRM_Fpptaqb_Page_StepthruInvSync extends CRM_Core_Page {
     ];
     CRM_Core_Resources::singleton()->addVars('fpptaqb', $vars);
     
+    // Set a new value for syncSessionId, to be used in FpptaquickbooksLog entries.
+    CRM_Core_Session::singleton()->set('syncSessionId', CRM_Fpptaqb_Util::getLogCallerId(), 'fpptaqb');
+
     parent::run();
   }
 

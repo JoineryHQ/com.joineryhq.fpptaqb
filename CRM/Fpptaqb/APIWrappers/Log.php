@@ -28,6 +28,7 @@ class CRM_Fpptaqb_APIWrappers_Log  implements API_Wrapper {
       'api_entity' => $apiRequest['entity'],
       'api_action' => $apiRequest['action'],
       'api_params' => json_encode($apiRequest['params']),
+      'sync_session_id' => CRM_Core_Session::singleton()->get('syncSessionId', 'fpptaqb'),
     ];
     $create = _fpptaqb_civicrmapi('FpptaquickbooksLog', 'create', $logParams);
 
@@ -47,6 +48,8 @@ class CRM_Fpptaqb_APIWrappers_Log  implements API_Wrapper {
       $logParams = [
         'id' => $apiRequest['fpptaqb']['log_id'],
         'api_output' => json_encode($result),
+        'api_output_text' => ($result['is_error'] ? $result['error_message'] : $result['values']['text']) ?? NULL,
+        'api_output_error_code' => $result['error_code'] ?? NULL,
       ];
       _fpptaqb_civicrmapi('FpptaquickbooksLog', 'create', $logParams);
     }

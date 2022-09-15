@@ -19,7 +19,10 @@ class CRM_Fpptaqb_Page_StepthruPmtSync extends CRM_Core_Page {
       'debug_enabled' => Civi::settings()->get('debug_enabled'),
     ];
     CRM_Core_Resources::singleton()->addVars('fpptaqb', $vars);
-    
+
+    // Set a new value for syncSessionId, to be used in FpptaquickbooksLog entries.
+    CRM_Core_Session::singleton()->set('syncSessionId', CRM_Fpptaqb_Util::getLogCallerId(), 'fpptaqb');
+
     parent::run();
   }
 
