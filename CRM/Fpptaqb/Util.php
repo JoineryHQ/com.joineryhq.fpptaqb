@@ -95,4 +95,39 @@ use CRM_Fpptaqb_ExtensionUtil as E;
     $error['error_code'] = $errorCode;
     return $error;
   }
+  
+  public static function createApiActionOptionsList() {
+      return [
+      'fpptaquickbooksfinancialtypeitem:create' => E::ts('Link a Financial Type to a QuickBooks item'),
+      'fpptaquickbookscontactcustomer:create' => E::ts('Link a Contact to a QuickBooks customer'),
+      'fpptaquickbookscontributioninvoice:create' => E::ts('Record the link between a Contribution and a QuickBooks invoice'),
+      'fpptaquickbookstrxnpayment:create' => E::ts('Record the link between a Payment and a QuickBooks payment'),
+      'fpptaqbstepthruinvoice:load' => E::ts('Load a Contribution in preparation for sync to QuickBooks'),
+      'fpptaqbstepthruinvoice:sync' => E::ts('Sync a Contribution to QuickBooks'),
+      'fpptaqbstepthruinvoice:hold' => E::ts('Place a Contribution on hold'),
+      'fpptaqbstepthrupayment:load' => E::ts('Load a Payment in preparation for sync to QuickBooks'),
+      'fpptaqbstepthrupayment:sync' => E::ts('Sync a Payment to QuickBooks'),
+      'fpptaqbstepthrupayment:hold' => E::ts('Place a Payment on hold'),
+    ];
+  }
+  
+  public static function formatApiAction($apiEntity, $apiAction) {
+    $defaultFormattedAction = "{$apiAction} {$apiEntity}";
+    
+    // Force to lowercase to facilityate string comparison.
+    $apiEntity = strtolower($apiEntity);
+    $apiAction = strtolower($apiAction);
+      
+    $key = "{$apiEntity}:{$apiAction}";
+    $options = self::createApiActionOptionsList();
+    $formattedAction = $options[$key];
+
+    // If we haven't identified a proper return value yet, fall back to a default 
+    // 'action entity' format.
+    if (empty($formattedAction)) {
+      $formattedAction = $defaultFormattedAction;
+    }
+
+    return $formattedAction;
+  }
 }
