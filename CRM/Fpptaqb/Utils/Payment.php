@@ -10,35 +10,32 @@ class CRM_Fpptaqb_Utils_Payment {
    * @return Array
    */
   public static function getReadyToSyncIds() {
-    static $ids;
-    if (!isset($ids)) {
-      $ids = [];
-      $query = "
-        select
-          ft.id,
-          ft.trxn_date,
-          ft.total_amount
-        from
-          civicrm_entity_financial_trxn eft
-          inner join civicrm_financial_trxn ft on eft.financial_trxn_id = ft.id
-          inner join civicrm_financial_account fa on ft.to_financial_account_id = fa.id
-          inner join civicrm_fpptaquickbooks_contribution_invoice fci on fci.contribution_id = eft.entity_id
-             and fci.quickbooks_id is not null
-          left join civicrm_fpptaquickbooks_trxn_payment tp on tp.financial_trxn_id = ft.id
-        where
-          ft.trxn_date >= %1
-          AND ft.trxn_date <= (NOW() - INTERVAL %2 DAY)
-          and ft.is_payment
-          and eft.entity_table = 'civicrm_contribution'
-          and tp.id is null
-      ";
-      $queryParams = [
-        '1' => [CRM_Utils_Date::isoToMysql(Civi::settings()->get('fpptaqb_minimum_date')), 'Int'],
-        '2' => [CRM_Utils_Date::isoToMysql(Civi::settings()->get('fpptaqb_sync_wait_days')), 'Int'],
-      ];
-      $dao = CRM_Core_DAO::executeQuery($query, $queryParams);
-      $ids = CRM_Utils_Array::collect('id', $dao->fetchAll());
-    }
+    $ids = [];
+    $query = "
+      select
+        ft.id,
+        ft.trxn_date,
+        ft.total_amount
+      from
+        civicrm_entity_financial_trxn eft
+        inner join civicrm_financial_trxn ft on eft.financial_trxn_id = ft.id
+        inner join civicrm_financial_account fa on ft.to_financial_account_id = fa.id
+        inner join civicrm_fpptaquickbooks_contribution_invoice fci on fci.contribution_id = eft.entity_id
+           and fci.quickbooks_id is not null
+        left join civicrm_fpptaquickbooks_trxn_payment tp on tp.financial_trxn_id = ft.id
+      where
+        ft.trxn_date >= %1
+        AND ft.trxn_date <= (NOW() - INTERVAL %2 DAY)
+        and ft.is_payment
+        and eft.entity_table = 'civicrm_contribution'
+        and tp.id is null
+    ";
+    $queryParams = [
+      '1' => [CRM_Utils_Date::isoToMysql(Civi::settings()->get('fpptaqb_minimum_date')), 'Int'],
+      '2' => [CRM_Utils_Date::isoToMysql(Civi::settings()->get('fpptaqb_sync_wait_days')), 'Int'],
+    ];
+    $dao = CRM_Core_DAO::executeQuery($query, $queryParams);
+    $ids = CRM_Utils_Array::collect('id', $dao->fetchAll());
     return $ids;
   }
 
