@@ -32,33 +32,33 @@ function _civicrm_api3_fpptaqb_stepthru_payment_Sync_spec(&$spec) {
  *
  * @see civicrm_api3_create_success
  *
- * @throws API_Exception with code 'fppta-404', if the contribution cannot be found.
- * @throws API_Exception with code 'fppta-409', the contribution hash has changed.
- * @throws API_Exception if the sync() operation catches an exception; error code 
- *   is "fppta-{$e->getErrorCode()}" if error code is available, else 'fppta-500'.
  */
 function civicrm_api3_fpptaqb_stepthru_payment_Sync($params) {
   $id = CRM_Fpptaqb_Utils_Payment::validateId($params['id']);
+  $extraParams = ['values' => $params];
 
   if ($id === FALSE) {
-    throw new API_Exception('Could not find payment with transaction id '. $params['id'], 'fpptaqb-404');
+    return CRM_Fpptaqb_Util::composeApiError('Could not find payment with transaction id '. $params['id'], 'fpptaqb-404', $extraParams);
   }
 
-  if ($params['hash'] != CRM_Fpptaqb_Utils_Payment::getHash($id)) {
-    throw new API_Exception('This payment transaction has changed since you viewed it. Please reload it before continuing.', 'fpptaqb-409');
+  $currentHash = CRM_Fpptaqb_Utils_Payment::getHash($id);
+  if ($params['hash'] != $currentHash) {
+    return CRM_Fpptaqb_Util::composeApiError('This payment transaction has changed since you viewed it. Please reload it before continuing.' . " id: $id; given hash: {$params['hash']}; curren hash: $currentHash", 'fpptaqb-409', $extraParams);
   }
   
   try {
     $qbPmtId = CRM_Fpptaqb_Utils_Payment::sync($id);
   }
   catch (CRM_Core_Exception $e) {
-    $extraParams = ['values' => $params];
     if ($e->getErrorCode()) {
-      throw new API_Exception($e->getMessage(), 'fpptaqb-'. $e->getErrorCode(), $extraParams);
+      $errorCode = 'fpptaqb-' . $e->getErrorCode();
+      $errorMessage = $e->getMessage();
     }
     else {
-      throw new API_Exception("Unknown error: ". $e->getMessage(), 'fpptaqb-500', $extraParams);
+      $errorCode = 'fpptaqb-500';
+      $errorMessage = "Unknown error: " . $e->getMessage();
     }
+    return CRM_Fpptaqb_Util::composeApiError($errorMessage, $errorCode, $extraParams);
   }
 
   $returnValues = array(
