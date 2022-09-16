@@ -90,7 +90,7 @@ use CRM_Fpptaqb_ExtensionUtil as E;
    * @param Array $extraParams
    * @return Array
    */
-  function composeApiError($errorMessage, $errorCode, $extraParams) {
+  public static function composeApiError($errorMessage, $errorCode, $extraParams) {
     $error = civicrm_api3_create_error($errorMessage, $extraParams);
     $error['error_code'] = $errorCode;
     return $error;
@@ -108,6 +108,7 @@ use CRM_Fpptaqb_ExtensionUtil as E;
       'fpptaqbstepthrupayment:load' => E::ts('Load a Payment in preparation for sync to QuickBooks'),
       'fpptaqbstepthrupayment:sync' => E::ts('Sync a Payment to QuickBooks'),
       'fpptaqbstepthrupayment:hold' => E::ts('Place a Payment on hold'),
+      'fpptaqbbatchsyncinvoices:process' => E::ts('Process all ready invoices for sync'),
     ];
   }
   

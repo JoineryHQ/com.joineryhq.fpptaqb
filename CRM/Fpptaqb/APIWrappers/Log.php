@@ -18,13 +18,13 @@ class CRM_Fpptaqb_APIWrappers_Log  implements API_Wrapper {
       'fpptaquickbookstrxnpayment' => 'financial_trxn_id',
       'fpptaqbstepthruinvoice' => 'id',
       'fpptaqbstepthrupayment' => 'id',
-
     ];
-    $apiEntityIdParamName = $apiEntityIdParamNames[strtolower($apiRequest['entity'])];
+    $apiEntityIdParamName = $apiEntityIdParamNames[strtolower($apiRequest['entity'])] ?? NULL;
+    $entityId = $apiRequest['params'][$apiEntityIdParamName] ?? NULL;
     // Log the api call.
     $logParams = [
       'entity_id_param' => $apiEntityIdParamName,
-      'entity_id' => $apiRequest['params'][$apiEntityIdParamName],
+      'entity_id' => $entityId,
       'api_entity' => $apiRequest['entity'],
       'api_action' => $apiRequest['action'],
       'api_params' => json_encode($apiRequest['params']),
