@@ -138,8 +138,45 @@ class CRM_Fpptaqb_Form_Report_SyncLog extends CRM_Report_Form {
         }
       }
 
+      // Display human-readable action label
       if (array_key_exists('civicrm_fpptaquickbooks_log_action', $row)) {
+        $entryFound = TRUE;
         $rows[$rowNum]['civicrm_fpptaquickbooks_log_action'] = CRM_Fpptaqb_Util::formatApiAction($row['civicrm_fpptaquickbooks_log_api_entity'], $row['civicrm_fpptaquickbooks_log_api_action']);
+      }
+
+      // Provide a link to the relevant entity, if any.
+      if (array_key_exists('civicrm_fpptaquickbooks_log_entity_id', $row)) {
+        $entryFound = TRUE;
+        // For contributions:
+        if (in_array(strtolower($row['civicrm_fpptaquickbooks_log_api_entity']), [
+          'fpptaquickbookscontributioninvoice',
+          'fpptaqbstepthruinvoice'
+        ])) {
+          $url = CRM_Utils_System::url("civicrm/contact/view/contribution",
+            "reset=1&action=view&id={$row['civicrm_fpptaquickbooks_log_entity_id']}",
+            $this->_absoluteUrl
+          );
+          $rows[$rowNum]['civicrm_fpptaquickbooks_log_entity_id_link'] = $url;
+          $rows[$rowNum]['civicrm_fpptaquickbooks_log_entity_id_hover'] = E::ts("View this Contribution");
+        }
+        // For contacts:
+        elseif (strtolower($row['civicrm_fpptaquickbooks_log_api_entity']) == 'fpptaquickbookscontactcustomer') {
+          $url = CRM_Utils_System::url("civicrm/contact/view",
+            "reset=1&cid={$row['civicrm_fpptaquickbooks_log_entity_id']}",
+            $this->_absoluteUrl
+          );
+          $rows[$rowNum]['civicrm_fpptaquickbooks_log_entity_id_link'] = $url;
+          $rows[$rowNum]['civicrm_fpptaquickbooks_log_entity_id_hover'] = E::ts("View this Contact");
+        }
+        // For financial types:
+        elseif (strtolower($row['civicrm_fpptaquickbooks_log_api_entity']) == 'fpptaquickbooksfinancialtypeitem') {
+          $url = CRM_Utils_System::url("civicrm/admin/financial/financialType",
+            "reset=1&action=update&id={$row['civicrm_fpptaquickbooks_log_entity_id']}",
+            $this->_absoluteUrl
+          );
+          $rows[$rowNum]['civicrm_fpptaquickbooks_log_entity_id_link'] = $url;
+          $rows[$rowNum]['civicrm_fpptaquickbooks_log_entity_id_hover'] = E::ts("Edit this Financial Type");
+        }
       }
       
       if (array_key_exists('civicrm_contact_sort_name', $row)) {
