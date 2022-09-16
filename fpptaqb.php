@@ -164,6 +164,7 @@ function fpptaqb_civicrm_apiWrappers(&$wrappers, $apiRequest) {
     'fpptaqbstepthruinvoice' => ['load', 'sync', 'hold'],
     'fpptaqbstepthrupayment' => ['load', 'sync', 'hold'],
     'fpptaqbbatchsyncinvoices' => ['process'],
+    'fpptaqbbatchsyncpayments' => ['process'],
   ];
   $loggedActions = ($loggedApiEntities[strtolower($apiRequest['entity'])] ?? array());
   if (
