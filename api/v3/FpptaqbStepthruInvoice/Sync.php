@@ -41,8 +41,9 @@ function civicrm_api3_fpptaqb_stepthru_invoice_Sync($params) {
     return CRM_Fpptaqb_Util::composeApiError('Could not find contribution with id '. $params['id'], 'fpptaqb-404', $extraParams);
   }
 
-  if ($params['hash'] != CRM_Fpptaqb_Utils_Invoice::getHash($id)) {
-    return CRM_Fpptaqb_Util::composeApiError('This contribution has changed since you viewed it. Please reload it before continuing.', 'fpptaqb-409', $extraParams);
+  $currentHash = CRM_Fpptaqb_Utils_Invoice::getHash($id);
+  if ($params['hash'] != $currentHash) {
+    return CRM_Fpptaqb_Util::composeApiError('This contribution has changed since you viewed it. Please reload it before continuing.' . "id: $id; given hash: {$params['hash']}; curren hash: $currentHash", 'fpptaqb-409', $extraParams);
   }
   
   try {
