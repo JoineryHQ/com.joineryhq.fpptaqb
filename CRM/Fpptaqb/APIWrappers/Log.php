@@ -46,10 +46,24 @@ class CRM_Fpptaqb_APIWrappers_Log  implements API_Wrapper {
 
     // If there's a log id, update that log entry with the api output.
     if (!empty($apiRequest['fpptaqb']['log_id'])) {
+      $apiOutputText = NULL;
+      if ($result['is_error']) {
+        $apiOutputText = $result['error_message'];
+      }
+      elseif (isset($result['values']['text'])) {
+        $apiOutputText = $result['values']['text'];
+      }
+      elseif (is_string($result['values'])) {
+        $apiOutputText = $result['values'];
+      }
+      else {
+        $apiOutputText = json_encode($result['values']);
+      }
+
       $logParams = [
         'id' => $apiRequest['fpptaqb']['log_id'],
         'api_output' => json_encode($result),
-        'api_output_text' => ($result['is_error'] ? $result['error_message'] : $result['values']['text']) ?? NULL,
+        'api_output_text' => $apiOutputText,
         'api_output_error_code' => $result['error_code'] ?? NULL,
       ];
       _fpptaqb_civicrmapi('FpptaquickbooksLog', 'create', $logParams);
