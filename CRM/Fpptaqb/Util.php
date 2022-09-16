@@ -115,6 +115,7 @@ class CRM_Fpptaqb_Util {
       'fpptaqbstepthrupayment:sync' => E::ts('Sync a Payment to QuickBooks'),
       'fpptaqbstepthrupayment:hold' => E::ts('Place a Payment on hold'),
       'fpptaqbbatchsyncinvoices:process' => E::ts('Process all ready invoices for sync'),
+      'fpptaqbbatchsyncpayments:process' => E::ts('Process all ready payments for sync'),
     ];
   }
   
