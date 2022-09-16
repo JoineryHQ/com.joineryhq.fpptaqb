@@ -4,8 +4,14 @@ use CRM_Fpptaqb_ExtensionUtil as E;
 /**
  * Utility methods for fpptaqb extension
  */
-  class CRM_Fpptaqb_Util {
+class CRM_Fpptaqb_Util {
 
+  /**
+   * 
+   * @return Object of the appropriate sync class.
+   * @throws CRM_Fpptaqb_Exception if an invalid sync class has been configured 
+   *   in fpptaqb_use_sync_class.
+   */
   public static function getSyncObject() {
     $classname = Civi::settings()->get('fpptaqb_use_sync_class');
     if (!array_key_exists($classname, self::getSyncClassOptions())) {

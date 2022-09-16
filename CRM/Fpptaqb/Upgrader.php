@@ -59,7 +59,6 @@ class CRM_Fpptaqb_Upgrader extends CRM_Fpptaqb_Upgrader_Base {
    * Co-opt settings from (now defunct) fpptaqbhelper extension.
    *
    * @return TRUE on success
-   * @throws Exception
    */
   public function upgrade_4201(): bool {
     $values = [];
@@ -80,7 +79,6 @@ class CRM_Fpptaqb_Upgrader extends CRM_Fpptaqb_Upgrader_Base {
    * to populate those columns where possible.
    *
    * @return TRUE on success
-   * @throws Exception
    */
   public function upgrade_4202(): bool {
     $alterQuery = "ALTER TABLE `civicrm_fpptaquickbooks_log`
@@ -133,7 +131,6 @@ class CRM_Fpptaqb_Upgrader extends CRM_Fpptaqb_Upgrader_Base {
    * Run an upgrade to add a column to civicrm_fpptaquickbooks_log table.
    *
    * @return TRUE on success
-   * @throws Exception
    */
   public function upgrade_4203(): bool {
     $alterQuery = "ALTER TABLE `civicrm_fpptaquickbooks_log`

@@ -50,6 +50,11 @@ class CRM_Fpptaqb_Utils_Invoice {
    * For a given contribution ID, get an array of all relevant properties for syncing.
    *
    * @return Array
+   * @throws CRM_Fpptaqb_Exception with code 404 if contribution can't be found
+   * @throws CRM_Fpptaqb_Exception with code 503 if contribution contains a non-zero 
+   *   line-item for which a corresponding QB item can't be determined.
+   * @throws CRM_Fpptaqb_Exception with code 503 if the contribution can't be 
+   *   attributed to an organization contact.
    */
   public static function getReadyToSync(int $contributionId) {
     static $cache = [];

@@ -56,6 +56,7 @@ class CRM_Fpptaqb_Utils_Payment {
    * For a given financialTrxn ID, get an array of all relevant properties for syncing.
    *
    * @return Array
+   * @throws CRM_Fpptaqb_Exception with code 404 if contribution payment can't be found
    */
   public static function getReadyToSync(int $financialTrxnId) {
     static $cache = [];
@@ -171,6 +172,7 @@ class CRM_Fpptaqb_Utils_Payment {
    * in "Review Held Items".
    *
    * @return Array
+   * @throws CRM_Fpptaqb_Exception with code 404 if contribution payment can't be found
    */
   public static function getHeldItem(int $financialTrxnId) {
     static $cache = [];

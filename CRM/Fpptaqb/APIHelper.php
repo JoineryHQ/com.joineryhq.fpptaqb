@@ -18,7 +18,6 @@ class CRM_Fpptaqb_APIHelper {
    * @param string $keyspace
    *
    * @return string
-   * @throws Exception
    */
   public static function generateStateToken($length, $keyspace = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ') {
     $pieces = [];
@@ -33,8 +32,6 @@ class CRM_Fpptaqb_APIHelper {
    * Generate dataservice object to verify and login into QuickBooks
    *
    * @return \QuickBooksOnline\API\DataService\DataService|null
-   * @throws CiviCRM_API3_Exception
-   * @throws \QuickBooksOnline\API\Exception\SdkException
    */
   public static function getLoginDataServiceObject() {
 
@@ -78,8 +75,6 @@ class CRM_Fpptaqb_APIHelper {
    * Generates data service object for accounting into QuickBooks.
    *
    * @return \QuickBooksOnline\API\DataService\DataService|null
-   * @throws CiviCRM_API3_Exception
-   * @throws \QuickBooksOnline\API\Exception\SdkException
    */
   public static function getAccountingDataServiceObject($forRefreshToken = FALSE) {
     if (!$forRefreshToken) {
@@ -135,8 +130,6 @@ class CRM_Fpptaqb_APIHelper {
   /**
    * Refresh QuickBooks access token if required.
    *
-   * @throws CiviCRM_API3_Exception
-   * @throws \QuickBooksOnline\API\Exception\SdkException
    */
   private static function refreshAccessTokenIfRequired() {
     $QBCredentials = self::getQuickBooksCredentials();
@@ -185,7 +178,6 @@ class CRM_Fpptaqb_APIHelper {
    * Get all required credentials to connect with QuickBooks
    *
    * @return array
-   * @throws CiviCRM_API3_Exception
    */
   public static function getQuickBooksCredentials() {
     $fpptaqbSettings = civicrm_api3('Setting', 'get', array('group' => "fpptaqb"));
@@ -215,7 +207,6 @@ class CRM_Fpptaqb_APIHelper {
    * @param $QBCredentials
    *
    * @return bool
-   * @throws Exception
    */
   public static function isTokenExpired($QBCredentials, $isRefreshToken = FALSE) {
     $tokenKey = "accessTokenExpiryDate";
@@ -240,7 +231,6 @@ class CRM_Fpptaqb_APIHelper {
    * Check if the API credentials are authorized.
    *
    * @return bool
-   * @throws \Exception
    */
   public static function isAuthorized() {
     $QBCredentials = CRM_Fpptaqb_APIHelper::getQuickBooksCredentials();

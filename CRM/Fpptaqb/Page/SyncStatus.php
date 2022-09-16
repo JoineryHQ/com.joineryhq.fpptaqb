@@ -3,6 +3,10 @@ use CRM_Fpptaqb_ExtensionUtil as E;
 
 class CRM_Fpptaqb_Page_SyncStatus extends CRM_Core_Page {
 
+  /**
+   * 
+   * @throws Exception@throws Exception if the relevant contribution has been placed on hold.
+   */
   public function run() {
     $id = CRM_Utils_Request::retrieveValue('id', 'Int');
     $this->assign('id', $id);
@@ -12,7 +16,7 @@ class CRM_Fpptaqb_Page_SyncStatus extends CRM_Core_Page {
     // This page is likely to run as a pop-up, which will not properly display
     // civicrm fatal errors;
     // There are several legitimate reasons (typically lack of configuration)
-    // that errors may be thrown in building this page, and we need to communicate
+    // that exceptions may be thrown in building this page, and we need to communicate
     // those to the user.
     // Therefore, we wrap the whole thing in a try/catch and display any exception
     // messages to the user.

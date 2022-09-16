@@ -21,8 +21,6 @@ class CRM_Fpptaqb_Page_OAuthQBO extends CRM_Core_Page {
    * Get Login Helper to get Redirection URL and Access/Refresh Tokens.
    *
    * @return \QuickBooksOnline\API\Core\OAuth\OAuth2\OAuth2LoginHelper
-   * @throws CiviCRM_API3_Exception
-   * @throws \QuickBooksOnline\API\Exception\SdkException
    */
   private function getLoginHelper() {
     $dataService = CRM_Fpptaqb_APIHelper::getLoginDataServiceObject();
@@ -32,9 +30,6 @@ class CRM_Fpptaqb_Page_OAuthQBO extends CRM_Core_Page {
 
   /**
    * Redirect from CiviCRM to QuickBooks for App authorization.
-   *
-   * @throws CiviCRM_API3_Exception
-   * @throws \QuickBooksOnline\API\Exception\SdkException
    */
   private function redirectForAuth() {
     $OAuth2LoginHelper = $this->getLoginHelper();
@@ -42,6 +37,11 @@ class CRM_Fpptaqb_Page_OAuthQBO extends CRM_Core_Page {
     CRM_Utils_System::redirect($authorizationCodeUrl);
   }
 
+  /**
+   * 
+   * @throws Exception if fpptaqb_quickbooks_consumer_key is not configured
+   * @throws Exception if fpptaqb_quickbooks_shared_secret is not configured
+   */
   public function run() {
     //get current value in the database
     $this->consumer_key = civicrm_api3('Setting', 'getvalue', array('name' => "fpptaqb_quickbooks_consumer_key"));

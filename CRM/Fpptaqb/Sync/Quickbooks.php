@@ -47,6 +47,9 @@ class CRM_Fpptaqb_Sync_Quickbooks {
    * For a given contact ID, get the QB customer number.
    *
    * @return int
+   * @throws CRM_Fpptaqb_Exception with code 503, if quickbooks dataservice object creation throws an exception.
+   * @throws Exception if there's an error in getting customers from quickbooks.
+   * @throws CRM_Fpptaqb_Exception with code 503, if no matching customer can be found.
    */
   public function fetchCustomerIdForContact($contactId) {
     $contactGet = _fpptaqb_civicrmapi('Contact', 'get', [
@@ -62,7 +65,7 @@ class CRM_Fpptaqb_Sync_Quickbooks {
       $customers = $dataService->Query("select * from Customer Where DisplayName = '$queryName'");
     }
     catch (Exception $e) {
-      throw new CRM_Core_Exception('Could not get QuickBooks DataService Object: ' . $e->getMessage());
+      throw new CRM_Fpptaqb_Exception('Could not get QuickBooks DataService Object: ' . $e->getMessage(), 503);
     }
     if ($lastError = $dataService->getLastError()) {
       $errorMessage = CRM_Fpptaqb_APIHelper::parseErrorResponse($lastError);
@@ -80,6 +83,9 @@ class CRM_Fpptaqb_Sync_Quickbooks {
    * For a given QuickBooks customer ID, get relevant customer details.
    *
    * @return Array
+   * @throws CRM_Fpptaqb_Exception with code 503, if quickbooks dataservice object creation throws an exception.
+   * @throws Exception if there's an error in getting customers from quickbooks.
+   * @throws CRM_Fpptaqb_Exception with code 503, if no matching customer can be found.
    */
   public function fetchCustomerDetails($customerId) {
     try {
@@ -88,7 +94,7 @@ class CRM_Fpptaqb_Sync_Quickbooks {
       $customer = $dataService->FindById('Customer', $customerId);
     }
     catch (Exception $e) {
-      throw new CRM_Core_Exception('Could not get QuickBooks DataService Object: ' . $e->getMessage());
+      throw new CRM_Fpptaqb_Exception('Could not get QuickBooks DataService Object: ' . $e->getMessage(), 503);
     }
     if ($lastError = $dataService->getLastError()) {
       $errorMessage = CRM_Fpptaqb_APIHelper::parseErrorResponse($lastError);
@@ -106,7 +112,10 @@ class CRM_Fpptaqb_Sync_Quickbooks {
    * @param Array $contribution
    *   Contribution details as built by CRM_Fpptaqb_Utils_Invoice::getInvToSync().
    *
-   * @return Int QuickBooks internal invoice id.
+   * @return Int QuickBooks internal invoice id.]
+   * 
+   * @throws CRM_Fpptaqb_Exception with code 503, if quickbooks dataservice object creation throws an exception.
+   * @throws CRM_Fpptaqb_Exception with code 503, if there's an error adding the invoice in quickbooks.
    */
   public function pushInv($contribution) {
     // Construct the array of relevant invoice data for QB invoice creation.
@@ -167,6 +176,9 @@ class CRM_Fpptaqb_Sync_Quickbooks {
    *   Payment details as built by CRM_Fpptaqb_Utils_Pmt::getReadyToSync().
    *
    * @return Int QuickBooks internal payment id.
+   * 
+   * @throws CRM_Fpptaqb_Exception with code 503, if quickbooks dataservice object creation throws an exception.
+   * @throws CRM_Fpptaqb_Exception with code 503, if there's an error adding the payment in quickbooks.
    */
   public function pushPmt($payment) {
 
@@ -235,6 +247,13 @@ class CRM_Fpptaqb_Sync_Quickbooks {
     return $this->items[$id];
   }
 
+  /**
+   * 
+   * @return Array
+   * 
+   * @throws CRM_Fpptaqb_Exception with code 503, if quickbooks dataservice object creation throws an exception.
+   * @throws CRM_Fpptaqb_Exception with code 503, if there's an error fetching items from quickbooks.
+   */
   public function fetchActiveItemsList() {
     $ret = [];
     try {
@@ -243,11 +262,11 @@ class CRM_Fpptaqb_Sync_Quickbooks {
       $items = $dataService->Query("select * from Item");
     }
     catch (Exception $e) {
-      throw new CRM_Core_Exception('Could not get QuickBooks DataService Object: ' . $e->getMessage());
+      throw new CRM_Fpptaqb_Exception('Could not get QuickBooks DataService Object: ' . $e->getMessage(), 503);
     }
     if ($lastError = $dataService->getLastError()) {
       $errorMessage = CRM_Fpptaqb_APIHelper::parseErrorResponse($lastError);
-      throw new Exception('QuickBooks error: "' . implode("\n", $errorMessage) . '"');
+      throw new CRM_Fpptaqb_Exception('QuickBooks error: "' . implode("\n", $errorMessage) . '"', 503);
     }
 
     foreach ($items as $item) {
@@ -263,6 +282,12 @@ class CRM_Fpptaqb_Sync_Quickbooks {
     return $this->items[$id];
   }
 
+  /**
+   * 
+   * @return Array
+   * @throws CRM_Fpptaqb_Exception with code 503, if quickbooks dataservice object creation throws an exception.
+   * @throws CRM_Fpptaqb_Exception with code 503, if there's an error fetching accounts from quickbooks.
+   */
   public function fetchActiveAccountsList() {
     $ret = [];
     try {
@@ -271,11 +296,11 @@ class CRM_Fpptaqb_Sync_Quickbooks {
       $accounts = $dataService->Query("select * from Account where AccountType = 'Bank' and Active");
     }
     catch (Exception $e) {
-      throw new CRM_Core_Exception('Could not get QuickBooks DataService Object: ' . $e->getMessage());
+      throw new CRM_Fpptaqb_Exception('Could not get QuickBooks DataService Object: ' . $e->getMessage(), 503);
     }
     if ($lastError = $dataService->getLastError()) {
       $errorMessage = CRM_Fpptaqb_APIHelper::parseErrorResponse($lastError);
-      throw new Exception('QuickBooks error: "' . implode("\n", $errorMessage) . '"');
+      throw new CRM_Fpptaqb_Exception('QuickBooks error: "' . implode("\n", $errorMessage) . '"', 503);
     }
 
     foreach ($accounts as $account) {
@@ -289,6 +314,12 @@ class CRM_Fpptaqb_Sync_Quickbooks {
     return $paymentMethods[$id];
   }
 
+  /**
+   * 
+   * @return Array
+   * @throws CRM_Fpptaqb_Exception with code 503, if quickbooks dataservice object creation throws an exception.
+   * @throws CRM_Fpptaqb_Exception with code 503, if there's an error fetching payment methods from quickbooks.
+   */
   public function fetchActivePaymentMethodsList() {
     $ret = [];
     try {
@@ -297,11 +328,11 @@ class CRM_Fpptaqb_Sync_Quickbooks {
       $paymentMethods = $dataService->Query("select * from PaymentMethod where Active");
     }
     catch (Exception $e) {
-      throw new CRM_Core_Exception('Could not get QuickBooks DataService Object: ' . $e->getMessage());
+     throw new CRM_Fpptaqb_Exception('Could not get QuickBooks DataService Object: ' . $e->getMessage(), 503);
     }
     if ($lastError = $dataService->getLastError()) {
       $errorMessage = CRM_Fpptaqb_APIHelper::parseErrorResponse($lastError);
-      throw new Exception('QuickBooks error: "' . implode("\n", $errorMessage) . '"');
+      throw new CRM_Fpptaqb_Exception('QuickBooks error: "' . implode("\n", $errorMessage) . '"', 503);
     }
 
     foreach ($paymentMethods as $paymentMethod) {

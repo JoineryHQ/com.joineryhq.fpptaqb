@@ -71,6 +71,8 @@ class CRM_Fpptaqb_Sync_Mock {
    * 
    * @param Array $contribution
    *   Contribution details as built by CRM_Fpptaqb_Utils_Invoice::getInvToSync().
+   * 
+   * @throws CRM_Fpptaqb_Exception with code 503, around 20% of the time (to demo error handling in the UI).
    */
   public function pushInv($contribution) {
     // Sometimes, fail with an error.
@@ -86,6 +88,8 @@ class CRM_Fpptaqb_Sync_Mock {
    * 
    * @param Array $payment
    *   Payment details as built by CRM_Fpptaqb_Utils_Pmt::getReadyToSync().
+   * 
+   * @throws CRM_Fpptaqb_Exception with code 503, around 20% of the time (to demo error handling in the UI).
    */
   public function pushPmt($payment) {
     // Sometimes, fail with an error.
