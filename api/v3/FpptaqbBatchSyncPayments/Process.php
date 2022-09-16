@@ -24,6 +24,7 @@ function _civicrm_api3_fpptaqb_batch_sync_payments_Process_spec(&$spec) {
  *
  */
 function civicrm_api3_fpptaqb_batch_sync_payments_Process($params) {
+  $syncedIds = $heldIds = [];
   try {
     // Before we do anything, try to connect to the sync. If this fails, it should
     // throw an exception, which we will of course catch here and then return an
@@ -33,9 +34,7 @@ function civicrm_api3_fpptaqb_batch_sync_payments_Process($params) {
     // happen.
     $sync = CRM_Fpptaqb_Util::getSyncObject();
     $accounts = $sync->fetchActiveAccountsList();
-    
-    
-    $syncedIds = $heldIds = [];
+
     while ($nextId = CRM_Fpptaqb_Utils_Payment::getReadyToSyncIdNext()) {
       try {
         // We'll use the stepthru api to sync because it logs to our log table;
