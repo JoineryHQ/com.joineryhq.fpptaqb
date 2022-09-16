@@ -26,6 +26,7 @@ class CRM_Fpptaqb_Form_Report_SyncLog extends CRM_Report_Form {
         'filters' => array(
           'sort_name' => array(
             'title' => E::ts('Performed by'),
+            'type' => CRM_Utils_Type::T_STRING,
           ),          
         )
       ),
