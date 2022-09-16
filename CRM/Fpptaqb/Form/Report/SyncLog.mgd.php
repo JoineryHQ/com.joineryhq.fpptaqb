@@ -13,7 +13,7 @@ return [
       'description' => 'Report on various actions performed during sync of invoices and payments to QuickBooks',
       'class_name' => 'CRM_Fpptaqb_Form_Report_SyncLog',
       'report_url' => 'fpptaqb/synclog',
-      'component' => '',
+      'component' => 'CiviContribute',
     ],
   ],
 ];

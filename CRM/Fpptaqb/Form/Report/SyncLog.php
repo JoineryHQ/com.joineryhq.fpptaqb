@@ -2,21 +2,13 @@
 use CRM_Fpptaqb_ExtensionUtil as E;
 
 class CRM_Fpptaqb_Form_Report_SyncLog extends CRM_Report_Form {
-
-  protected $_addressField = FALSE;
-
-  protected $_emailField = FALSE;
-
-  protected $_summary = NULL;
-
-  protected $_customGroupExtends = array('Membership');
-  protected $_customGroupGroupBy = FALSE; 
   function __construct() {
     $this->_columns = array(
       'civicrm_contact' => array(
         'fields' => array(
           'sort_name' => array(
             'title' => E::ts('Performed by'),
+            'default' => TRUE,
           ),
           'id' => array(
             'no_display' => TRUE,
@@ -27,6 +19,7 @@ class CRM_Fpptaqb_Form_Report_SyncLog extends CRM_Report_Form {
           'sort_name' => array(
             'title' => E::ts('Performed by'),
             'type' => CRM_Utils_Type::T_STRING,
+            'default_op' => 'nll',
           ),          
         )
       ),
@@ -35,9 +28,11 @@ class CRM_Fpptaqb_Form_Report_SyncLog extends CRM_Report_Form {
         'fields' => array(
           'created' => array(
             'title' => E::ts('Date/Time'),
+            'default' => TRUE,
           ),
           'action' => array(
             'title' => E::ts('Action'),
+            'default' => TRUE,
             'dbAlias' => '"REPLACED IN alterDisplay()"',
           ),
           'api_entity' => array(
@@ -50,6 +45,7 @@ class CRM_Fpptaqb_Form_Report_SyncLog extends CRM_Report_Form {
           ),
           'entity_id' => array(
             'title' => E::ts('Entity ID'),
+            'default' => TRUE,
           ),
           'api_params' => array(
             'title' => E::ts('API parameters'),
@@ -59,12 +55,15 @@ class CRM_Fpptaqb_Form_Report_SyncLog extends CRM_Report_Form {
           ),
           'api_output_text' => array(
             'title' => E::ts('Result text'),
+            'default' => TRUE,
           ),
           'api_output_error_code' => array(
             'title' => E::ts('Error Code'),
+            'default' => TRUE,
           ),
           'reason' => array(
             'title' => E::ts('Reason for action'),
+            'default' => TRUE,
           ),
         ),
         'filters' => array(
