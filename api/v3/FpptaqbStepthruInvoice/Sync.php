@@ -32,7 +32,6 @@ function _civicrm_api3_fpptaqb_stepthru_invoice_Sync_spec(&$spec) {
  *
  * @see civicrm_api3_create_success
  *
- * @throws API_Exception
  */
 function civicrm_api3_fpptaqb_stepthru_invoice_Sync($params) {
   $id = CRM_Fpptaqb_Utils_Invoice::validateId($params['id']);

@@ -26,7 +26,8 @@ function _civicrm_api3_fpptaqb_stepthru_payment_Load_spec(&$spec) {
  *
  * @see civicrm_api3_create_success
  *
- * @throws API_Exception
+ * @throws API_Exception if the getReadyToSync() operation catches an exception; error code 
+ *   is "fppta-{$e->getErrorCode()}" if error code is available, else 'fppta-500'.
  */
 function civicrm_api3_fpptaqb_stepthru_payment_Load($params) {
   $id = ($params['id'] ?? CRM_Fpptaqb_Utils_Payment::getReadyToSyncIdNext());
@@ -39,8 +40,6 @@ function civicrm_api3_fpptaqb_stepthru_payment_Load($params) {
   else {
     try {
       $payment = CRM_Fpptaqb_Utils_Payment::getReadyToSync($id);
-//      var_dump($payment); die();
-
     }
     catch (CRM_Core_Exception $e) {
       $extraParams = ['values' => $params];

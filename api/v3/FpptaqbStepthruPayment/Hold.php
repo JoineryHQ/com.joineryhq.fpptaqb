@@ -27,7 +27,9 @@ function _civicrm_api3_fpptaqb_stepthru_payment_Hold_spec(&$spec) {
  *
  * @see civicrm_api3_create_success
  *
- * @throws API_Exception
+ * @throws API_Exception with code fpptaqb-404 if contribution payment can't be found.
+ * @throws API_Exception if the hold() operation catches an exception; error code 
+ *   is "fppta-{$e->getErrorCode()}" if error code is available, else 'fppta-500'.
  */
 function civicrm_api3_fpptaqb_stepthru_payment_Hold($params) {
   $id = CRM_Fpptaqb_Utils_Payment::validateId($params['id']);

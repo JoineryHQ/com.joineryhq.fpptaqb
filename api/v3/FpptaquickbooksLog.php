@@ -21,7 +21,6 @@ function _civicrm_api3_fpptaquickbooks_log_create_spec(&$spec) {
  * @return array
  *   API result descriptor
  *
- * @throws API_Exception
  */
 function civicrm_api3_fpptaquickbooks_log_create($params) {
   $params['contact_id'] = CRM_Core_Session::singleton()->getLoggedInContactID();
@@ -38,7 +37,6 @@ function civicrm_api3_fpptaquickbooks_log_create($params) {
  * @return array
  *   API result descriptor
  *
- * @throws API_Exception
  */
 function civicrm_api3_fpptaquickbooks_log_delete($params) {
   return _civicrm_api3_basic_delete(_civicrm_api3_get_BAO(__FUNCTION__), $params);
@@ -52,7 +50,6 @@ function civicrm_api3_fpptaquickbooks_log_delete($params) {
  * @return array
  *   API result descriptor
  *
- * @throws API_Exception
  */
 function civicrm_api3_fpptaquickbooks_log_get($params) {
   return _civicrm_api3_basic_get(_civicrm_api3_get_BAO(__FUNCTION__), $params, TRUE, 'FpptaquickbooksLog');

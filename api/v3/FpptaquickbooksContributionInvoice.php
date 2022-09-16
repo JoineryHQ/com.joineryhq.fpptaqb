@@ -21,7 +21,6 @@ function _civicrm_api3_fpptaquickbooks_contribution_invoice_create_spec(&$spec) 
  * @return array
  *   API result descriptor
  *
- * @throws API_Exception
  */
 function civicrm_api3_fpptaquickbooks_contribution_invoice_create($params) {
   return _civicrm_api3_basic_create(_civicrm_api3_get_BAO(__FUNCTION__), $params, 'FpptaquickbooksContributionInvoice');
@@ -35,7 +34,6 @@ function civicrm_api3_fpptaquickbooks_contribution_invoice_create($params) {
  * @return array
  *   API result descriptor
  *
- * @throws API_Exception
  */
 function civicrm_api3_fpptaquickbooks_contribution_invoice_delete($params) {
   return _civicrm_api3_basic_delete(_civicrm_api3_get_BAO(__FUNCTION__), $params);
@@ -49,7 +47,6 @@ function civicrm_api3_fpptaquickbooks_contribution_invoice_delete($params) {
  * @return array
  *   API result descriptor
  *
- * @throws API_Exception
  */
 function civicrm_api3_fpptaquickbooks_contribution_invoice_get($params) {
   return _civicrm_api3_basic_get(_civicrm_api3_get_BAO(__FUNCTION__), $params, TRUE, 'FpptaquickbooksContributionInvoice');

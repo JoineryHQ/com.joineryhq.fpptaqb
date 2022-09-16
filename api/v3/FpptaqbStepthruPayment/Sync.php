@@ -32,7 +32,10 @@ function _civicrm_api3_fpptaqb_stepthru_payment_Sync_spec(&$spec) {
  *
  * @see civicrm_api3_create_success
  *
- * @throws API_Exception
+ * @throws API_Exception with code 'fppta-404', if the contribution cannot be found.
+ * @throws API_Exception with code 'fppta-409', the contribution hash has changed.
+ * @throws API_Exception if the sync() operation catches an exception; error code 
+ *   is "fppta-{$e->getErrorCode()}" if error code is available, else 'fppta-500'.
  */
 function civicrm_api3_fpptaqb_stepthru_payment_Sync($params) {
   $id = CRM_Fpptaqb_Utils_Payment::validateId($params['id']);
