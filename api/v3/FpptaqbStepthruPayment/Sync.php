@@ -41,9 +41,11 @@ function civicrm_api3_fpptaqb_stepthru_payment_Sync($params) {
     return CRM_Fpptaqb_Util::composeApiError('Could not find payment with transaction id '. $params['id'], 'fpptaqb-404', $extraParams);
   }
 
-  $currentHash = CRM_Fpptaqb_Utils_Payment::getHash($id);
-  if ($params['hash'] != $currentHash) {
-    return CRM_Fpptaqb_Util::composeApiError('This payment transaction has changed since you viewed it. Please reload it before continuing.' . " id: $id; given hash: {$params['hash']}; curren hash: $currentHash", 'fpptaqb-409', $extraParams);
+  if ($params['hash'] != CRM_Fpptaqb_Util::getHashBypassString()) {
+    $currentHash = CRM_Fpptaqb_Utils_Payment::getHash($id);
+    if ($params['hash'] != $currentHash) {
+      return CRM_Fpptaqb_Util::composeApiError('This payment transaction has changed since you viewed it. Please reload it before continuing.', 'fpptaqb-409', $extraParams);
+    }
   }
   
   try {

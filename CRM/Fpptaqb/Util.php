@@ -137,4 +137,20 @@ class CRM_Fpptaqb_Util {
 
     return $formattedAction;
   }
+
+  /**
+   * Generate a magic string to bypass verification hash on invoice and payment
+   * syncing. This string is unique per php invocation so that it can't (reasonably)
+   * be guessed but will be reusable in a single api call, e.g. fpptaqbBatchSyncPayments.process.
+   *
+   * @staticvar string $hash
+   * @return string
+   */
+  public static function getHashBypassString() {
+    static $hash;
+    if (!isset($hash)) {
+      $hash = 'FPPTAQB_HASH_BYPASS_' . uniqid();
+    }
+    return $hash;
+  }
 }

@@ -39,15 +39,16 @@ function civicrm_api3_fpptaqb_batch_sync_payments_Process($params) {
     while ($nextId = CRM_Fpptaqb_Utils_Payment::getReadyToSyncIdNext()) {
       try {
         // We'll use the stepthru api to sync because it logs to our log table;
-        // it also requires the hash, so we'll get the hash from the utility
-        // method. (If we used the stepthru api to load the payment, it
-        // would also get us the hash, but it would also needlessly log this
-        // unattended action.)
-        $hash = CRM_Fpptaqb_Utils_Payment::getHash($nextId);
+        // it also requires a hash, but allows a hash bypass for cases such as
+        // this in which we are generating the hash bypass and using it again
+        // within the same php invocation. (If we used the stepthru api to load
+        // the payment, it would get us the actual hash, which would be valid,
+        // but it would also needlessly log this unattended load action.)
+        $hashBypass = CRM_Fpptaqb_Util::getHashBypassString();
         // Now we have the hash and the id, we can sync.
         $sync = _fpptaqb_civicrmapi('FpptaqbStepthruPayment', 'sync', [
           'id' => $nextId,
-          'hash' => $hash,
+          'hash' => $hashBypass,
         ]);
         $syncedIds[] = $nextId;
       }
