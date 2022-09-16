@@ -104,18 +104,18 @@ class CRM_Fpptaqb_Util {
   
   public static function createApiActionOptionsList() {
       return [
-      'fpptaquickbooksfinancialtypeitem:create' => E::ts('Link a Financial Type to a QuickBooks item'),
-      'fpptaquickbookscontactcustomer:create' => E::ts('Link a Contact to a QuickBooks customer'),
-      'fpptaquickbookscontributioninvoice:create' => E::ts('Record the link between a Contribution and a QuickBooks invoice'),
-      'fpptaquickbookstrxnpayment:create' => E::ts('Record the link between a Payment and a QuickBooks payment'),
-      'fpptaqbstepthruinvoice:load' => E::ts('Load a Contribution in preparation for sync to QuickBooks'),
-      'fpptaqbstepthruinvoice:sync' => E::ts('Sync a Contribution to QuickBooks'),
-      'fpptaqbstepthruinvoice:hold' => E::ts('Place a Contribution on hold'),
-      'fpptaqbstepthrupayment:load' => E::ts('Load a Payment in preparation for sync to QuickBooks'),
-      'fpptaqbstepthrupayment:sync' => E::ts('Sync a Payment to QuickBooks'),
-      'fpptaqbstepthrupayment:hold' => E::ts('Place a Payment on hold'),
-      'fpptaqbbatchsyncinvoices:process' => E::ts('Process all ready invoices for sync'),
-      'fpptaqbbatchsyncpayments:process' => E::ts('Process all ready payments for sync'),
+      'fpptaquickbooksfinancialtypeitem.create' => E::ts('Link a Financial Type to a QuickBooks item'),
+      'fpptaquickbookscontactcustomer.create' => E::ts('Link a Contact to a QuickBooks customer'),
+      'fpptaquickbookscontributioninvoice.create' => E::ts('Record the link between a Contribution and a QuickBooks invoice'),
+      'fpptaquickbookstrxnpayment.create' => E::ts('Record the link between a Payment and a QuickBooks payment'),
+      'fpptaqbstepthruinvoice.load' => E::ts('Load a Contribution in preparation for sync to QuickBooks'),
+      'fpptaqbstepthruinvoice.sync' => E::ts('Sync a Contribution to QuickBooks'),
+      'fpptaqbstepthruinvoice.hold' => E::ts('Place a Contribution on hold'),
+      'fpptaqbstepthrupayment.load' => E::ts('Load a Payment in preparation for sync to QuickBooks'),
+      'fpptaqbstepthrupayment.sync' => E::ts('Sync a Payment to QuickBooks'),
+      'fpptaqbstepthrupayment.hold' => E::ts('Place a Payment on hold'),
+      'fpptaqbbatchsyncinvoices.process' => E::ts('Process all ready invoices for sync'),
+      'fpptaqbbatchsyncpayments.process' => E::ts('Process all ready payments for sync'),
     ];
   }
   
@@ -126,7 +126,7 @@ class CRM_Fpptaqb_Util {
     $apiEntity = strtolower($apiEntity);
     $apiAction = strtolower($apiAction);
       
-    $key = "{$apiEntity}:{$apiAction}";
+    $key = "{$apiEntity}.{$apiAction}";
     $options = self::createApiActionOptionsList();
     $formattedAction = $options[$key];
 

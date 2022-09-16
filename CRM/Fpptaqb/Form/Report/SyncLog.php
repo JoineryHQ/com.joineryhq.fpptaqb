@@ -77,7 +77,7 @@ class CRM_Fpptaqb_Form_Report_SyncLog extends CRM_Report_Form {
             'type' => CRM_Utils_Type::T_STRING,
             'operatorType' => CRM_Report_Form::OP_MULTISELECT,
             'options' => CRM_Fpptaqb_Util::createApiActionOptionsList(),
-            'dbAlias' => 'concat(fpptaquickbooks_log_civireport.api_entity , ":", fpptaquickbooks_log_civireport.api_action)',
+            'dbAlias' => 'concat(fpptaquickbooks_log_civireport.api_entity , ".", fpptaquickbooks_log_civireport.api_action)',
           ),
           'entity_id' => array(
             'title' => E::ts('Entity ID'),
