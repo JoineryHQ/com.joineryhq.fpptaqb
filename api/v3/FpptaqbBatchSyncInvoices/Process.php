@@ -32,33 +32,45 @@ function civicrm_api3_fpptaqb_batch_sync_invoices_Process($params) {
     // In any case, if an exception is thrown here, no further processing will
     // happen.
     $sync = CRM_Fpptaqb_Util::getSyncObject();
-    $sync = new CRM_Fpptaqb_Sync_Mock();
     $accounts = $sync->fetchActiveAccountsList();
     
     
-    $ids = [];
+    $syncedIds = $heldIds = [];
     while ($nextId = CRM_Fpptaqb_Utils_Invoice::getReadyToSyncIdNext()) {
-      $ids[] = $nextId;
       try {
-        $nextEntity = CRM_Fpptaqb_Utils_Invoice::getReadyToSync($nextId);
-        // get hash from $nextEntity.
-        // call fpptaqb_stepthru_invoice . Sync api with $nextId and hash to perform sync
-        _fpptaqb_civicrmapi($entity, $action, $params);
+        // We'll use the stepthru api to sync because it logs to our log table;
+        // it also requires the hash, so we'll get the hash from the utility
+        // method. (If we used the stepthru api to load the contribution, it
+        // would also get us the hash, but it would also needlessly log this
+        // unattended action.)
+        $hash = CRM_Fpptaqb_Utils_Invoice::getHash($nextId);
+        // Now we have the hash and the id, we can sync.
+        $sync = _fpptaqb_civicrmapi('FpptaqbStepthruInvoice', 'sync', [
+          'id' => $nextId,
+          'hash' => $hash,
+        ]);
+        $syncedIds[] = $nextId;
       }
       catch (Exception $e) {
         // if anything goes wrong, use the hold api to place this invoice on hold,
         // and give the log_reason as whatever is in the $e->errorMessage().
         // Then move on to the next invoice.
+        $holdReason = $e->getMessage();
+        try {
+          $hold = _fpptaqb_civicrmapi('FpptaqbStepthruInvoice', 'hold', [
+           'id' => $nextId,
+           'log_reason' => 'Error encountered in sync: '. $holdReason,
+         ]);
+        }
+        catch (Exception $e) {
+          throw new CRM_Fpptaqb_Exception("Error in trying to hold contribution $nextId (hold reason was: $holdReason): " . $e->getMessage(), '500');
+        }
+        $heldIds[] = $nextId;
       }
     }
-    
-    // ALTERNATIVE: $returnValues = []; // OK, success
-    // ALTERNATIVE: $returnValues = ["Some value"]; // OK, return a single value
-
-    // Spec: civicrm_api3_create_success($values = 1, $params = [], $entity = NULL, $action = NULL)
-    return civicrm_api3_create_success($ids, $params, 'FpptaqbBatchSyncInvoices', 'Process');
+    return civicrm_api3_create_success('synced: '. json_encode($syncedIds) .  '; held: ' . json_encode($heldIds), $params, 'FpptaqbBatchSyncInvoices', 'Process');
   }
   catch (Exception $e) {
-    return CRM_Fpptaqb_Util::composeApiError($e->getMessage(), $e->getCode(), ['values' => $params, 'next' => $next]);
+    return CRM_Fpptaqb_Util::composeApiError('synced: '. json_encode($syncedIds) .  '; held: ' . json_encode($heldIds) . '; ended with error: '. $e->getMessage(), $e->getCode(), ['values' => $params, 'next' => $next]);
   }
 }
