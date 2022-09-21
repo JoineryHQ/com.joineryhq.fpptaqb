@@ -72,6 +72,39 @@ class CRM_Fpptaqb_APIHelper {
   }
 
   /**
+   * Create a quickbooks dataservice object, and run a query through it to verify
+   * that we have a valid connection; if not, recreate it and try again.
+   *
+   * @param Int $retries How many times should we re-try if needed?
+   * @return \QuickBooksOnline\API\DataService\DataService|null
+   * @throws CRM_Fpptaqb_Exception with code 503, if there's an exception in the dataService object creation.
+   */
+  public static function getDataServiceWithRetries(Int $retries=1) {
+    $retryCount = 0;
+    // We're going to try this multiple times until we can get a good query result
+    // without error, on the hope that any "AuthenticationFailed" messages from
+    // QB are just momentary.
+    while ($retryCount <= $retries) {
+      try {
+        $dataService = CRM_Fpptaqb_APIHelper::getAccountingDataServiceObject();
+        $dataService->throwExceptionOnError(FALSE);
+        $accounts = $dataService->Query("select * from Account where AccountType = 'Bank' and Active");
+      }
+      catch (Exception $e) {
+        // On any exception, prepend an explanation to the error message and throw
+        // a new exception of our own.
+        throw new CRM_Fpptaqb_Exception('Could not get QuickBooks DataService Object: ' . $e->getMessage(), 503);
+      }
+      if (!$dataService->getLastError()) {
+        // If no error, just return the dataService.
+        return $dataService;
+      }
+      // If we're still here, increment the counter and let the while loop try again.
+      $retryCount++;
+    }
+  }
+
+  /**
    * Generates data service object for accounting into QuickBooks.
    *
    * @return \QuickBooksOnline\API\DataService\DataService|null

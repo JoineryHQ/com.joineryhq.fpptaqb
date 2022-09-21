@@ -59,7 +59,7 @@ class CRM_Fpptaqb_Sync_Quickbooks {
     $contactName = $contactGet['values'][0]['display_name'];
 
     try {
-      $dataService = CRM_Fpptaqb_APIHelper::getAccountingDataServiceObject();
+      $dataService = CRM_Fpptaqb_APIHelper::getDataServiceWithRetries();
       $dataService->throwExceptionOnError(FALSE);
       $queryName = addslashes($contactName);
       $customers = $dataService->Query("select * from Customer Where DisplayName = '$queryName'");
@@ -89,7 +89,7 @@ class CRM_Fpptaqb_Sync_Quickbooks {
    */
   public function fetchCustomerDetails($customerId) {
     try {
-      $dataService = CRM_Fpptaqb_APIHelper::getAccountingDataServiceObject();
+      $dataService = CRM_Fpptaqb_APIHelper::getDataServiceWithRetries();
       $dataService->throwExceptionOnError(FALSE);
       $customer = $dataService->FindById('Customer', $customerId);
     }
@@ -146,7 +146,7 @@ class CRM_Fpptaqb_Sync_Quickbooks {
 
     // Set up the data service for QB connection.
     try {
-      $dataService = CRM_Fpptaqb_APIHelper::getAccountingDataServiceObject();
+      $dataService = CRM_Fpptaqb_APIHelper::getDataServiceWithRetries();
       $dataService->throwExceptionOnError(FALSE);
     }
     catch (Exception $e) {
@@ -218,7 +218,7 @@ class CRM_Fpptaqb_Sync_Quickbooks {
 
     // Set up the data service for QB connection.
     try {
-      $dataService = CRM_Fpptaqb_APIHelper::getAccountingDataServiceObject();
+      $dataService = CRM_Fpptaqb_APIHelper::getDataServiceWithRetries();
       $dataService->throwExceptionOnError(FALSE);
     }
     catch (Exception $e) {
@@ -257,7 +257,7 @@ class CRM_Fpptaqb_Sync_Quickbooks {
   public function fetchActiveItemsList() {
     $ret = [];
     try {
-      $dataService = CRM_Fpptaqb_APIHelper::getAccountingDataServiceObject();
+      $dataService = CRM_Fpptaqb_APIHelper::getDataServiceWithRetries();
       $dataService->throwExceptionOnError(FALSE);
       $items = $dataService->Query("select * from Item");
     }
@@ -291,7 +291,7 @@ class CRM_Fpptaqb_Sync_Quickbooks {
   public function fetchActiveAccountsList() {
     $ret = [];
     try {
-      $dataService = CRM_Fpptaqb_APIHelper::getAccountingDataServiceObject();
+      $dataService = CRM_Fpptaqb_APIHelper::getDataServiceWithRetries();
       $dataService->throwExceptionOnError(FALSE);
       $accounts = $dataService->Query("select * from Account where AccountType = 'Bank' and Active");
     }
@@ -323,7 +323,7 @@ class CRM_Fpptaqb_Sync_Quickbooks {
   public function fetchActivePaymentMethodsList() {
     $ret = [];
     try {
-      $dataService = CRM_Fpptaqb_APIHelper::getAccountingDataServiceObject();
+      $dataService = CRM_Fpptaqb_APIHelper::getDataServiceWithRetries();
       $dataService->throwExceptionOnError(FALSE);
       $paymentMethods = $dataService->Query("select * from PaymentMethod where Active");
     }
