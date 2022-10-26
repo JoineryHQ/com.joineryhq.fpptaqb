@@ -13,22 +13,45 @@ class CRM_Fpptaqb_Utils_Payment {
     $ids = [];
     $query = "
       select
-        ft.id,
-        ft.trxn_date,
-        ft.total_amount
+        t.*
       from
-        civicrm_entity_financial_trxn eft
-        inner join civicrm_financial_trxn ft on eft.financial_trxn_id = ft.id
-        inner join civicrm_financial_account fa on ft.to_financial_account_id = fa.id
-        inner join civicrm_fpptaquickbooks_contribution_invoice fci on fci.contribution_id = eft.entity_id
-           and fci.quickbooks_id is not null
-        left join civicrm_fpptaquickbooks_trxn_payment tp on tp.financial_trxn_id = ft.id
+        (
+          select
+            ft.id,
+            ft.trxn_date,
+            ft.total_amount
+          from
+            civicrm_entity_financial_trxn eft
+            inner join civicrm_financial_trxn ft on eft.financial_trxn_id = ft.id
+            inner join civicrm_financial_account fa on ft.to_financial_account_id = fa.id
+            inner join civicrm_fpptaquickbooks_contribution_invoice fci on fci.contribution_id = eft.entity_id
+            and fci.quickbooks_id is not null
+            left join civicrm_fpptaquickbooks_trxn_payment tp on tp.financial_trxn_id = ft.id
+          where
+            ft.trxn_date >= %1
+            AND ft.trxn_date <= (NOW() - INTERVAL %2 DAY)
+            and ft.is_payment
+            and eft.entity_table = 'civicrm_contribution'
+            and tp.id is null
+            and ft.total_amount > 0
+        ) t
+        -- left-join this to a list of transactions that appear to be corresponding
+        -- 'audit' entries in civicrm, e.g. where the financial type has been changed.
+        -- Such entries are recorded in pairs, have ids within 1 of each other,
+        -- have the same timestamp, and have a total_amount negative of each other.
+        -- If the potential payment record we're examining has such a matching record,
+        -- we'll treat it as an 'audit' entry and not process it as an actual payment.
+        left join civicrm_financial_trxn txn on (
+          txn.id = (t.id + 1)
+          or txn.id = (t.id - 1)
+        )
+        and txn.trxn_date = t.trxn_date
+        and txn.total_amount = (t.total_amount * -1)
       where
-        ft.trxn_date >= %1
-        AND ft.trxn_date <= (NOW() - INTERVAL %2 DAY)
-        and ft.is_payment
-        and eft.entity_table = 'civicrm_contribution'
-        and tp.id is null
+        -- We want only those transactions that are not matched.
+        txn.id is null
+      order by
+        t.trxn_date
     ";
     $queryParams = [
       '1' => [CRM_Utils_Date::isoToMysql(Civi::settings()->get('fpptaqb_minimum_date')), 'Int'],
