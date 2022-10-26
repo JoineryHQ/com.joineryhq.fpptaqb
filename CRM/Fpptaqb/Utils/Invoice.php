@@ -19,6 +19,7 @@ class CRM_Fpptaqb_Utils_Invoice {
         LEFT JOIN civicrm_fpptaquickbooks_contribution_invoice fci ON fci.contribution_id = ctrb.id
       WHERE
         ctrb.receive_date >= %1
+        AND ctrb.total_amount > 0
         AND ctrb.receive_date <= (NOW() - INTERVAL %2 DAY)
         AND fci.id IS NULL
       ORDER BY
