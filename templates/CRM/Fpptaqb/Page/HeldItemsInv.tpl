@@ -13,10 +13,16 @@
   <tbody>
   {foreach from=$rows item=row}
     <tr id="fpptaqbHeldItem-{$row.id}" class="crm-entity {cycle values="odd-row,even-row"}">
-      <td>{$row.id}</td>
+      <td><a target="_blank" href="{crmURL fb=1 p="civicrm/contact/view/contribution" q="reset=1&action=view&cid=`$row.contact_id`&id=`$row.id`"}">{$row.id}</a></td>
       <td>{$row.receive_date}</td>
-      <td>{$row.organizationName}</td>
-      <td>{$row.display_name}</td>
+      <td>
+        {if $row.organizationCid}
+          <a target="_blank" href="{crmURL fb=1 p="civicrm/contact/view" q="reset=1&cid=`$row.organizationCid`"}">{$row.organizationName}</a></td>
+        {else}
+          {$row.organizationName}
+        {/if}
+      </td>
+      <td><a target="_blank" href="{crmURL fb=1 p="civicrm/contact/view" q="reset=1&cid=`$row.contact_id`"}">{$row.display_name}</a></td>
       <td>{$row.total_amount|crmMoney}</td>
       <td>
         <a href="{crmURL fb=1 p="civicrm/fpptaqb/itemaction" q="itemaction=load&type=inv&id=`$row.id`"}" class="action-item crm-hover-button crm-popup" title="Load Invoice">Load</a>

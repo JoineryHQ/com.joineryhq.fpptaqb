@@ -15,8 +15,8 @@
   {foreach from=$rows item=row}
     <tr id="fpptaqbHeldItem-{$row.id}" class="crm-entity {cycle values="odd-row,even-row"}">
       <td>{$row.id}</td>
-      <td>{$row.contributionId}</td>
-      <td>{$row.organizationName}</td>
+      <td><a target="_blank" href="{crmURL fb=1 p="civicrm/contact/view/contribution" q="reset=1&action=view&id=`$row.contributionId`"}">{$row.contributionId}</a></td>
+      <td><a target="_blank" href="{crmURL fb=1 p="civicrm/contact/view" q="reset=1&cid=`$row.organizationCid`"}">{$row.organizationName}</a></td>
       <td>{$row.trxn_date}</td>
       <td>{$row.paymentInstrumentLabel}</td>
       <td>{$row.total_amount|crmMoney}</td>

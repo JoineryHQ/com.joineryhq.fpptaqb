@@ -221,6 +221,7 @@ class CRM_Fpptaqb_Utils_Payment {
           'id' => $organizationCid,
           'return' => 'display_name',
         ]),
+        'organizationCid' => $organizationCid,
         'contributionId' => $contributionId,
         'paymentInstrumentLabel' => CRM_Core_PseudoConstant::getLabel('CRM_Core_BAO_FinancialTrxn', 'payment_instrument_id', $financialTrxn['payment_instrument_id']),
       ];
