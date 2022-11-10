@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+
+<table>
+  <base>CRM/Fpptaqb</base>
+  <class>FpptaquickbooksTrxnCreditmemo</class>
+  <name>civicrm_fpptaquickbooks_trxn_creditmemo</name>
+  <comment>Credit memos for sync with QuickBooks, per refunds in CiviCRM</comment>
+  <log>true</log>
+
+  <field>
+    <name>id</name>
+    <type>int unsigned</type>
+    <required>true</required>
+    <comment>Unique FpptaquickbooksTrxnCreditmemo ID</comment>
+    <html>
+      <type>Number</type>
+    </html>
+  </field>
+  <primaryKey>
+    <name>id</name>
+    <autoincrement>true</autoincrement>
+  </primaryKey>
+
+  <field>
+    <name>financial_trxn_id</name>
+    <type>int unsigned</type>
+    <comment>FK to civicrm_financial_trxn</comment>
+    <unique>true</unique>
+  </field>
+  <index>
+    <name>UI_fpptaquickbooks_trxn_payment_financial_trxn_id</name>
+    <fieldName>financial_trxn_id</fieldName>
+    <unique>true</unique>
+  </index>
+  <foreignKey>
+    <name>financial_trxn_id</name>
+    <table>civicrm_financial_trxn</table>
+    <key>id</key>
+    <onDelete>CASCADE</onDelete>
+  </foreignKey>
+
+  <field>
+    <name>quickbooks_doc_number</name>
+    <title>Credit Memo No.</title>
+    <required>true</required>
+    <type>varchar</type>
+    <length>21</length>
+    <unique>true</unique>
+    <comment>Unique Credit Memo number for QuickBooks</comment>
+  </field>
+  <index>
+    <name>UI_quickbooks_credit_note_doc_number</name>
+    <fieldName>quickbooks_doc_number</fieldName>
+    <unique>true</unique>
+  </index>
+
+  <field>
+    <name>quickbooks_customer_memo</name>
+    <title>Message displayed on credit memo</title>
+    <type>varchar</type>
+    <length>1000</length>
+    <comment>Message or comment on QuickBooks credit memo</comment>
+  </field>
+
+  <field>
+    <name>quickbooks_id</name>
+    <type>int</type>
+    <default>-1</default>
+    <comment>Quickbooks credit memo trxn ID (-1=pending sync; null=held)</comment>
+  </field>
+
+  <field>
+    <name>is_mock</name>
+    <title>Is this a mock sync?</title>
+    <import>true</import>
+    <export>true</export>
+    <type>boolean</type>
+    <required>true</required>
+    <default>0</default>
+  </field>
+
+</table>

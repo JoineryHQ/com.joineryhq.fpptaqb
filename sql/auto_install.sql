@@ -18,6 +18,8 @@
 SET FOREIGN_KEY_CHECKS=0;
 
 DROP TABLE IF EXISTS `civicrm_fpptaquickbooks_trxn_payment`;
+DROP TABLE IF EXISTS `civicrm_fpptaquickbooks_trxn_creditmemo_line`;
+DROP TABLE IF EXISTS `civicrm_fpptaquickbooks_trxn_creditmemo`;
 DROP TABLE IF EXISTS `civicrm_fpptaquickbooks_log`;
 DROP TABLE IF EXISTS `civicrm_fpptaquickbooks_financialtype_item`;
 DROP TABLE IF EXISTS `civicrm_fpptaquickbooks_contribution_invoice`;
@@ -106,6 +108,45 @@ CREATE TABLE `civicrm_fpptaquickbooks_log` (
   `reason` varchar(255) COMMENT 'Reason for this action, as given by the API caller',
   PRIMARY KEY (`id`),
   CONSTRAINT FK_civicrm_fpptaquickbooks_log_contact_id FOREIGN KEY (`contact_id`) REFERENCES `civicrm_contact`(`id`) ON DELETE CASCADE
+)
+ENGINE=InnoDB;
+
+-- /*******************************************************
+-- *
+-- * civicrm_fpptaquickbooks_trxn_creditmemo
+-- *
+-- * Credit memos for sync with QuickBooks, per refunds in CiviCRM
+-- *
+-- *******************************************************/
+CREATE TABLE `civicrm_fpptaquickbooks_trxn_creditmemo` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT COMMENT 'Unique FpptaquickbooksTrxnCreditmemo ID',
+  `financial_trxn_id` int unsigned COMMENT 'FK to civicrm_financial_trxn',
+  `quickbooks_doc_number` varchar(21) NOT NULL COMMENT 'Unique Credit Memo number for QuickBooks',
+  `quickbooks_customer_memo` varchar(1000) COMMENT 'Message or comment on QuickBooks credit memo',
+  `quickbooks_id` int DEFAULT -1 COMMENT 'Quickbooks credit memo trxn ID (-1=pending sync; null=held)',
+  `is_mock` tinyint NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `UI_fpptaquickbooks_trxn_payment_financial_trxn_id`(financial_trxn_id),
+  UNIQUE INDEX `UI_quickbooks_credit_note_doc_number`(quickbooks_doc_number),
+  CONSTRAINT FK_civicrm_fpptaquickbooks_trxn_creditmemo_financial_trxn_id FOREIGN KEY (`financial_trxn_id`) REFERENCES `civicrm_financial_trxn`(`id`) ON DELETE CASCADE
+)
+ENGINE=InnoDB;
+
+-- /*******************************************************
+-- *
+-- * civicrm_fpptaquickbooks_trxn_creditmemo_line
+-- *
+-- * FIXME
+-- *
+-- *******************************************************/
+CREATE TABLE `civicrm_fpptaquickbooks_trxn_creditmemo_line` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT COMMENT 'Unique FpptaquickbooksTrxnCreditmemoLine ID',
+  `creditmemo_id` int unsigned COMMENT 'FK to Credit Memo',
+  `ft_id` int unsigned COMMENT 'FK to Financial Type',
+  `total_amount` decimal(20,2) NOT NULL COMMENT 'Total amount of to be applied to a line item for the given financial type.',
+  PRIMARY KEY (`id`),
+  CONSTRAINT FK_civicrm_fpptaquickbooks_trxn_creditmemo_line_creditmemo_id FOREIGN KEY (`creditmemo_id`) REFERENCES `civicrm_fpptaquickbooks_trxn_creditmemo`(`id`) ON DELETE CASCADE,
+  CONSTRAINT FK_civicrm_fpptaquickbooks_trxn_creditmemo_line_ft_id FOREIGN KEY (`ft_id`) REFERENCES `civicrm_financial_type`(`id`) ON DELETE CASCADE
 )
 ENGINE=InnoDB;
 

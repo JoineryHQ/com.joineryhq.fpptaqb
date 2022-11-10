@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+
+<table>
+  <base>CRM/Fpptaqb</base>
+  <class>FpptaquickbooksTrxnCreditmemoLine</class>
+  <name>civicrm_fpptaquickbooks_trxn_creditmemo_line</name>
+  <comment>FIXME</comment>
+  <log>true</log>
+
+  <field>
+    <name>id</name>
+    <type>int unsigned</type>
+    <required>true</required>
+    <comment>Unique FpptaquickbooksTrxnCreditmemoLine ID</comment>
+    <html>
+      <type>Number</type>
+    </html>
+  </field>
+  <primaryKey>
+    <name>id</name>
+    <autoincrement>true</autoincrement>
+  </primaryKey>
+
+  <field>
+    <name>creditmemo_id</name>
+    <type>int unsigned</type>
+    <comment>FK to Credit Memo</comment>
+  </field>
+  <foreignKey>
+    <name>creditmemo_id</name>
+    <table>civicrm_fpptaquickbooks_trxn_creditmemo</table>
+    <key>id</key>
+    <onDelete>CASCADE</onDelete>
+  </foreignKey>
+
+  <field>
+    <name>ft_id</name>
+    <type>int unsigned</type>
+    <comment>FK to Financial Type</comment>
+  </field>
+  <foreignKey>
+    <name>ft_id</name>
+    <table>civicrm_financial_type</table>
+    <key>id</key>
+    <onDelete>CASCADE</onDelete>
+  </foreignKey>
+  
+  <field>
+    <name>total_amount</name>
+    <type>decimal</type>
+    <required>true</required>
+    <import>true</import>
+    <dataPattern>/^\d+(\.\d{2})?$/</dataPattern>
+    <comment>Total amount of to be applied to a line item for the given financial type.</comment>
+  </field>
+  
+</table>
