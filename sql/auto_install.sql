@@ -18,7 +18,6 @@
 SET FOREIGN_KEY_CHECKS=0;
 
 DROP TABLE IF EXISTS `civicrm_fpptaquickbooks_trxn_payment`;
-DROP TABLE IF EXISTS `civicrm_fpptaquickbooks_trxn_creditnote`;
 DROP TABLE IF EXISTS `civicrm_fpptaquickbooks_log`;
 DROP TABLE IF EXISTS `civicrm_fpptaquickbooks_financialtype_item`;
 DROP TABLE IF EXISTS `civicrm_fpptaquickbooks_contribution_invoice`;
@@ -107,21 +106,6 @@ CREATE TABLE `civicrm_fpptaquickbooks_log` (
   `reason` varchar(255) COMMENT 'Reason for this action, as given by the API caller',
   PRIMARY KEY (`id`),
   CONSTRAINT FK_civicrm_fpptaquickbooks_log_contact_id FOREIGN KEY (`contact_id`) REFERENCES `civicrm_contact`(`id`) ON DELETE CASCADE
-)
-ENGINE=InnoDB;
-
--- /*******************************************************
--- *
--- * civicrm_fpptaquickbooks_trxn_creditnote
--- *
--- * FIXME
--- *
--- *******************************************************/
-CREATE TABLE `civicrm_fpptaquickbooks_trxn_creditnote` (
-  `id` int unsigned NOT NULL AUTO_INCREMENT COMMENT 'Unique FpptaquickbooksTrxnCreditnote ID',
-  `contact_id` int unsigned COMMENT 'FK to Contact',
-  PRIMARY KEY (`id`),
-  CONSTRAINT FK_civicrm_fpptaquickbooks_trxn_creditnote_contact_id FOREIGN KEY (`contact_id`) REFERENCES `civicrm_contact`(`id`) ON DELETE CASCADE
 )
 ENGINE=InnoDB;
 
