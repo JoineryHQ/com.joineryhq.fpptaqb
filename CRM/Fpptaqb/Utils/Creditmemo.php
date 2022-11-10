@@ -2,7 +2,7 @@
 use CRM_Fpptaqb_ExtensionUtil as E;
 
 
-class CRM_Fpptaqb_Utils_Creditnote {
+class CRM_Fpptaqb_Utils_Creditmemo {
 
   /**
    * Get a list of IDs for paymeents which are ready to be synced.
