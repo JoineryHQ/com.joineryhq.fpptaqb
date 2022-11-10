@@ -5,142 +5,101 @@ use CRM_Fpptaqb_ExtensionUtil as E;
 class CRM_Fpptaqb_Utils_Creditmemo {
 
   /**
-   * Get a list of IDs for paymeents which are ready to be synced.
+   * Get a list of IDs for creditmemos which are ready to be synced.
    *
    * @return Array
    */
   public static function getReadyToSyncIds() {
-    throw new CRM_Fpptaqb_Exception('Method '. __METHOD__ . ' not yet ready.');
     $ids = [];
     $query = "
-      select
-        t.*
+      select cm.id
       from
-        (
-          select
-            ft.id,
-            ft.trxn_date,
-            ft.total_amount
-          from
-            civicrm_entity_financial_trxn eft
-            inner join civicrm_financial_trxn ft on eft.financial_trxn_id = ft.id
-            inner join civicrm_financial_account fa on ft.to_financial_account_id = fa.id
-            inner join civicrm_fpptaquickbooks_contribution_invoice fci on fci.contribution_id = eft.entity_id
-            and fci.quickbooks_id is not null
-            left join civicrm_fpptaquickbooks_trxn_payment tp on tp.financial_trxn_id = ft.id
-          where
-            ft.trxn_date >= %1
-            AND ft.trxn_date <= (NOW() - INTERVAL %2 DAY)
-            and ft.is_payment
-            and eft.entity_table = 'civicrm_contribution'
-            and tp.id is null
-            and ft.total_amount > 0
-        ) t
-        -- left-join this to a list of transactions that appear to be corresponding
-        -- 'audit' entries in civicrm, e.g. where the financial type has been changed.
-        -- Such entries are recorded in pairs, have ids within 1 of each other,
-        -- have the same timestamp, and have a total_amount negative of each other.
-        -- If the potential payment record we're examining has such a matching record,
-        -- we'll treat it as an 'audit' entry and not process it as an actual payment.
-        left join civicrm_financial_trxn txn on (
-          txn.id = (t.id + 1)
-          or txn.id = (t.id - 1)
-        )
-        and txn.trxn_date = t.trxn_date
-        and txn.total_amount = (t.total_amount * -1)
-      where
-        -- We want only those transactions that are not matched.
-        txn.id is null
+        civicrm_fpptaquickbooks_trxn_creditmemo cm
+        inner join civicrm_financial_trxn ft on cm.financial_trxn_id = ft.id
+        inner join civicrm_entity_financial_trxn eft on eft.financial_trxn_id = cm.financial_trxn_id
+        inner join civicrm_fpptaquickbooks_contribution_invoice fci on fci.contribution_id = eft.entity_id
+          and fci.quickbooks_id is not null
+      where 
+        cm.quickbooks_id = -1
+        and eft.entity_table = 'civicrm_contribution'
       order by
-        t.trxn_date
+        ft.trxn_date
     ";
-    $queryParams = [
-      '1' => [CRM_Utils_Date::isoToMysql(Civi::settings()->get('fpptaqb_minimum_date')), 'Int'],
-      '2' => [CRM_Utils_Date::isoToMysql(Civi::settings()->get('fpptaqb_sync_wait_days')), 'Int'],
-    ];
     $dao = CRM_Core_DAO::executeQuery($query, $queryParams);
     $ids = CRM_Utils_Array::collect('id', $dao->fetchAll());
     return $ids;
   }
 
   /**
-   * For all refunds which are ready to be synced, get the first available one.
+   * For all creditmemos which are ready to be synced, get the first available one.
    *
    * @return Int
    */
   public static function getReadyToSyncIdNext() {
-    throw new CRM_Fpptaqb_Exception('Method '. __METHOD__ . ' not yet ready.');
     $ids = self::getReadyToSyncIds();
     return $ids[0];
   }
 
   /**
-   * For a given financialTrxn ID, get an array of all relevant properties for syncing.
+   * For a given creditmemo, get an array of all relevant properties for syncing.
    *
    * @return Array
-   * @throws CRM_Fpptaqb_Exception with code 404 if contribution payment can't be found
+   * @throws CRM_Fpptaqb_Exception with code 404 if creditmemo can't be found
    */
-  public static function getReadyToSync(int $financialTrxnId) {
-    throw new CRM_Fpptaqb_Exception('Method '. __METHOD__ . ' not yet ready.');
+  public static function getReadyToSync(int $creditmemoId) {
     static $cache = [];
-    if (!isset($cache[$financialTrxnId])) {
-      $financialTrxnCount = _fpptaqb_civicrmapi('FinancialTrxn', 'getCount', [
-        'id' => $financialTrxnId,
-      ]);
+    if (!isset($cache[$creditmemoId])) {
 
-      if (!$financialTrxnCount) {
-        throw new CRM_Fpptaqb_Exception('Payment not found', 404);
+      if (!self::validateId($creditmemoId)) {
+        throw new CRM_Fpptaqb_Exception('Credit Memo not found', 404);
       }
 
-      $financialTrxn = _fpptaqb_civicrmapi('FinancialTrxn', 'getSingle', [
-        'id' => $financialTrxnId,
+      $creditmemo = _fpptaqb_civicrmapi('FpptaquickbooksTrxnCreditmemo', 'getSingle', [
+        'id' => $creditmemoId,
       ]);
+      
       $contributionId = _fpptaqb_civicrmapi('EntityFinancialTrxn', 'getValue', [
         'entity_table' => "civicrm_contribution",
-        'financial_trxn_id' => $financialTrxnId,
+        'financial_trxn_id' => $creditmemo['financial_trxn_id'],
         'return' => 'entity_id'
       ]);
-
-      $contribution = _fpptaqb_civicrmapi('Contribution', 'getSingle', ['id' => $contributionId]);
 
       $organizationCid = CRM_Fpptaqb_Utils_Invoice::getAttributedContactId($contributionId);
       $qbCustomerId = CRM_Fpptaqb_Utils_Quickbooks::getCustomerIdForContact($organizationCid);
       $qbCustomerDetails = CRM_Fpptaqb_Utils_Quickbooks::getCustomerDetails($qbCustomerId);
-
-      // Record the synced QB invoice ID, if any.
-      $qbInvGet = _fpptaqb_civicrmapi('FpptaquickbooksContributionInvoice', 'get', [
-        'sequential' => TRUE,
-        'contribution_id' => $contributionId,
-        'return' => 'quickbooks_id',
+      
+      $financialTrxnDate = _fpptaqb_civicrmapi('FinancialTrxn', 'getValue', [
+        'id' => $creditmemo['financial_trxn_id'],
+        'return' => 'trxn_date'
       ]);
-      if ($qbInvGet['count']) {
-        $qbInvId = $qbInvGet['values'][0]['quickbooks_id'];
-      }
-      else {
-        $qbInvId = E::ts('(No synced QuickBooks invoice found)');
-      }
+      
+      $lineItemsGet = _fpptaqb_civicrmapi('FpptaquickbooksTrxnCreditmemoLine', 'get', [
+        'sequential' => 1,
+        'creditmemo_id' => $creditmemoId,
+        'api.FinancialType.get' => ['return' => ["name"]],
+      ]);
+      $lineItems = $lineItemsGet['values'];
+      $qbLineItems = [];
+      foreach ($lineItems as &$lineItem) {
+        $lineItem['financialType'] = $lineItem['api.FinancialType.get']['values'][0]['name'];
+        $financialTypeId = $lineItem['api.FinancialType.get']['values'][0]['id'];
+        if ((float)$lineItem['total_amount'] > 0) {
+          $lineItem['qbItemDetails'] = CRM_Fpptaqb_Utils_Quickbooks::getItemDetails($financialTypeId);
+          $qbLineItems[] = $lineItem;
+        }
+        else {
+          $lineItem['qbItemDetails'] = CRM_Fpptaqb_Utils_Quickbooks::getNullItem();
+        }
 
-      // Define a value for QuickBooks "Reference No." field on this payment.
-      switch($financialTrxn['payment_instrument_id']) {
-        // EFT
-        case '5';
-          $financialTrxn['qbReferenceNo'] = ($financialTrxn['trxn_id'] ?? '');
-          break;
-        // Check
-        case '4';
-          $financialTrxn['qbReferenceNo'] = ($financialTrxn['check_number'] ?? '');
-          break;
-        // Credit card or Debit card:
-        case '1';
-        case '2';
-          $financialTrxn['qbReferenceNo'] = ($financialTrxn['pan_truncation'] ?? '');
-          break;
+        // If we have no qbItem, it means this is a non-zero line item, and that
+        // no corresponding active qbItem was found, so we can't proceed. Throw
+        // an exception.
+        if (empty($lineItem['qbItemDetails'])) {
+          throw new CRM_Fpptaqb_Exception(E::ts('QuickBooks item not found for financial type: %1; is the Financial Type properly configured?', ['%1' => $lineItem['financialType']]), 503);
+        }
       }
-
-      $qbDepositToAccountId = (Civi::settings()->get('fpptaqb_pmt_deposit_to_account_id') ?? NULL);
-
-      $financialTrxn += [
-        'contributionCid' => $contribution['contact_id'],
+      $creditmemo += [
+        'qbLineItems' => $qbLineItems,
         'organizationCid' => $organizationCid,
         'organizationName' => _fpptaqb_civicrmapi('Contact', 'getValue', [
           'id' => $organizationCid,
@@ -149,46 +108,12 @@ class CRM_Fpptaqb_Utils_Creditmemo {
         'contributionId' => $contributionId,
         'qbCustomerName' => $qbCustomerDetails['DisplayName'],
         'qbCustomerId' => $qbCustomerId,
-        'qbInvNumber' => CRM_Fpptaqb_Utils_Quickbooks::prepInvNumber($contribution['invoice_number']),
-        'qbInvId' => $qbInvId,
-        'qbDepositToAccountId' => $qbDepositToAccountId,
-        'qbDepositToAccountLabel' => CRM_Fpptaqb_Utils_Quickbooks::getAccountOptions()[$qbDepositToAccountId],
-        'paymentInstrumentLabel' => CRM_Core_PseudoConstant::getLabel('CRM_Core_BAO_FinancialTrxn', 'payment_instrument_id', $financialTrxn['payment_instrument_id']),
-        'cardTypeLabel' => CRM_Core_PseudoConstant::getLabel('CRM_Financial_DAO_FinancialTrxn', 'card_type_id', $financialTrxn['card_type_id']),
+        'trxn_date' => $financialTrxnDate,
       ];
-      self::appendQbPaymentMethod($financialTrxn);
-      $cache[$financialTrxnId] = $financialTrxn;
+      
+      $cache[$creditmemoId] = $creditmemo;
     }
-    return $cache[$financialTrxnId];
-  }
-
-  public static function appendQbPaymentMethod(&$financialTrxn) {
-    throw new CRM_Fpptaqb_Exception('Method '. __METHOD__ . ' not yet ready.');
-    $cardType = ($financialTrxn['card_type_id'] ?? NULL);
-    $crmPaymentMethodId = ($financialTrxn['payment_instrument_id'] ?? NULL);
-    $paymentMethodRules = (json_decode(Civi::settings()->get('fpptaqb_qb_payment_method_rules'), TRUE) ?? []);
-
-    foreach ($paymentMethodRules as $paymentMethodRule) {
-      if (
-        (
-          $paymentMethodRule['crmPaymentMethod'] == 0
-          || $paymentMethodRule['crmPaymentMethod'] == $crmPaymentMethodId
-        )
-        && (
-          $paymentMethodRule['cardType'] == 0
-          || $paymentMethodRule['cardType'] == $cardType
-        )
-      ) {
-        $qbPaymentMethodId = $paymentMethodRule['qbPaymentMethod'];
-        $sync = CRM_Fpptaqb_Util::getSyncObject();
-        $qbPaymentMethod = $sync->fetchPaymentMethodById($qbPaymentMethodId);
-        if ($qbPaymentMethod) {
-          $financialTrxn['qbPaymentMethodId'] = $qbPaymentMethodId;
-          $financialTrxn['qbPaymentMethodLabel'] = $qbPaymentMethod['Name'];
-        }
-        break;
-      }
-    }
+    return $cache[$creditmemoId];
   }
 
   /**
@@ -207,7 +132,7 @@ class CRM_Fpptaqb_Utils_Creditmemo {
       ]);
 
       if (!$financialTrxnCount) {
-        throw new CRM_Fpptaqb_Exception('Payment not found', 404);
+        throw new CRM_Fpptaqb_Exception('Credit Memo not found', 404);
       }
 
       $financialTrxn = _fpptaqb_civicrmapi('FinancialTrxn', 'getSingle', [
@@ -261,19 +186,20 @@ class CRM_Fpptaqb_Utils_Creditmemo {
   }
 
   /**
-   * For a given contribution id, check that the contribution exists.
+   * For a given creditmemo id, check that the contribution exists.
    *
-   * @param int $financialTrxnId
+   * @param int $creditmemoId
    *
-   * @return boolean|int FALSE if not valid; otherwise the given $financialTrxnId.
+   * @return boolean|int FALSE if not valid; otherwise the given $creditmemoId.
    */
-  public static function validateId($financialTrxnId) {
-    throw new CRM_Fpptaqb_Exception('Method '. __METHOD__ . ' not yet ready.');
-    $count = _fpptaqb_civicrmapi('FinancialTrxn', 'getCount', [
-      'id' => $financialTrxnId,
+  public static function validateId($creditmemoId) {
+
+    $creditmemoCount = _fpptaqb_civicrmapi('FpptaquickbooksTrxnCreditmemo', 'getCount', [
+      'id' => $creditmemoId,
     ]);
-    if ($count) {
-      return $financialTrxnId;
+
+    if ($creditmemoCount) {
+      return $creditmemoId;
     }
     else {
       return FALSE;
@@ -281,41 +207,38 @@ class CRM_Fpptaqb_Utils_Creditmemo {
   }
 
   /**
-   * For a given contribution id, mark it on hold.
+   * For a given creditmemo id, mark it on hold.
    *
-   * @param int $trxnId
+   * @param int $creditmemoId
    *
    * @return void
    */
-  public static function hold(int $trxnId) {
-    throw new CRM_Fpptaqb_Exception('Method '. __METHOD__ . ' not yet ready.');
+  public static function hold(int $creditmemoId) {
     // Log the contribution-invoice connection
-    $result = _fpptaqb_civicrmapi('FpptaquickbooksTrxnPayment', 'create', [
-      'financial_trxn_id' => $trxnId,
+    $result = _fpptaqb_civicrmapi('FpptaquickbooksTrxnCreditmemo', 'create', [
+      'id' => $creditmemoId,
       'quickbooks_id' => 'null',
     ]);
   }
 
-  public static function getHash($trxnId) {
-    throw new CRM_Fpptaqb_Exception('Method '. __METHOD__ . ' not yet ready.');
-    $payment = self::getReadyToSync($trxnId);
-    return sha1(json_encode($payment));
+  public static function getHash($creditmemoId) {
+    $creditmemo = self::getReadyToSync($creditmemoId);
+    return sha1(json_encode($creditmemo));
   }
 
-  public static function sync($trxnId) {
-    throw new CRM_Fpptaqb_Exception('Method '. __METHOD__ . ' not yet ready.');
-    $payment = self::getReadyToSync($trxnId);
+  public static function sync($creditmemoId) {
+    $creditmemo = self::getReadyToSync($creditmemoId);
     $sync = CRM_Fpptaqb_Util::getSyncObject();
-    $qbPmtId = $sync->pushPmt($payment);
+    $qbCreditmemoId = $sync->pushCreditmemo($creditmemo);
 
     // Log the trxn-payment connection
-    $result = _fpptaqb_civicrmapi('FpptaquickbooksTrxnPayment', 'create', [
-      'financial_trxn_id' => $trxnId,
-      'quickbooks_id' => $qbPmtId,
+    $result = _fpptaqb_civicrmapi('FpptaquickbooksTrxnCreditmemo', 'create', [
+      'id' => $creditmemoId,
+      'quickbooks_id' => $qbCreditmemoId,
       'is_mock' => $sync->isMock(),
     ]);
 
-    return $qbPmtId;
+    return $qbCreditmemoId;
   }
 
   public static function getStepthruStatistics() {

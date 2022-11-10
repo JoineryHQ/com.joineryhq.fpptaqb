@@ -100,6 +100,23 @@ class CRM_Fpptaqb_Sync_Mock {
     return rand(1000, 9999);
   }
   
+  /**
+   * Given a creditmemo, push it to QB via api.
+   * 
+   * @param Array $creditmemo
+   *   Creditmemo details as built by CRM_Fpptaqb_Utils_Creditmemo::getReadyToSync().
+   * 
+   * @throws CRM_Fpptaqb_Exception with code 503, around 20% of the time (to demo error handling in the UI).
+   */
+  public function pushCreditmemo($creditmemo) {
+    // Sometimes, fail with an error.
+    if (self::failRandom(20)) {
+      throw new CRM_Fpptaqb_Exception('MOCK sync: this error happens around 20% of the time.', 503);
+    }
+
+    return rand(1000, 9999);
+  }
+  
   public function fetchItemById($id) {
     // In LIVE sync this should probably be an actual live API query, but in
     // this mock we'll just use the static values from self::fetchActiveItemsList().

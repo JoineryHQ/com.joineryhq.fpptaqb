@@ -240,6 +240,71 @@ class CRM_Fpptaqb_Sync_Quickbooks {
     return $pmtAdded->Id;
   }
 
+  /**
+   * Given a creditmemo, push it to QB via api.
+   *
+   * @param Array $creditmemo
+   *   Creditmemo details as built by CRM_Fpptaqb_Utils_Creditmemo::getReadyToSync().
+   *
+   * @return Int QuickBooks internal creditmemo id.
+   * 
+   * @throws CRM_Fpptaqb_Exception with code 503, if quickbooks dataservice object creation throws an exception.
+   * @throws CRM_Fpptaqb_Exception with code 503, if there's an error adding the creditmemo in quickbooks.
+   */
+  public function pushCreditmemo($creditmemo) {
+
+    // Construct the array of relevant creditmemo data for QB payment creation.
+    // Reference: https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/creditmemo#create-a-credit-memo
+    $creditmemoParams = [
+      "CustomerRef" => [
+        "value" => $creditmemo['qbCustomerId'],
+      ],
+      "CustomerMemo" => [
+       "value" => $creditmemo['quickbooks_customer_memo'],
+      ],
+      "DocNumber" => $creditmemo['quickbooks_doc_number'],
+      "TxnDate" => $creditmemo['trxn_date'],
+      'Line' => [],
+    ];
+    foreach ($creditmemo['qbLineItems'] as $qbLineItem) {
+      $creditmemoParams['Line'][] = [
+        'DetailType' => 'SalesItemLineDetail',
+        'Amount' => $qbLineItem['total_amount'],
+        'SalesItemLineDetail' => [
+          "ServiceDate" => $creditmemo['trxn_date'],
+          'Qty' => 1,
+          'UnitPrice' => $qbLineItem['total_amount'],
+          'ItemRef' => [
+            'value' => $qbLineItem['qbItemDetails']['Id'],
+          ],
+        ],
+      ];
+    }
+
+    // Set up the data service for QB connection.
+    try {
+      $dataService = CRM_Fpptaqb_APIHelper::getAccountingDataServiceObject();
+      $dataService->throwExceptionOnError(FALSE);
+    }
+    catch (Exception $e) {
+      throw new CRM_Fpptaqb_Exception('Could not get QuickBooks DataService Object: ' . $e->getMessage(), 503);
+    }
+    // Prep the creditmemo object and then create creditmemo in QuickBooks.
+    // Reference: https://intuit.github.io/QuickBooks-V3-PHP-SDK/quickstart.html#create-new-resources-post
+
+    // Create the creditmemo  entity object based on params.
+    $creditmemoEntity = \QuickBooksOnline\API\Facades\CreditMemo::create($creditmemoParams);
+    // Send the payment entity to the data service 'add' medthod.
+    $creditmemoAdded = $dataService->Add($creditmemoEntity);
+
+    if ($lastError = $dataService->getLastError()) {
+      $errorMessage = CRM_Fpptaqb_APIHelper::parseErrorResponse($lastError);
+      throw new CRM_Fpptaqb_Exception('QuickBooks error: "' . implode("\n", $errorMessage) . '"', 503);
+    }
+    // Return the QB payment ID.
+    return $creditmemoAdded->Id;
+  }
+
   public function fetchItemById($id) {
     if (!isset($this->items)) {
       $this->items = $this->fetchActiveItemsList();
