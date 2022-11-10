@@ -49,7 +49,7 @@
     <comment>Unique Credit Memo number for QuickBooks</comment>
   </field>
   <index>
-    <name>UI_quickbooks_credit_note_doc_number</name>
+    <name>UI_quickbooks_credit_memo_doc_number</name>
     <fieldName>quickbooks_doc_number</fieldName>
     <unique>true</unique>
   </index>

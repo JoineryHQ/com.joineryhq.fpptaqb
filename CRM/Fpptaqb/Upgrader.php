@@ -156,7 +156,7 @@ class CRM_Fpptaqb_Upgrader extends CRM_Fpptaqb_Upgrader_Base {
         `is_mock` tinyint NOT NULL DEFAULT 0,
         PRIMARY KEY (`id`),
         UNIQUE INDEX `UI_fpptaquickbooks_trxn_payment_financial_trxn_id`(financial_trxn_id),
-        UNIQUE INDEX `UI_quickbooks_credit_note_doc_number`(quickbooks_doc_number),
+        UNIQUE INDEX `UI_quickbooks_credit_memo_doc_number`(quickbooks_doc_number),
         CONSTRAINT FK_civicrm_fpptaquickbooks_trxn_creditmemo_financial_trxn_id FOREIGN KEY (`financial_trxn_id`) REFERENCES `civicrm_financial_trxn`(`id`) ON DELETE CASCADE
       )
       ENGINE=InnoDB;
