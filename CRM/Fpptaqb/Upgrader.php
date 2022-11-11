@@ -152,7 +152,7 @@ class CRM_Fpptaqb_Upgrader extends CRM_Fpptaqb_Upgrader_Base {
         `financial_trxn_id` int unsigned COMMENT 'FK to civicrm_financial_trxn',
         `quickbooks_doc_number` varchar(21) NOT NULL COMMENT 'Unique Credit Memo number for QuickBooks',
         `quickbooks_customer_memo` varchar(1000) COMMENT 'Message or comment on QuickBooks credit memo',
-        `quickbooks_id` int DEFAULT -1 COMMENT 'Quickbooks credit memo trxn ID (-1=pending sync; null=held)',
+        `quickbooks_id` int unsigned DEFAULT 0 COMMENT 'Quickbooks credit memo trxn ID (0=pending sync; null=held)',
         `is_mock` tinyint NOT NULL DEFAULT 0,
         PRIMARY KEY (`id`),
         UNIQUE INDEX `UI_fpptaquickbooks_trxn_payment_financial_trxn_id`(financial_trxn_id),

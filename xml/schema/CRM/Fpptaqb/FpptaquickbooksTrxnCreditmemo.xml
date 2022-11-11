@@ -64,9 +64,9 @@
 
   <field>
     <name>quickbooks_id</name>
-    <type>int</type>
-    <default>-1</default>
-    <comment>Quickbooks credit memo trxn ID (-1=pending sync; null=held)</comment>
+    <type>int unsigned</type>
+    <default>0</default>
+    <comment>Quickbooks credit memo trxn ID (0=pending sync; null=held)</comment>
   </field>
 
   <field>
