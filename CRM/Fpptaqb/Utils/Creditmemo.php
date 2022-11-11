@@ -186,7 +186,8 @@ class CRM_Fpptaqb_Utils_Creditmemo {
   }
 
   /**
-   * For a given creditmemo id, check that the contribution exists.
+   * For a given creditmemo id, check that the creditmemo record exists and is
+   * pending sync.
    *
    * @param int $creditmemoId
    *
@@ -196,6 +197,7 @@ class CRM_Fpptaqb_Utils_Creditmemo {
 
     $creditmemoCount = _fpptaqb_civicrmapi('FpptaquickbooksTrxnCreditmemo', 'getCount', [
       'id' => $creditmemoId,
+      'quickbooks_id' => 0,
     ]);
 
     if ($creditmemoCount) {
