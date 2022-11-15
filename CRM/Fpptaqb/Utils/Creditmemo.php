@@ -20,11 +20,17 @@ class CRM_Fpptaqb_Utils_Creditmemo {
         inner join civicrm_fpptaquickbooks_contribution_invoice fci on fci.contribution_id = eft.entity_id
           and fci.quickbooks_id is not null
       where 
-        cm.quickbooks_id = -1
-        and eft.entity_table = 'civicrm_contribution'
+        ft.trxn_date >= %1
+        AND ft.trxn_date <= (NOW() - INTERVAL %2 DAY)
+        AND cm.quickbooks_id = 0
+        AND eft.entity_table = 'civicrm_contribution'
       order by
         ft.trxn_date
     ";
+    $queryParams = [
+      '1' => [CRM_Utils_Date::isoToMysql(Civi::settings()->get('fpptaqb_minimum_date')), 'Int'],
+      '2' => [CRM_Utils_Date::isoToMysql(Civi::settings()->get('fpptaqb_sync_wait_days')), 'Int'],
+    ];
     $dao = CRM_Core_DAO::executeQuery($query, $queryParams);
     $ids = CRM_Utils_Array::collect('id', $dao->fetchAll());
     return $ids;
@@ -161,21 +167,20 @@ class CRM_Fpptaqb_Utils_Creditmemo {
   }
 
   /**
-   * Get a list of IDs for all contributions marked to be held out from syncing.
+   * Get a list of IDs for all creditmemos marked to be held out from syncing.
    *
    * @return Array
    */
   public static function getHeldIds() {
-    throw new CRM_Fpptaqb_Exception('Method '. __METHOD__ . ' not yet ready.');
     static $ids;
     if (!isset($ids)) {
       $ids = [];
       $query = "
-        SELECT ft.id
+        SELECT cm.id
         FROM civicrm_financial_trxn ft
-          INNER JOIN civicrm_fpptaquickbooks_trxn_payment tp ON tp.financial_trxn_id = ft.id
+          INNER JOIN civicrm_fpptaquickbooks_trxn_creditmemo cm ON cm.financial_trxn_id = ft.id
         WHERE
-          tp.quickbooks_id IS NULL
+          cm.quickbooks_id IS NULL
         ORDER BY
           ft.trxn_date, ft.id
       ";
@@ -244,7 +249,6 @@ class CRM_Fpptaqb_Utils_Creditmemo {
   }
 
   public static function getStepthruStatistics() {
-    throw new CRM_Fpptaqb_Exception('Method '. __METHOD__ . ' not yet ready.');
     return [
       'countReady' => count(self::getReadyToSyncIds()),
       'countHeld' => count(self::getHeldIds()),

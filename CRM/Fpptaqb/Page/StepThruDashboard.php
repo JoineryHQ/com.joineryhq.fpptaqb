@@ -13,6 +13,10 @@ class CRM_Fpptaqb_Page_StepThruDashboard extends CRM_Core_Page {
         'label' => E::ts('Payments'),
         'statistics' => CRM_Fpptaqb_Utils_Payment::getStepthruStatistics(),
       ],
+      'cm' => [
+        'label' => E::ts('Credit Memos'),
+        'statistics' => CRM_Fpptaqb_Utils_Creditmemo::getStepthruStatistics(),
+      ],
     ];
     $this->assign('rows', $rows);
     $this->assign('isMock', CRM_Fpptaqb_Util::getSyncObject()->isMock());
