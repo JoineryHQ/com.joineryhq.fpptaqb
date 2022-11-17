@@ -63,7 +63,7 @@ class CRM_Fpptaqb_Utils_Creditmemo {
       $creditmemo = _fpptaqb_civicrmapi('FpptaquickbooksTrxnCreditmemo', 'getSingle', [
         'id' => $creditmemoId,
       ]);
-      
+
       $contributionId = _fpptaqb_civicrmapi('EntityFinancialTrxn', 'getValue', [
         'entity_table' => "civicrm_contribution",
         'financial_trxn_id' => $creditmemo['financial_trxn_id'],
@@ -73,39 +73,43 @@ class CRM_Fpptaqb_Utils_Creditmemo {
       $organizationCid = CRM_Fpptaqb_Utils_Invoice::getAttributedContactId($contributionId);
       $qbCustomerId = CRM_Fpptaqb_Utils_Quickbooks::getCustomerIdForContact($organizationCid);
       $qbCustomerDetails = CRM_Fpptaqb_Utils_Quickbooks::getCustomerDetails($qbCustomerId);
-      
-      $financialTrxnDate = _fpptaqb_civicrmapi('FinancialTrxn', 'getValue', [
+
+      $financialTrxn = _fpptaqb_civicrmapi('FinancialTrxn', 'getSingle', [
         'id' => $creditmemo['financial_trxn_id'],
-        'return' => 'trxn_date'
+        'return' => [
+          'trxn_date',
+          'total_amount',
+         ],
       ]);
-      
-      $lineItemsGet = _fpptaqb_civicrmapi('FpptaquickbooksTrxnCreditmemoLine', 'get', [
+
+      $creditmemoLineGet = _fpptaqb_civicrmapi('FpptaquickbooksTrxnCreditmemoLine', 'get', [
         'sequential' => 1,
         'creditmemo_id' => $creditmemoId,
-        'api.FinancialType.get' => ['return' => ["name"]],
+        'total_amount' => ['>' => 0],
+        'api.FinancialType.get' => [
+          'id' => '$value.ft_id',
+          'return' => 'name',
+        ],
       ]);
-      $lineItems = $lineItemsGet['values'];
-      $qbLineItems = [];
-      foreach ($lineItems as &$lineItem) {
-        $lineItem['financialType'] = $lineItem['api.FinancialType.get']['values'][0]['name'];
-        $financialTypeId = $lineItem['api.FinancialType.get']['values'][0]['id'];
-        if ((float)$lineItem['total_amount'] > 0) {
-          $lineItem['qbItemDetails'] = CRM_Fpptaqb_Utils_Quickbooks::getItemDetails($financialTypeId);
-          $qbLineItems[] = $lineItem;
-        }
-        else {
-          $lineItem['qbItemDetails'] = CRM_Fpptaqb_Utils_Quickbooks::getNullItem();
-        }
-
+      $creditmemoLineValues = $creditmemoLineGet['values'];
+      $lineItems = [];
+      foreach ($creditmemoLineValues as $creditmemoLineValue) {
+        $lineItem = [
+          'total_amount' => $creditmemoLineValue['total_amount'],
+          'label' => $creditmemoLineValue['api.FinancialType.get']['values'][0]['name'],
+          'qbItemDetails' => CRM_Fpptaqb_Utils_Quickbooks::getItemDetails($creditmemoLineValue['ft_id']),
+        ];
         // If we have no qbItem, it means this is a non-zero line item, and that
         // no corresponding active qbItem was found, so we can't proceed. Throw
         // an exception.
         if (empty($lineItem['qbItemDetails'])) {
-          throw new CRM_Fpptaqb_Exception(E::ts('QuickBooks item not found for financial type: %1; is the Financial Type properly configured?', ['%1' => $lineItem['financialType']]), 503);
+          throw new CRM_Fpptaqb_Exception(E::ts('QuickBooks item not found for financial type: %1; is the Financial Type properly configured?', ['%1' => $creditmemoLineValue['financialType']]), 503);
         }
+
+        $lineItems[] = $lineItem;
       }
       $creditmemo += [
-        'qbLineItems' => $qbLineItems,
+        'lineItems' => $lineItems,
         'organizationCid' => $organizationCid,
         'organizationName' => _fpptaqb_civicrmapi('Contact', 'getValue', [
           'id' => $organizationCid,
@@ -114,7 +118,8 @@ class CRM_Fpptaqb_Utils_Creditmemo {
         'contributionId' => $contributionId,
         'qbCustomerName' => $qbCustomerDetails['DisplayName'],
         'qbCustomerId' => $qbCustomerId,
-        'trxn_date' => $financialTrxnDate,
+        'trxn_date' => $financialTrxn['trxn_date'],
+        'total_amount' => ($financialTrxn['total_amount'] * -1),
       ];
       
       $cache[$creditmemoId] = $creditmemo;
