@@ -153,46 +153,8 @@ class CRM_Fpptaqb_Page_ItemAction extends CRM_Core_Page {
             CRM_Core_Session::setStatus($msg, 'Success', 'success');
             CRM_Utils_System::redirect(CRM_Utils_System::url('civicrm/fpptaqb/helditems/cm', NULL, NULL, NULL, NULL, NULL, TRUE));
             break;
-          case 'unsync':
-            // Get the creditmemo, if any.
-            $creditmemoGet = _fpptaqb_civicrmapi('FpptaquickbooksTrxnCreditmemo', 'get', [
-              'sequential' => 1,
-              'id' => $id,
-              'quickbooks_id' => ['>' => 0],
-            ]);
-
-            if ($creditmemoGet['count'] != 1) {
-              // If there is no sync record, bounce with an error.
-              $msg = E::ts('No action taken, because this credit memo (id=%1) does not exist or has not yet been synced.', [
-                '%1' => $id
-              ]);
-              CRM_Core_Error::statusBounce($msg);
-            }
-
-            $creditmemo = $creditmemoGet['values'][0];
-
-            if ($creditmemo['is_mock'] != 1) {
-              // We can only un-sync mock syncs. If this is not a mock sync, bounce with an error.
-              $msg = E::ts('This contribution (id=%1) was synced to a live QuickBooks account. The sync cannot be undone.', [
-                '%1' => $id
-              ]);
-              CRM_Core_Error::statusBounce($msg);
-            }
-
-            // Un-sync the mock sync of this creditmemo, returning it to the queue (i.e. not held).
-            _fpptaqb_civicrmapi('FpptaquickbooksTrxnCreditmemo', 'create', [
-              'id' => $id,
-              'quickbooks_id' => 0,
-            ]);
-
-            // Inform the user of un-sync success.
-            $msg = E::ts('Credit Memo %1 has been un-synced.', [1 => $id]);
-            CRM_Core_Session::setStatus($msg, 'Success', 'success');
-            CRM_Utils_System::redirect(CRM_Utils_System::url('civicrm/fpptaqb/syncstatus', "reset=1&id=$id", NULL, NULL, NULL, NULL, TRUE));
-            break;
-
           default:
-            CRM_Core_Error::statusBounce('Invalid action '. $itemaction .'for type "cm"; must be "load", "unhold", or "unsync".');
+            CRM_Core_Error::statusBounce('Invalid action '. $itemaction .'for type "cm"; must be "load" or "unhold".');
         }
         break;
       default:
