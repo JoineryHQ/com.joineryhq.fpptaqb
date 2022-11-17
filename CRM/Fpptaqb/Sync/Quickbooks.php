@@ -251,7 +251,7 @@ class CRM_Fpptaqb_Sync_Quickbooks {
    * @throws CRM_Fpptaqb_Exception with code 503, if quickbooks dataservice object creation throws an exception.
    * @throws CRM_Fpptaqb_Exception with code 503, if there's an error adding the creditmemo in quickbooks.
    */
-  public function pushCreditmemo($creditmemo) {
+  public function pushCm($creditmemo) {
 
     // Construct the array of relevant creditmemo data for QB payment creation.
     // Reference: https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/creditmemo#create-a-credit-memo

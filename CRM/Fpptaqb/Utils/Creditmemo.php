@@ -253,7 +253,7 @@ class CRM_Fpptaqb_Utils_Creditmemo {
   public static function sync($creditmemoId) {
     $creditmemo = self::getReadyToSync($creditmemoId);
     $sync = CRM_Fpptaqb_Util::getSyncObject();
-    $qbCreditmemoId = $sync->pushCreditmemo($creditmemo);
+    $qbCreditmemoId = $sync->pushCm($creditmemo);
 
     // Log the trxn-payment connection
     $result = _fpptaqb_civicrmapi('FpptaquickbooksTrxnCreditmemo', 'create', [

@@ -87,8 +87,8 @@ class CRM_Fpptaqb_Sync_QuickbooksReadonly {
    * @param Array $creditmemo
    *   Payment details as built by CRM_Fpptaqb_Utils_Creditmemo::getReadyToSync().
    */
-  public function pushCreditmemo($creditmemo) {
-    return $this->mockSync->pushCreditmemo($creditmemo);
+  public function pushCm($creditmemo) {
+    return $this->mockSync->pushCm($creditmemo);
   }
   
   public function fetchItemById($id) {

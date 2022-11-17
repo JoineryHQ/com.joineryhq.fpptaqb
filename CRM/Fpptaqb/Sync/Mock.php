@@ -108,7 +108,7 @@ class CRM_Fpptaqb_Sync_Mock {
    * 
    * @throws CRM_Fpptaqb_Exception with code 503, around 20% of the time (to demo error handling in the UI).
    */
-  public function pushCreditmemo($creditmemo) {
+  public function pushCm($creditmemo) {
     // Sometimes, fail with an error.
     if (self::failRandom(20)) {
       throw new CRM_Fpptaqb_Exception('MOCK sync: this error happens around 20% of the time.', 503);
