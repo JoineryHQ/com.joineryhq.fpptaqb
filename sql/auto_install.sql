@@ -136,7 +136,7 @@ ENGINE=InnoDB;
 -- *
 -- * civicrm_fpptaquickbooks_trxn_creditmemo_line
 -- *
--- * FIXME
+-- * Allotment of credit memos total into separate financial types
 -- *
 -- *******************************************************/
 CREATE TABLE `civicrm_fpptaquickbooks_trxn_creditmemo_line` (

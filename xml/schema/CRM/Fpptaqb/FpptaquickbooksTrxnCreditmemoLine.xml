@@ -4,7 +4,7 @@
   <base>CRM/Fpptaqb</base>
   <class>FpptaquickbooksTrxnCreditmemoLine</class>
   <name>civicrm_fpptaquickbooks_trxn_creditmemo_line</name>
-  <comment>FIXME</comment>
+  <comment>Allotment of credit memos total into separate financial types</comment>
   <log>true</log>
 
   <field>
