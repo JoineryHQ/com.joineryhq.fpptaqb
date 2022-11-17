@@ -281,7 +281,10 @@ function fpptaqb_civicrm_postProcess($formName, $form) {
         'id' => $financialTypeItemId,
       ]);
     }
-  }  
+  }
+  elseif ($formName == 'CRM_Contribute_Form_AdditionalPayment') {
+    // FIXME: allow editing of credit memo details on edit of refund, if cm has not already been synced.
+  }
 }
 
 /**
@@ -297,6 +300,15 @@ function fpptaqb_civicrm_apiWrappers(&$wrappers, $apiRequest) {
     // contacts returned (see comments in wrapper class).
     $wrappers[] = new CRM_Fpptaqb_APIWrappers_Contact_IsFpptaqbContactRef();
   }
+  if (
+    strtolower($apiRequest['entity']) == 'payment'
+    && strtolower($apiRequest['action']) == 'create'
+    && (($apiRequest['params']['fpptaqb_is_creditmemo'] ?? 0) == 1)
+  ) {
+    // On payment.create where fpptaqb_is_creditmemo, add wrappers to create a
+    // creditmemo entry after payment creation.
+    $wrappers[] = new CRM_Fpptaqb_APIWrappers_Payment_IsCreditmemo();
+  }
 
   // The APIWrapper is conditionally registered so that it runs only when appropriate
   $loggedApiEntities = [
@@ -308,6 +320,7 @@ function fpptaqb_civicrm_apiWrappers(&$wrappers, $apiRequest) {
     'fpptaqbstepthrupayment' => ['load', 'sync', 'hold'],
     'fpptaqbbatchsyncinvoices' => ['process'],
     'fpptaqbbatchsyncpayments' => ['process'],
+    // FIXME: add logging for creditmemos
   ];
   $loggedActions = ($loggedApiEntities[strtolower($apiRequest['entity'])] ?? array());
   if (
