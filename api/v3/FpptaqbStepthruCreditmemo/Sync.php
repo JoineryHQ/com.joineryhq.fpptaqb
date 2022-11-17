@@ -34,7 +34,7 @@ function _civicrm_api3_fpptaqb_stepthru_creditmemo_Sync_spec(&$spec) {
  *
  */
 function civicrm_api3_fpptaqb_stepthru_creditmemo_Sync($params) {
-  $id = CRM_Fpptaqb_Utils_Creditmemo::validateId($params['id']);
+  $id = CRM_Fpptaqb_Utils_Creditmemo::validateId($params['id'], TRUE);
   $extraParams = ['values' => $params];
 
   if ($id === FALSE) {

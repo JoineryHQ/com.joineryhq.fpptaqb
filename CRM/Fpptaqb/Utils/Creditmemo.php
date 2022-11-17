@@ -128,47 +128,56 @@ class CRM_Fpptaqb_Utils_Creditmemo {
   }
 
   /**
-   * For a given financialTrxn ID, get an array of all relevant properties for listing
+   * For a given creditmemo ID, get an array of all relevant properties for listing
    * in "Review Held Items".
    *
    * @return Array
    * @throws CRM_Fpptaqb_Exception with code 404 if contribution payment can't be found
    */
-  public static function getHeldItem(int $financialTrxnId) {
-    throw new CRM_Fpptaqb_Exception('Method '. __METHOD__ . ' not yet ready.');
+  public static function getHeldItem(int $creditmemoId) {
     static $cache = [];
-    if (!isset($cache[$financialTrxnId])) {
-      $financialTrxnCount = _fpptaqb_civicrmapi('FinancialTrxn', 'getCount', [
-        'id' => $financialTrxnId,
+    if (!isset($cache[$creditmemoId])) {
+      $creditmemoCount = _fpptaqb_civicrmapi('FpptaquickbooksTrxnCreditmemo', 'getCount', [
+        'id' => $creditmemoId,
       ]);
 
-      if (!$financialTrxnCount) {
+      if (!$creditmemoCount) {
         throw new CRM_Fpptaqb_Exception('Credit Memo not found', 404);
       }
 
-      $financialTrxn = _fpptaqb_civicrmapi('FinancialTrxn', 'getSingle', [
-        'id' => $financialTrxnId,
+      $creditmemo = _fpptaqb_civicrmapi('FpptaquickbooksTrxnCreditmemo', 'getSingle', [
+        'id' => $creditmemoId,
       ]);
+
       $contributionId = _fpptaqb_civicrmapi('EntityFinancialTrxn', 'getValue', [
         'entity_table' => "civicrm_contribution",
-        'financial_trxn_id' => $financialTrxnId,
+        'financial_trxn_id' => $creditmemo['financial_trxn_id'],
         'return' => 'entity_id'
       ]);
 
       $organizationCid = CRM_Fpptaqb_Utils_Invoice::getAttributedContactId($contributionId);
 
-      $financialTrxn += [
+      $financialTrxn = _fpptaqb_civicrmapi('FinancialTrxn', 'getSingle', [
+        'id' => $creditmemo['financial_trxn_id'],
+        'return' => [
+          'trxn_date',
+          'total_amount',
+         ],
+      ]);
+
+      $creditmemo += [
         'organizationName' => _fpptaqb_civicrmapi('Contact', 'getValue', [
           'id' => $organizationCid,
           'return' => 'display_name',
         ]),
         'organizationCid' => $organizationCid,
         'contributionId' => $contributionId,
-        'paymentInstrumentLabel' => CRM_Core_PseudoConstant::getLabel('CRM_Core_BAO_FinancialTrxn', 'payment_instrument_id', $financialTrxn['payment_instrument_id']),
+        'trxn_date' => $financialTrxn['trxn_date'],
+        'total_amount' => ($financialTrxn['total_amount'] * -1),
       ];
-      $cache[$financialTrxnId] = $financialTrxn;
+      $cache[$creditmemoId] = $creditmemo;
     }
-    return $cache[$financialTrxnId];
+    return $cache[$creditmemoId];
   }
 
   /**
@@ -197,18 +206,21 @@ class CRM_Fpptaqb_Utils_Creditmemo {
 
   /**
    * For a given creditmemo id, check that the creditmemo record exists and is
-   * pending sync.
+   * (optionally) pending sync.
    *
    * @param int $creditmemoId
+   * @param bool $requireIsPending If true, require that quickbooks_id = 0 (not synced and not on hold).
    *
    * @return boolean|int FALSE if not valid; otherwise the given $creditmemoId.
    */
-  public static function validateId($creditmemoId) {
-
-    $creditmemoCount = _fpptaqb_civicrmapi('FpptaquickbooksTrxnCreditmemo', 'getCount', [
+  public static function validateId($creditmemoId, $requireIsPending = FALSE) {
+    $apiParams = [
       'id' => $creditmemoId,
-      'quickbooks_id' => 0,
-    ]);
+    ];
+    if ($requireIsPending) {
+      $apiParams['quickbooks_id'] = 0;
+    }
+    $creditmemoCount = _fpptaqb_civicrmapi('FpptaquickbooksTrxnCreditmemo', 'getCount', $apiParams);
 
     if ($creditmemoCount) {
       return $creditmemoId;
