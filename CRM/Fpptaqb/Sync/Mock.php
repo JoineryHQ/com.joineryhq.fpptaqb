@@ -113,10 +113,9 @@ class CRM_Fpptaqb_Sync_Mock {
     if (self::failRandom(20)) {
       throw new CRM_Fpptaqb_Exception('MOCK sync: this error happens around 20% of the time.', 503);
     }
-
     return rand(1000, 9999);
   }
-  
+
   public function fetchItemById($id) {
     // In LIVE sync this should probably be an actual live API query, but in
     // this mock we'll just use the static values from self::fetchActiveItemsList().
@@ -4393,4 +4392,21 @@ class CRM_Fpptaqb_Sync_Mock {
     return CRM_Utils_Array::rekey($response['QueryResponse']['PaymentMethod'], 'Id');
   }
 
+  /**
+   * Fetch a creditmemo from quickbooks for a given creditmemo number (docNumber).
+   *
+   * @param String $docNumber
+   * @return Obj|Bool An abbreviated stdClass object if docNumber starts with 'EXISTS-', or FALSE.
+   * @throws CRM_Fpptaqb_Exception
+   * @throws Exception
+   */
+  public function fetchCmByDocNumber($docNumber) {
+    // If docNumber starts with 'EXISTS-', return an abbreviated stdClass object.
+    if (strpos($docNumber, 'EXISTS-') === 0) {
+      return (object) array('DocNumber' => $docNumber);
+    }
+    else {
+      return FALSE;
+    }
+  }
 }

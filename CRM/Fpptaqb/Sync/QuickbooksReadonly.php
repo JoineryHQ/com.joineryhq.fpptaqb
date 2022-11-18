@@ -115,4 +115,8 @@ class CRM_Fpptaqb_Sync_QuickbooksReadonly {
   public function fetchActivePaymentMethodsList() {
     return $this->liveSync->fetchActivePaymentMethodsList();
   }
+
+  public function fetchCmByDocNumber($docNumber) {
+    return $this->liveSync->fetchCmByDocNumber($docNumber);
+  }
 }

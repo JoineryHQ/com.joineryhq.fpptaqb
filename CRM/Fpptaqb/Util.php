@@ -316,11 +316,15 @@ class CRM_Fpptaqb_Util {
       }
       $trxnCreditmemoGetCount = _fpptaqb_civicrmapi('FpptaquickbooksTrxnCreditmemo', 'getcount', $getcountApiParams);
       if ($trxnCreditmemoGetCount) {
-        $errors['fpptaqb_creditmemo_doc_number'] = E::ts('Credit memo number already exists; please enter a different value for this field.');
+        $errors['fpptaqb_creditmemo_doc_number'] = E::ts('Credit memo number already exists in queue; please enter a different value for this field.');
       }
 
       // Also ensure creditmemo_doc_number doesn't already exist in quickbooks.
-      // FIXME: write utility function to test this.
+      $sync = CRM_Fpptaqb_Util::getSyncObject();
+      $exitingQbCreditmemo = $sync->fetchCmByDocNumber($fields['fpptaqb_creditmemo_doc_number']);
+      if ($exitingQbCreditmemo) {
+        $errors['fpptaqb_creditmemo_doc_number'] = E::ts('Credit memo number already exists in QuickBooks; please enter a different value for this field.');
+      }
     }
   }
 }
