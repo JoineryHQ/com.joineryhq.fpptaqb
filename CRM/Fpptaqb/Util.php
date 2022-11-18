@@ -274,4 +274,53 @@ class CRM_Fpptaqb_Util {
     CRM_Core_Resources::singleton()->addVars('fpptaqb', $jsvars);
 
   }
+
+  /**
+   * Validate "New Refund" and "Edit Payment" forms for valid creditmemo values.
+   *
+   * @param $formName @see hook_civicrm_validateForm
+   * @param $fields @see hook_civicrm_validateForm
+   * @param $files @see hook_civicrm_validateForm
+   * @param $form @see hook_civicrm_validateForm
+   * @param $errors @see hook_civicrm_validateForm
+   * @param Float $total_amount A negative number indicating the refund total.
+   * @param Int $financial_trxn_id ID of the payment financial_trxn entity.
+   */
+  public static function validateCreditMemoInPaymentForm($formName, &$fields, &$files, &$form, &$errors, $total_amount, $financial_trxn_id) {
+    if (is_array($form->_fpptaqbTemporarilyUnrequiredFields)) {
+      // Re-add tempoarily unrequired fields to the list of required fields.
+      $form->_required = array_merge($form->_required, $form->_fpptaqbTemporarilyUnrequiredFields);
+    }
+    if($fields['fpptaqb_is_creditmemo']) {
+    // If is_creditnote:
+      // Ensure the refund amount is matched by sum of line item amounts.
+      $lineTotal = 0;
+      foreach ($form->_fpptaqb_doneFinancialTypeIds as $ftId) {
+        $lineTotal += $fields['fpptaqb_line_ft_' . $ftId];
+      }
+      if ($lineTotal != $total_amount) {
+        $errors['total_amount'] = E::ts('The Refund Amount must be matched by the total of all credit memo line values (the given total is %1 across all lines, which does not match the Refund Amount of %2).', [
+          '1' => CRM_Utils_Money::format($lineTotal),
+          '2' => CRM_Utils_Money::format($total_amount),
+        ]);
+      }
+
+      // Ensure creditmemo_doc_number doesn't already exist in fpptaquickbookstrxnCreditmemo.
+      $getcountApiParams = [
+        'quickbooks_doc_number' => $fields['fpptaqb_creditmemo_doc_number'],
+      ];
+      if ($financial_trxn_id) {
+        // In case where we're editing a creditmemo/refund, only check for conflicting
+        // creditimemo_doc_number on other credit memos, not this one.
+        $getcountApiParams['financial_trxn_id'] = ['!=' => $financial_trxn_id];
+      }
+      $trxnCreditmemoGetCount = _fpptaqb_civicrmapi('FpptaquickbooksTrxnCreditmemo', 'getcount', $getcountApiParams);
+      if ($trxnCreditmemoGetCount) {
+        $errors['fpptaqb_creditmemo_doc_number'] = E::ts('Credit memo number already exists; please enter a different value for this field.');
+      }
+
+      // Also ensure creditmemo_doc_number doesn't already exist in quickbooks.
+      // FIXME: write utility function to test this.
+    }
+  }
 }

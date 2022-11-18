@@ -41,43 +41,30 @@ function fpptaqb_civicrm_links($op, $objectName, $objectId, &$links, &$mask, &$v
 }
 
 /**
- * Implements hook_civicrm_buildForm().
+ * Implements hook_civicrm_validateForm().
  */
 function fpptaqb_civicrm_validateForm($formName, &$fields, &$files, &$form, &$errors) {
   if (
     $formName == 'CRM_Contribute_Form_AdditionalPayment'
     || $formName == 'CRM_Financial_Form_PaymentEdit'
   ) {
-    if (is_array($form->_fpptaqbTemporarilyUnrequiredFields)) {
-      // Re-add tempoarily unrequired fields to the list of required fields.
-      $form->_required = array_merge($form->_required, $form->_fpptaqbTemporarilyUnrequiredFields);
-    }
-    if($form->_submitValues['fpptaqb_is_creditmemo']) {
-    // If is_creditnote:
-      // Ensure the refund amount is matched by sum of line item amounts.
-      $lineTotal = 0;
-      foreach ($form->_fpptaqb_doneFinancialTypeIds as $ftId) {
-        $lineTotal += $form->_submitValues['fpptaqb_line_ft_' . $ftId];
-      }
+    // Creditmemo field validation for "New Refund" and "Edit Payment" forms.
+    // Get appropriate comparison values, depending on the form.
+    if ($formName == 'CRM_Financial_Form_PaymentEdit') {
       // On Payment Edit form, total is negative for refunds, but on
       // New Refund form, total is positive for refunds. Therefore on Payment Edit
       // form, we should negate total_amount before comparing.
-      if ($formName == 'CRM_Financial_Form_PaymentEdit') {
-        $total_amount = ($form->_submitValues['total_amount'] * -1);
-      }
-      else {
-        $total_amount = $form->_submitValues['total_amount'];
-      }
-      if ($lineTotal != $total_amount) {
-        $errors['total_amount'] = E::ts('The Refund Amount must be matched by the total of all credit memo line values (the given total is %1 across all lines, which does not match the Refund Amount of %2).', [
-          '1' => CRM_Utils_Money::format($lineTotal),
-          '2' => CRM_Utils_Money::format($total_amount),
-        ]);
-      }
-
-      // Also ensure creditmemo_doc_number doesn't already exist in quickbooks.
-      // FIXME: write utility function to test this.
+      $total_amount = ($fields['total_amount'] * -1);
+      // On Payment Edit, form->_id is the financial_trxn_id for the payment.
+      $financial_trxn_id = $form->getVar('_id');
     }
+    else {
+      $total_amount = $fields['total_amount'];
+      // On New Refund form, there is no financial_trxn_id because we haven't created it yet.
+      $financial_trxn_id = NULL;
+    }
+
+    CRM_Fpptaqb_Util::validateCreditMemoInPaymentForm($formName, $fields, $files, $form, $errors, $total_amount, $financial_trxn_id);
   }
 }
 
@@ -86,7 +73,7 @@ function fpptaqb_civicrm_validateForm($formName, &$fields, &$files, &$form, &$er
  */
 function fpptaqb_civicrm_buildForm($formName, &$form) {
   if ($formName == 'CRM_Contribute_Form_AdditionalPayment') {
-    $paymentType = $form->get_template_vars('paymentType');
+    $paymentType = $form->getVar('_paymentType');
     if ($paymentType == 'refund') {
       $contributionId = $form->_id;
       CRM_Fpptaqb_Util::alterPaymentFormForCreditmemo($form, $contributionId);
@@ -97,7 +84,7 @@ function fpptaqb_civicrm_buildForm($formName, &$form) {
     }
   }
   elseif ($formName == 'CRM_Financial_Form_PaymentEdit') {
-    $trxnId = $form->get_template_vars('id');
+    $trxnId = $form->getVar('_id');
     // ID of Contribution entity for this payment.
     $contributionId = _fpptaqb_civicrmapi('EntityFinancialTrxn', 'getValue', [
       'financial_trxn_id' => $trxnId,
@@ -264,7 +251,7 @@ function fpptaqb_civicrm_postProcess($formName, $form) {
       ]);
     }
   }
-  elseif ($formName == 'CRM_Contribute_Form_AdditionalPayment') {
+  elseif ($formName == 'CRM_Financial_Form_PaymentEdit') {
     // FIXME: suppor postProcess when editing of credit memo details on edit of refund, if cm has not already been synced.
   }
 }
