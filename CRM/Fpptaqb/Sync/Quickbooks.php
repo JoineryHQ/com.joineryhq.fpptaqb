@@ -266,16 +266,16 @@ class CRM_Fpptaqb_Sync_Quickbooks {
       "TxnDate" => $creditmemo['trxn_date'],
       'Line' => [],
     ];
-    foreach ($creditmemo['qbLineItems'] as $qbLineItem) {
+    foreach ($creditmemo['lineItems'] as $lineItem) {
       $creditmemoParams['Line'][] = [
         'DetailType' => 'SalesItemLineDetail',
-        'Amount' => $qbLineItem['total_amount'],
+        'Amount' => $lineItem['total_amount'],
         'SalesItemLineDetail' => [
           "ServiceDate" => $creditmemo['trxn_date'],
           'Qty' => 1,
-          'UnitPrice' => $qbLineItem['total_amount'],
+          'UnitPrice' => $lineItem['total_amount'],
           'ItemRef' => [
-            'value' => $qbLineItem['qbItemDetails']['Id'],
+            'value' => $lineItem['qbItemDetails']['Id'],
           ],
         ],
       ];
@@ -406,4 +406,28 @@ class CRM_Fpptaqb_Sync_Quickbooks {
     return $ret;
   }
 
+  /**
+   * Fetch a creditmemo from quickbooks for a given creditmemo number (docNumber).
+   *
+   * @param String $docNumber
+   * @return Obj|Bool Fully loaded quickbooks CreditMemo object if found, or FALSE.
+   * @throws CRM_Fpptaqb_Exception
+   * @throws Exception
+   */
+  public function fetchCmByDocNumber($docNumber) {
+    try {
+      $dataService = CRM_Fpptaqb_APIHelper::getAccountingDataServiceObject();
+      $dataService->throwExceptionOnError(FALSE);
+      $queryDocNumber = addslashes($docNumber);
+      $creditmemos = $dataService->Query("select * from CreditMemo Where DocNumber = '$queryDocNumber'");
+    }
+    catch (Exception $e) {
+      throw new CRM_Fpptaqb_Exception('Could not get QuickBooks DataService Object: ' . $e->getMessage(), 503);
+    }
+    if ($lastError = $dataService->getLastError()) {
+      $errorMessage = CRM_Fpptaqb_APIHelper::parseErrorResponse($lastError);
+      throw new Exception('QuickBooks error: "' . implode("\n", $errorMessage) . '"');
+    }
+    return ($creditmemos[0] ?? FALSE);
+  }
 }
