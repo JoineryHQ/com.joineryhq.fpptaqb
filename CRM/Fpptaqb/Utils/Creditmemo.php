@@ -272,4 +272,43 @@ class CRM_Fpptaqb_Utils_Creditmemo {
     ];
   }
 
+  /**
+   * Create a credtimemo and creditmemolines based on the given data.
+   *
+   * @param Array $creditmemoParams array of api parameters for FpptaquickbooksTrxnCreditmemoLine.create
+   * @param Array $lineFinancialtypeAmounts Array of FinancialTypes with dollar
+   *    values for each, in the form [$ftId => $amount], to be stored as lines
+   *    on this creditmemo.
+   */
+  public static function createCreditmemoWithLines($creditmemoParams, $lineFinancialtypeAmounts) {
+    // Create the creditmemo.
+    $creditmemo = _fpptaqb_civicrmapi('FpptaquickbooksTrxnCreditmemo', 'create', $creditmemoParams);
+
+    foreach ($lineFinancialtypeAmounts as $ftId => $amount) {
+      $creditmemoLine = _fpptaqb_civicrmapi('FpptaquickbooksTrxnCreditmemoLine', 'create', [
+        'creditmemo_id' => $creditmemo['id'],
+        'ft_id' => $ftId,
+        'total_amount' => $amount,
+      ]);
+    }
+  }
+
+  /**
+   * Convert form values (or similar array of values) to an array of creditmemolines.
+   * Only values in the form /^fpptaqb_line_ft_([0-9]+)$/ are used, with the trailing
+   * integer(s) used as the financial type id.
+   *
+   * @param Array $formValues as from a form (see fpptaqb_civicrm_buildForm() for CRM_Contribute_Form_AdditionalPayment, for example)
+   * @return Array suitable for passing as the $lineFinancialtypeAmounts argument in self::createCreditmemoWithLines().
+   */
+  public static function composeLinesFromFormValues($formValues) {
+    $lines = [];
+    foreach($formValues as $key => $value) {
+      $matches = NULL;
+      if (preg_match('/^fpptaqb_line_ft_([0-9]+)$/', $key, $matches) && ($value > 0)) {
+        $lines[$matches[1]] = $value;
+      }
+    }
+    return $lines;
+  }
 }

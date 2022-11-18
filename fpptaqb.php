@@ -92,8 +92,8 @@ function fpptaqb_civicrm_buildForm($formName, &$form) {
       'return' => 'entity_id',
     ]);
 
-    // Values of this payment (because we need the total_amount).
-    $trxnGetsingle = _fpptaqb_civicrmapi('FinancialTrxn', 'getsingle', ['id' => $trxnId]);
+    // Values of this payment, per form storage (because we need the total_amount).
+    $formValues = $form->getVar('_values');
 
     // Any creditmemo filed on this payment.
     $trxnCreditmemoGet = _fpptaqb_civicrmapi('FpptaquickbooksTrxnCreditmemo', 'get', [
@@ -104,7 +104,7 @@ function fpptaqb_civicrm_buildForm($formName, &$form) {
 
     if (
       ($trxnCreditmemoGet['count'] == 1)
-      || ($trxnGetsingle['total_amount'] < 0 )
+      || ($formValues['total_amount'] < 0 )
     ) {
       // If this payment is a refund (i.e., the amount is negative, OR it already
       // is marked for creditmemo processin) then add relevant creditmemo fields to the form.
@@ -252,8 +252,63 @@ function fpptaqb_civicrm_postProcess($formName, $form) {
     }
   }
   elseif ($formName == 'CRM_Financial_Form_PaymentEdit') {
-    // FIXME: suppor postProcess when editing of credit memo details on edit of refund, if cm has not already been synced.
+    // Save creditmemo values appropriately when editing of credit memo details
+    // on edit of refund, if cm has not already been synced to qb.
+    $trxnId = $form->getVar('_id');
+    // Get any creditmemo filed on this payment.
+    $trxnCreditmemoGet = _fpptaqb_civicrmapi('FpptaquickbooksTrxnCreditmemo', 'get', [
+      'sequential' => 1,
+      'financial_trxn_id' => $trxnId
+    ]);
+    if ($trxnCreditmemoGet['count']) {
+      // We have a creditmemo on record. If it hasn't been synced, we'll delete it,
+      // and below we'll create a brand new cm record, if called for with the
+      // submitted values
+      // Determine if credimemo has been synced to qb.
+      $isSynced = (($trxnCreditmemoGet['values'][0]['quickbooks_id'] ?? 0) > 0);
+      if ($isSynced) {
+        // If it's already synced, we don't want to save anything about this creditmemo,
+        // so just return.
+        return;
+      }
+      else  {
+        // If not yet synced, we'll save appropriate values. But rather than trying to
+        // update the credimemo and any creditmemolines individually, we'll just
+        // delete the creditmemo (which will cascade delete any creditmemolines) and
+        // then re-create them below.
+        $trxnCreditmemoDelete= _fpptaqb_civicrmapi('FpptaquickbooksTrxnCreditmemo', 'delete', [
+          'id' => $trxnCreditmemoGet['id'],
+        ]);
+      }
+    }
+    // If we're still here, it means no creditmemo exists for this payment (either
+    // it didn't exist from the start, or we deleted it above.) So if requested
+    // to do so in this form, go ahead and save it.
+    $submitValues = $form->_submitValues;
+    if ($submitValues['fpptaqb_is_creditmemo']) {
+      // Define parameters for our FpptaquickbooksTrxnCreditmemo.create api call.
+      $creditmemoParams = [
+        'financial_trxn_id' => $trxnId,
+        'quickbooks_doc_number' => $submitValues['fpptaqb_creditmemo_doc_number'],
+        'quickbooks_customer_memo' => $submitValues['fpptaqb_creditmemo_customer_memo'],
+        // retain existing value of 'quickbooks_id' because it may be NULL ('on hold')
+        'quickbooks_id' => ($trxnCreditmemoGet['values'][0]['quickbooks_id'] === NULL ? 'null' : $trxnCreditmemoGet['values'][0]['quickbooks_id']),
+      ];
+      $lineFinancialtypeAmounts = CRM_Fpptaqb_Utils_Creditmemo::composeLinesFromFormValues($submitValues);
+      CRM_Fpptaqb_Utils_Creditmemo::createCreditmemoWithLines($creditmemoParams, $lineFinancialtypeAmounts);
+    }
   }
+  // In core, this form does not redirect to itself; it only reloads. As a result,
+  // $form properties persist (because there's no 'reset=1' url query parameter).
+  // Under this model, Because we're adding our own fields and default values in
+  // buildForm hook,these values persist on the form, which causes display of old
+  // data in the form. To avoide this, we'll set the form detsination to the
+  // original entryurl of the form. (BTW, this isn't relevant in most cases for the
+  // civicrm ui, because in most cases this form apepears in a dialog; that's probably
+  // why core devs didn't bother to set the redirect properly. However, this situation
+  // does matter in the case that the you open the Edit Payment form in a new tab
+  // instead of in the default dialog display.)
+  $form->controller->_destination = $form->controller->_entryURL;
 }
 
 /**
@@ -272,10 +327,11 @@ function fpptaqb_civicrm_apiWrappers(&$wrappers, $apiRequest) {
   if (
     strtolower($apiRequest['entity']) == 'payment'
     && strtolower($apiRequest['action']) == 'create'
+    && (!$apiRequest['params']['id'])
     && (($apiRequest['params']['fpptaqb_is_creditmemo'] ?? 0) == 1)
   ) {
-    // On payment.create where fpptaqb_is_creditmemo, add wrappers to create a
-    // creditmemo entry after payment creation.
+    // On payment.create where fpptaqb_is_creditmemo, and id=NULL (we're not updating a payment),
+    // add wrappers to create a creditmemo entry after payment creation.
     $wrappers[] = new CRM_Fpptaqb_APIWrappers_Payment_IsCreditmemo();
   }
 

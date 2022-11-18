@@ -29,31 +29,8 @@ class CRM_Fpptaqb_APIWrappers_Payment_IsCreditmemo implements API_Wrapper {
         'quickbooks_doc_number' => $params['fpptaqb_creditmemo_doc_number'],
         'quickbooks_customer_memo' => $params['fpptaqb_creditmemo_customer_memo'],
       ];
-      // Create the creditmemo.
-      $creditmemo = _fpptaqb_civicrmapi('FpptaquickbooksTrxnCreditmemo', 'create', $creditmemoParams);
-      
-      // Prep to create creditmemo lines.
-      $contributionId = _fpptaqb_civicrmapi('EntityFinancialTrxn', 'getvalue', [
-        'return' => "entity_id",
-        'entity_table' => "civicrm_contribution",
-        'financial_trxn_id' => $trxnId,
-      ]);
-      $lineItemGet = _fpptaqb_civicrmapi('lineItem', 'get', [
-        'contribution_id' => $contributionId,
-        'unit_price' => ['>' => 0],
-        'return' => ["financial_type_id"],
-      ]);
-      foreach($lineItemGet['values'] as $lineItemGetValue) {
-        $financialTypeId = $lineItemGetValue['financial_type_id'];
-        // Create a creditmemoLine only if a positive value was given for this financialtype.
-        if ($params['fpptaqb_line_ft_'. $financialTypeId] > 0) {
-          $creditmemoLine = _fpptaqb_civicrmapi('FpptaquickbooksTrxnCreditmemoLine', 'create', [
-            'creditmemo_id' => $creditmemo['id'],
-            'ft_id' => $financialTypeId,
-            'total_amount' => $params['fpptaqb_line_ft_'. $financialTypeId],
-          ]);
-        }
-      }
+      $lineFinancialtypeAmounts = CRM_Fpptaqb_Utils_Creditmemo::composeLinesFromFormValues($params);
+      CRM_Fpptaqb_Utils_Creditmemo::createCreditmemoWithLines($creditmemoParams, $lineFinancialtypeAmounts);
     }
     return $result;    
   }
