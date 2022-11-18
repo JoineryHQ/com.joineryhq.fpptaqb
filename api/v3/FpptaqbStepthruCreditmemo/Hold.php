@@ -50,10 +50,16 @@ function civicrm_api3_fpptaqb_stepthru_creditmemo_Hold($params) {
     }
   }
 
+  // Get the financial_trxn_id so we can report that, since we've already been showing
+  // it to the user in the stepthru interface.
+  $trxnId = _fpptaqb_civicrmapi('FpptaquickbooksTrxnCreditmemo', 'getValue', [
+    'id' => $id,
+    'return' => 'financial_trxn_id',
+  ]);
   $returnValues = array(
     // OK, return several data rows
     'id' => $id,
-    'text' => "Credit memo transaction id=$id has been placed on hold.",
+    'text' => "Credit memo for refund id=$trxnId has been placed on hold.",
     'statistics' => CRM_Fpptaqb_Utils_Creditmemo::getStepthruStatistics(),
   );
 
