@@ -44,7 +44,10 @@ function fpptaqb_civicrm_links($op, $objectName, $objectId, &$links, &$mask, &$v
  * Implements hook_civicrm_buildForm().
  */
 function fpptaqb_civicrm_validateForm($formName, &$fields, &$files, &$form, &$errors) {
-  if ($formName == 'CRM_Contribute_Form_AdditionalPayment') {
+  if (
+    $formName == 'CRM_Contribute_Form_AdditionalPayment'
+    || $formName == 'CRM_Financial_Form_PaymentEdit'
+  ) {
     if (is_array($form->_fpptaqbTemporarilyUnrequiredFields)) {
       // Re-add tempoarily unrequired fields to the list of required fields.
       $form->_required = array_merge($form->_required, $form->_fpptaqbTemporarilyUnrequiredFields);
@@ -53,13 +56,22 @@ function fpptaqb_civicrm_validateForm($formName, &$fields, &$files, &$form, &$er
     // If is_creditnote:
       // Ensure the refund amount is matched by sum of line item amounts.
       $lineTotal = 0;
-      foreach ($form->_doneFinancialTypeIds as $ftId) {
+      foreach ($form->_fpptaqb_doneFinancialTypeIds as $ftId) {
         $lineTotal += $form->_submitValues['fpptaqb_line_ft_' . $ftId];
       }
-      if ($lineTotal != $form->_submitValues['total_amount']) {
+      // On Payment Edit form, total is negative for refunds, but on
+      // New Refund form, total is positive for refunds. Therefore on Payment Edit
+      // form, we should negate total_amount before comparing.
+      if ($formName == 'CRM_Financial_Form_PaymentEdit') {
+        $total_amount = ($form->_submitValues['total_amount'] * -1);
+      }
+      else {
+        $total_amount = $form->_submitValues['total_amount'];
+      }
+      if ($lineTotal != $total_amount) {
         $errors['total_amount'] = E::ts('The Refund Amount must be matched by the total of all credit memo line values (the given total is %1 across all lines, which does not match the Refund Amount of %2).', [
           '1' => CRM_Utils_Money::format($lineTotal),
-          '2' => CRM_Utils_Money::format($form->_submitValues['total_amount']),
+          '2' => CRM_Utils_Money::format($total_amount),
         ]);
       }
 

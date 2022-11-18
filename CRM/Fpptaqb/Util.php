@@ -214,7 +214,8 @@ class CRM_Fpptaqb_Util {
         $ftLineFieldId,
         E::ts('Line value: %1', [1 => $ftName]),
         NULL,
-        ['class' => 'fpptaqb_creditmemo_hide']
+        ['class' => 'fpptaqb_creditmemo_hide'],
+        FALSE,
       );
       // Default each line amount to zero (the calling function can further update
       // the default value if needed, e.g. for existing creditmemos).
@@ -234,7 +235,7 @@ class CRM_Fpptaqb_Util {
       $bhfe[] = 'fpptaqb_line_ft_'. $ftId;
       $doneFinancialTypeIds[] = $ftId;
     }
-    $form->_doneFinancialTypeIds = $doneFinancialTypeIds;
+    $form->_fpptaqb_doneFinancialTypeIds = $doneFinancialTypeIds;
 
     foreach ($bhfe as $bhfeElementId) {
       // Append a class to all bhfe elements so we can manage them in JS without
@@ -253,7 +254,8 @@ class CRM_Fpptaqb_Util {
       // we want them to be displayed as required (red asterisk), so we define
       // them as required in this buildForm method; but in truth they're only
       // conditionally required -- only if "is_creditmemo" is 'yes'. Therefore,
-      // if "is_creditmemo" is 'no', we'll temporarily unrequire them.
+      // if "is_creditmemo" is 'no', we'll temporarily unrequire them, and let the
+      // validateForm hook sort it out.
       $temporarilyUnrequiredFields = [];
       $index = array_search('fpptaqb_creditmemo_doc_number', $form->_required);
       if ($index) {
