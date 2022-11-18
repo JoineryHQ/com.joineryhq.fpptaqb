@@ -1,5 +1,7 @@
-<H3>Processing refund ID: {$creditmemo.financial_trxn_id} (on Contribution ID: {$creditmemo.contributionId}) &nbsp; <a target="_blank" href="{crmURL fb=1 p="civicrm/contact/view/contribution" q="reset=1&action=view&cid=`$creditmemo.contact_id`&id=`$creditmemo.contributionId`" fb=1}">View Contribution</a></H3>
+<H3>Processing refund ID: {$creditmemo.financial_trxn_id} &nbsp; <a target="_blank" href="{crmURL fb=1 p="civicrm/payment/edit" q="reset=1&id=`$creditmemo.financial_trxn_id`&contribution_id=`$creditmemo.contributionId`" fb=1}">Edit</a>
+</H3>
 <pre>
+Refund on Contribution ID: {$creditmemo.contributionId}   <a target="_blank" href="{crmURL fb=1 p="civicrm/contact/view/contribution" q="reset=1&action=view&cid=`$creditmemo.contact_id`&id=`$creditmemo.contributionId`" fb=1}">View Contribution</a>
 Transaction date: {$creditmemo.trxn_date|crmDate:'%Y-%m-%d'}
 Attributed to Organization: {$creditmemo.organizationName} (id={$creditmemo.organizationCid})   <a target="_blank" href="{crmURL fb=1 p="civicrm/contact/view" q="reset=1&cid=`$creditmemo.organizationCid`"}">View</a>
 Found QuickBooks customer "{$creditmemo.qbCustomerName}" (id={$creditmemo.qbCustomerId})
