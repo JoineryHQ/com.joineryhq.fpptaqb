@@ -215,7 +215,7 @@ class CRM_Fpptaqb_Util {
         E::ts('Line value: %1', [1 => $ftName]),
         NULL,
         ['class' => 'fpptaqb_creditmemo_hide'],
-        FALSE,
+        FALSE
       );
       // Default each line amount to zero (the calling function can further update
       // the default value if needed, e.g. for existing creditmemos).
