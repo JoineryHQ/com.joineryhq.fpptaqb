@@ -1,5 +1,7 @@
 <?php
 
+// FIXME: TODO: create api for creditmemos like api/v3/FpptaqbBatchSyncInvoices/Process.php
+
 require_once 'fpptaqb.civix.php';
 // phpcs:disable
 use CRM_Fpptaqb_ExtensionUtil as E;
@@ -72,117 +74,85 @@ function fpptaqb_civicrm_validateForm($formName, &$fields, &$files, &$form, &$er
  */
 function fpptaqb_civicrm_buildForm($formName, &$form) {
   if ($formName == 'CRM_Contribute_Form_AdditionalPayment') {
-    // FIXME: add similar fields in CRM_Financial_Form_PaymentEdit if payment is a refund.
     $paymentType = $form->get_template_vars('paymentType');
     if ($paymentType == 'refund') {
-      // Get the list of bhfe elements from the template; if none, start with
-      // an empty array; we'll add fields to this array as we go along, and then
-      // assign it to the template at the end.
-      $bhfe = $form->get_template_vars('beginHookFormElements');
-      if (!$bhfe) {
-        $bhfe = [];
-      }
-
-      // Define an array to hold default field values.
-      $defaults = [];
-
-      $form->addElement('checkbox', 'fpptaqb_is_creditmemo', E::ts('Credit memo?'));
-      $defaults['fpptaqb_is_creditmemo'] = 0;
-      $bhfe[] = 'fpptaqb_is_creditmemo';
-
-      $form->addElement(
-        'Text',
-        // field name
-        'fpptaqb_creditmemo_doc_number',
-        // field label
-        E::ts('Credit memo number'),
-        ['class' => 'fpptaqb_creditmemo_hide']
-      );
-      $form->addRule('fpptaqb_creditmemo_doc_number', E::ts('Credit memo number is a required field.'), 'required');
-      $bhfe[] = 'fpptaqb_creditmemo_doc_number';
-
-      $form->addElement(
-        'textarea',
-        'fpptaqb_creditmemo_customer_memo',
-        E::ts('Credit memo comment'),
-        ['class' => 'fpptaqb_creditmemo_hide']
-      );
-      $bhfe[] = 'fpptaqb_creditmemo_customer_memo';
-
-      // Add one Line field per financial type in the contribution
-      $lineItemGet = _fpptaqb_civicrmapi('lineItem', 'get', [
-        'contribution_id' => $form->_id,
-        'unit_price' => ['>' => 0],
-        'api.FinancialType.getSingle' => [],
-      ]);
-      // Define a container for financial types for which line fields are created.
-      $doneFinancialTypeIds = [];
-      $ftLineFieldDescriptions = [];
-      foreach($lineItemGet['values'] as $lineItemValue) {
-        $ftId = $lineItemValue['financial_type_id'];
-        if (in_array($ftId, $doneFinancialTypeIds)) {
-          // we've already created a field for this financial type, so don't bother.
-          continue;
-        }
-        $ftName = $lineItemValue['api.FinancialType.getSingle']['name'];
-        $ftLineFieldId = 'fpptaqb_line_ft_'. $ftId;
-        $form->addMoney(
-          $ftLineFieldId,
-          E::ts('Line value: %1', [1 => $ftName]),
-          NULL,
-          ['class' => 'fpptaqb_creditmemo_hide']
-        );
-        $ftLineFieldDescriptions[$ftLineFieldId] = E::ts('Dollar amount for financial type "%1"', [1 => $ftName]);
-        // Append the QB item name if known, or warning if unknown.
-        $qbItemDetails = CRM_Fpptaqb_Utils_Quickbooks::getItemDetails($ftId);
-        if($qbItemDetails['FullyQualifiedName']) {
-          $ftLineFieldDescriptions[$ftLineFieldId] .= E::ts(' (QuickBooks Item: %1)', [1 => $qbItemDetails['FullyQualifiedName']]);
-        }
-        else {
-          $ftLineFieldDescriptions[$ftLineFieldId] .= E::ts(' (WARNING: no QuickBooks Item found for this Financial Type!)');
-        }
-
-        $bhfe[] = 'fpptaqb_line_ft_'. $ftId;
-        $doneFinancialTypeIds[] = $ftId;
-      }
-      $form->_doneFinancialTypeIds = $doneFinancialTypeIds;
-
-      // Assign bhfe array to template so that it will inject the elements.
-      $form->assign('beginHookFormElements', $bhfe);
-
+      $contributionId = $form->_id;
+      CRM_Fpptaqb_Util::alterPaymentFormForCreditmemo($form, $contributionId);
       // Set field default values.
-      $form->setDefaults($defaults);
-
-      if ($form->_flagSubmitted && !$form->_submitValues['fpptaqb_is_creditmemo']) {
-        // Some of our fields are displayed only if "is_creditmemo" is 'yes';
-        // but when they're displayed, some of them are required. In that case
-        // we want them to be displayed as required (red asterisk), so we define
-        // them as required in this buildForm method; but in truth they're only
-        // conditionally required -- only if "is_creditmemo" is 'yes'. Therefore,
-        // if "is_creditmemo" is 'no', we'll temporarily unrequire them.
-        $temporarilyUnrequiredFields = [];
-        $index = array_search('fpptaqb_creditmemo_doc_number', $form->_required);
-        if ($index) {
-          unset($form->_required[$index]);
-          $temporarilyUnrequiredFields[] = 'fpptaqb_creditmemo_doc_number';
-        }
-        // Store these unrequired field names so we can re-require them in hook_civicrm_validateForm().
-        $form->_fpptaqbTemporarilyUnrequiredFields = $temporarilyUnrequiredFields;
-      }
-
+      $form->setDefaults(['fpptaqb_is_creditmemo' => 0]);
       // Add js to place fields in the right location on the form.
       CRM_Core_Resources::singleton()->addScriptFile('com.joineryhq.fpptaqb', 'js/CRM_Contribute_Form_AdditionalPayment.js');
+    }
+  }
+  elseif ($formName == 'CRM_Financial_Form_PaymentEdit') {
+    $trxnId = $form->get_template_vars('id');
+    // ID of Contribution entity for this payment.
+    $contributionId = _fpptaqb_civicrmapi('EntityFinancialTrxn', 'getValue', [
+      'financial_trxn_id' => $trxnId,
+      'entity_table' => "civicrm_contribution",
+      'return' => 'entity_id',
+    ]);
 
-      $jsvars = [
-        'descriptions' => $ftLineFieldDescriptions + [
-          // You could define descriptions here, but currently there are none defined.
-          // See js/CRM_Financial_Form_FinancialType.js
-          // $fieldId => $fieldDescription,
-          'fpptaqb_is_creditmemo' => E::ts('Record a credit memo in QuickBooks?'),
-        ],
+    // Values of this payment (because we need the total_amount).
+    $trxnGetsingle = _fpptaqb_civicrmapi('FinancialTrxn', 'getsingle', ['id' => $trxnId]);
+
+    // Any creditmemo filed on this payment.
+    $trxnCreditmemoGet = _fpptaqb_civicrmapi('FpptaquickbooksTrxnCreditmemo', 'get', [
+      'sequential' => 1,
+      'financial_trxn_id' => $trxnId,
+      'api.FpptaquickbooksTrxnCreditmemoLine.get' => ['creditmemo_id' => '$value.id'],
+    ]);
+
+    if (
+      ($trxnCreditmemoGet['count'] == 1)
+      || ($trxnGetsingle['total_amount'] < 0 )
+    ) {
+      // If this payment is a refund (i.e., the amount is negative, OR it already
+      // is marked for creditmemo processin) then add relevant creditmemo fields to the form.
+      CRM_Fpptaqb_Util::alterPaymentFormForCreditmemo($form, $contributionId);
+      // Also add js to place fields in the right location on the form.
+      CRM_Core_Resources::singleton()->addScriptFile('com.joineryhq.fpptaqb', 'js/CRM_Financial_Form_PaymentEdit.js');
+    }
+
+    if ($trxnCreditmemoGet['count'] == 1) {
+      // If it's marked as a creditmemo, we'll set default field values and a
+      // message about the sync status of the creditmemo.
+
+      $trxnCreditmemo = $trxnCreditmemoGet['values'][0];
+
+      // Determine and set default values.
+      $defaults = [
+        'fpptaqb_is_creditmemo' => 1,
+        'fpptaqb_creditmemo_doc_number' => $trxnCreditmemo['quickbooks_doc_number'],
+        'fpptaqb_creditmemo_customer_memo' => $trxnCreditmemo['quickbooks_customer_memo'],
       ];
-//      $jsVars['descriptions'] += $ftLineFieldDescriptions;
-      CRM_Core_Resources::singleton()->addVars('fpptaqb', $jsvars);
+      foreach ($trxnCreditmemo['api.FpptaquickbooksTrxnCreditmemoLine.get']['values'] as $trxnCreditmemoLineValue) {
+        $defaults['fpptaqb_line_ft_' . $trxnCreditmemoLineValue['ft_id']] = $trxnCreditmemoLineValue['total_amount'];
+      }
+      $form->setDefaults($defaults);
+
+      // Define a status message indicating sync status.
+      $syncMessage = '';
+      if ($trxnCreditmemo['quickbooks_id'] > 0) {
+        // Creditmemo has already been synced.
+        $url = "https://app.qbo.intuit.com/app/creditmemo?txnId={$trxnCreditmemo['quickbooks_id']}";
+        $syncMessage = E::ts('This credit memo has already been synced to QuickBooks (<a href="%1" target="_blank">trxnid=%2</a>) and cannot be edited here.', [
+          '1' => $url,
+          '2' => $trxnCreditmemo['quickbooks_id'],
+        ]);
+        // freeze creditmemo form elements; we can't allow them to be edited, since
+        // the credtimemo has alrady been synced to quickbooks.
+        foreach (array_keys($defaults) as $elementName) {
+          $form->getElement($elementName)->freeze();
+        }
+      }
+      else {
+        // Credit memo not synced yet.
+        $syncMessage = E::ts('This credit memo has not yet been synced to QuickBooks.');
+      }
+      CRM_Core_Resources::singleton()->addVars('fpptaqb', [
+        'syncMessage' => $syncMessage
+      ]);
     }
   }
   elseif ($formName == "CRM_Financial_Form_FinancialType") {
@@ -283,7 +253,7 @@ function fpptaqb_civicrm_postProcess($formName, $form) {
     }
   }
   elseif ($formName == 'CRM_Contribute_Form_AdditionalPayment') {
-    // FIXME: allow editing of credit memo details on edit of refund, if cm has not already been synced.
+    // FIXME: suppor postProcess when editing of credit memo details on edit of refund, if cm has not already been synced.
   }
 }
 

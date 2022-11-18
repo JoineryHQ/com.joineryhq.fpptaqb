@@ -12,9 +12,9 @@ CRM.$(function($) {
   // Give the bhfe elements table an id so we can handle it later.
   $('input#fpptaqb_is_creditmemo').closest('table').attr('id', 'bhfe_table');
 
-  // Move all bhfe table rows into the main table after 'from_email_address'
+  // Move all our bhfe table rows into the main table after 'from_email_address'
   var tr = $('input#total_amount').closest('table').find('tr:last-child');
-  $('table#bhfe_table tr').insertAfter(tr);
+  $('table#bhfe_table .fpptaqb_creditmemo_field').closest('tr').insertAfter(tr);
   
   // Append desriptions after fields.
   for (id in CRM.vars.fpptaqb.descriptions) {

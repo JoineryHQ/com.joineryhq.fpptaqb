@@ -154,4 +154,122 @@ class CRM_Fpptaqb_Util {
     }
     return $hash;
   }
+
+  /**
+   * Add creditmemo-related fields to a given form. This is expected to be the "new payment"
+   * or "edit payment" form for a refund.
+   *
+   * @param Obj $form CRM_Core_Form
+   * @param Int $contributionId ID of the contribution entity associated with the payment.
+   */
+  public static function alterPaymentFormForCreditmemo(&$form, $contributionId) {
+    // Get the list of bhfe elements from the template; if none, start with
+    // an empty array; we'll add fields to this array as we go along, and then
+    // assign it to the template at the end.
+    $bhfe = $form->get_template_vars('beginHookFormElements');
+    if (!$bhfe) {
+      $bhfe = [];
+    }
+
+    $form->addElement('checkbox', 'fpptaqb_is_creditmemo', E::ts('Credit memo?'));
+    $bhfe[] = 'fpptaqb_is_creditmemo';
+
+    $form->addElement(
+      'Text',
+      // field name
+      'fpptaqb_creditmemo_doc_number',
+      // field label
+      E::ts('Credit memo number'),
+      ['class' => 'fpptaqb_creditmemo_hide']
+    );
+    $form->addRule('fpptaqb_creditmemo_doc_number', E::ts('Credit memo number is a required field.'), 'required');
+    $bhfe[] = 'fpptaqb_creditmemo_doc_number';
+
+    $form->addElement(
+      'textarea',
+      'fpptaqb_creditmemo_customer_memo',
+      E::ts('Credit memo comment'),
+      ['class' => 'fpptaqb_creditmemo_hide']
+    );
+    $bhfe[] = 'fpptaqb_creditmemo_customer_memo';
+
+    // Add one Line field per financial type in the contribution
+    $lineItemGet = _fpptaqb_civicrmapi('lineItem', 'get', [
+      'contribution_id' => $contributionId,
+      'unit_price' => ['>' => 0],
+      'api.FinancialType.getSingle' => [],
+    ]);
+    // Define a container for financial types for which line fields are created.
+    $doneFinancialTypeIds = [];
+    $ftLineFieldDescriptions = [];
+    foreach($lineItemGet['values'] as $lineItemValue) {
+      $ftId = $lineItemValue['financial_type_id'];
+      if (in_array($ftId, $doneFinancialTypeIds)) {
+        // we've already created a field for this financial type, so don't bother.
+        continue;
+      }
+      $ftName = $lineItemValue['api.FinancialType.getSingle']['name'];
+      $ftLineFieldId = 'fpptaqb_line_ft_'. $ftId;
+      $form->addMoney(
+        $ftLineFieldId,
+        E::ts('Line value: %1', [1 => $ftName]),
+        NULL,
+        ['class' => 'fpptaqb_creditmemo_hide']
+      );
+      // Default each line amount to zero (the calling function can further update
+      // the default value if needed, e.g. for existing creditmemos).
+      $form->setDefaults([$ftLineFieldId => '0.00']);
+
+      // Set a description for this line amount field.
+      $ftLineFieldDescriptions[$ftLineFieldId] = E::ts('Dollar amount for financial type "%1"', [1 => $ftName]);
+      // Append the QB item name if known, or warning if unknown.
+      $qbItemDetails = CRM_Fpptaqb_Utils_Quickbooks::getItemDetails($ftId);
+      if($qbItemDetails['FullyQualifiedName']) {
+        $ftLineFieldDescriptions[$ftLineFieldId] .= E::ts(' (QuickBooks Item: %1)', [1 => $qbItemDetails['FullyQualifiedName']]);
+      }
+      else {
+        $ftLineFieldDescriptions[$ftLineFieldId] .= E::ts(' (WARNING: no QuickBooks Item found for this Financial Type!)');
+      }
+
+      $bhfe[] = 'fpptaqb_line_ft_'. $ftId;
+      $doneFinancialTypeIds[] = $ftId;
+    }
+    $form->_doneFinancialTypeIds = $doneFinancialTypeIds;
+
+    foreach ($bhfe as $bhfeElementId) {
+      // Append a class to all bhfe elements so we can manage them in JS without
+      // interfering with other possible bhfe elements provided by other extensions.
+      $el = $form->getElement($bhfeElementId);
+      $class = $el->getAttribute('class') . ' fpptaqb_creditmemo_field';
+      $el->updateAttributes(['class' => $class]);
+    }
+
+    // Assign bhfe array to template so that it will inject the elements.
+    $form->assign('beginHookFormElements', $bhfe);
+
+    if ($form->_flagSubmitted && !$form->_submitValues['fpptaqb_is_creditmemo']) {
+      // Some of our fields are displayed only if "is_creditmemo" is 'yes';
+      // but when they're displayed, some of them are required. In that case
+      // we want them to be displayed as required (red asterisk), so we define
+      // them as required in this buildForm method; but in truth they're only
+      // conditionally required -- only if "is_creditmemo" is 'yes'. Therefore,
+      // if "is_creditmemo" is 'no', we'll temporarily unrequire them.
+      $temporarilyUnrequiredFields = [];
+      $index = array_search('fpptaqb_creditmemo_doc_number', $form->_required);
+      if ($index) {
+        unset($form->_required[$index]);
+        $temporarilyUnrequiredFields[] = 'fpptaqb_creditmemo_doc_number';
+      }
+      // Store these unrequired field names so we can re-require them in hook_civicrm_validateForm().
+      $form->_fpptaqbTemporarilyUnrequiredFields = $temporarilyUnrequiredFields;
+    }
+
+    $jsvars = [
+      'descriptions' => $ftLineFieldDescriptions + [
+        'fpptaqb_is_creditmemo' => E::ts('Record a credit memo in QuickBooks?'),
+      ],
+    ];
+    CRM_Core_Resources::singleton()->addVars('fpptaqb', $jsvars);
+
+  }
 }
