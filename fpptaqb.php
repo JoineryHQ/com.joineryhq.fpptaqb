@@ -343,9 +343,10 @@ function fpptaqb_civicrm_apiWrappers(&$wrappers, $apiRequest) {
     'fpptaquickbookstrxnpayment' => ['create'],
     'fpptaqbstepthruinvoice' => ['load', 'sync', 'hold'],
     'fpptaqbstepthrupayment' => ['load', 'sync', 'hold'],
+    'fpptaqbstepthrucreditmemo' => ['load', 'sync', 'hold'],
     'fpptaqbbatchsyncinvoices' => ['process'],
     'fpptaqbbatchsyncpayments' => ['process'],
-    // FIXME: add logging for creditmemos
+    'fpptaqbbatchsynccreditmemos' => ['process'],
   ];
   $loggedActions = ($loggedApiEntities[strtolower($apiRequest['entity'])] ?? array());
   if (
