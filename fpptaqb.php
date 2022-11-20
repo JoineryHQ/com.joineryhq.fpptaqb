@@ -114,6 +114,9 @@ function fpptaqb_civicrm_buildForm($formName, &$form) {
       CRM_Core_Resources::singleton()->addScriptFile('com.joineryhq.fpptaqb', 'js/CRM_Financial_Form_PaymentEdit.js');
     }
 
+    // Define a status message indicating sync status.
+    $syncMessage = '';
+
     if ($trxnCreditmemoGet['count'] == 1) {
       // If it's marked as a creditmemo, we'll set default field values and a
       // message about the sync status of the creditmemo.
@@ -131,8 +134,6 @@ function fpptaqb_civicrm_buildForm($formName, &$form) {
       }
       $form->setDefaults($defaults);
 
-      // Define a status message indicating sync status.
-      $syncMessage = '';
       if ($trxnCreditmemo['quickbooks_id'] > 0) {
         // Creditmemo has already been synced.
         $url = "https://app.qbo.intuit.com/app/creditmemo?txnId={$trxnCreditmemo['quickbooks_id']}";
@@ -150,10 +151,10 @@ function fpptaqb_civicrm_buildForm($formName, &$form) {
         // Credit memo not synced yet.
         $syncMessage = E::ts('This credit memo has not yet been synced to QuickBooks.');
       }
-      CRM_Core_Resources::singleton()->addVars('fpptaqb', [
-        'syncMessage' => $syncMessage
-      ]);
     }
+    CRM_Core_Resources::singleton()->addVars('fpptaqb', [
+      'syncMessage' => $syncMessage
+    ]);
   }
   elseif ($formName == "CRM_Financial_Form_FinancialType") {
     // For the form CRM_Financial_Form_FinancialType, we'll add a 'quickbooks item'
