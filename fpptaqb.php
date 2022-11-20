@@ -302,18 +302,18 @@ function fpptaqb_civicrm_postProcess($formName, $form) {
       $lineFinancialtypeAmounts = CRM_Fpptaqb_Utils_Creditmemo::composeLinesFromFormValues($submitValues);
       CRM_Fpptaqb_Utils_Creditmemo::createCreditmemoWithLines($creditmemoParams, $lineFinancialtypeAmounts);
     }
+    // In core, this form does not redirect to itself; it only reloads. As a result,
+    // $form properties persist (because there's no 'reset=1' url query parameter).
+    // Under this model, Because we're adding our own fields and default values in
+    // buildForm hook,these values persist on the form, which causes display of old
+    // data in the form. To avoide this, we'll set the form detsination to the
+    // original entryurl of the form. (BTW, this isn't relevant in most cases for the
+    // civicrm ui, because in most cases this form apepears in a dialog; that's probably
+    // why core devs didn't bother to set the redirect properly. However, this situation
+    // does matter in the case that the you open the Edit Payment form in a new tab
+    // instead of in the default dialog display.)
+    $form->controller->_destination = $form->controller->_entryURL;
   }
-  // In core, this form does not redirect to itself; it only reloads. As a result,
-  // $form properties persist (because there's no 'reset=1' url query parameter).
-  // Under this model, Because we're adding our own fields and default values in
-  // buildForm hook,these values persist on the form, which causes display of old
-  // data in the form. To avoide this, we'll set the form detsination to the
-  // original entryurl of the form. (BTW, this isn't relevant in most cases for the
-  // civicrm ui, because in most cases this form apepears in a dialog; that's probably
-  // why core devs didn't bother to set the redirect properly. However, this situation
-  // does matter in the case that the you open the Edit Payment form in a new tab
-  // instead of in the default dialog display.)
-  $form->controller->_destination = $form->controller->_entryURL;
 }
 
 /**
