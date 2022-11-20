@@ -262,6 +262,8 @@ function fpptaqb_civicrm_postProcess($formName, $form) {
       'financial_trxn_id' => $trxnId
     ]);
     if ($trxnCreditmemoGet['count']) {
+      // Store any existing values in this creditmemo, before we delete it.
+      $existingCreditmemo = $trxnCreditmemoGet['values'][0];
       // We have a creditmemo on record. If it hasn't been synced, we'll delete it,
       // and below we'll create a brand new cm record, if called for with the
       // submitted values
@@ -292,9 +294,11 @@ function fpptaqb_civicrm_postProcess($formName, $form) {
         'financial_trxn_id' => $trxnId,
         'quickbooks_doc_number' => $submitValues['fpptaqb_creditmemo_doc_number'],
         'quickbooks_customer_memo' => $submitValues['fpptaqb_creditmemo_customer_memo'],
-        // retain existing value of 'quickbooks_id' because it may be NULL ('on hold')
-        'quickbooks_id' => ($trxnCreditmemoGet['values'][0]['quickbooks_id'] === NULL ? 'null' : $trxnCreditmemoGet['values'][0]['quickbooks_id']),
       ];
+      if ($existingCreditmemo) {
+        // retain existing value of 'quickbooks_id' because it may be NULL ('on hold')
+        $creditmemoParams['quickbooks_id'] = ($existingCreditmemo['quickbooks_id'] === NULL ? 'null' : $existingCreditmemo['quickbooks_id']);
+      }
       $lineFinancialtypeAmounts = CRM_Fpptaqb_Utils_Creditmemo::composeLinesFromFormValues($submitValues);
       CRM_Fpptaqb_Utils_Creditmemo::createCreditmemoWithLines($creditmemoParams, $lineFinancialtypeAmounts);
     }
