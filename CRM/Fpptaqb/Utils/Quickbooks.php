@@ -110,13 +110,14 @@ class CRM_Fpptaqb_Utils_Quickbooks {
     $ret = [];
     $countsPerItem = [];
     foreach ($qbLineItems as $qbLineItem) {
+      $lineQty = intval($qbLineItem['qty']);
       $itemId = $qbLineItem['qbItemDetails']['Id'];
       if (isset($ret[$itemId])) {
-        ++$ret[$itemId]['qty'];
+        $ret[$itemId]['qty'] += $lineQty;
       }
       else {
         $ret[$itemId] = [
-          'qty' => 1,
+          'qty' => $lineQty,
           'qbItemDetails' => $qbLineItem['qbItemDetails'],
           'unit_price' => $qbLineItem['unit_price'],
           'label' => $qbLineItem['label'],
