@@ -48,22 +48,23 @@ function fpptaqb_civicrm_validateForm($formName, &$fields, &$files, &$form, &$er
     $formName == 'CRM_Contribute_Form_AdditionalPayment'
     || $formName == 'CRM_Financial_Form_PaymentEdit'
   ) {
+    // $total_amount might have a non-numeric characters, e.g. '$ 1,000.02', which
+    // will screw up our math below. Therefore clean it up to a proper Float.
+    $total_amount = CRM_Utils_Rule::cleanMoney($fields['total_amount']);
     // Creditmemo field validation for "New Refund" and "Edit Payment" forms.
     // Get appropriate comparison values, depending on the form.
     if ($formName == 'CRM_Financial_Form_PaymentEdit') {
       // On Payment Edit form, total is negative for refunds, but on
       // New Refund form, total is positive for refunds. Therefore on Payment Edit
       // form, we should negate total_amount before comparing.
-      $total_amount = ($fields['total_amount'] * -1);
+      $total_amount = ($total_amount * -1);
       // On Payment Edit, form->_id is the financial_trxn_id for the payment.
       $financial_trxn_id = $form->getVar('_id');
     }
     else {
-      $total_amount = $fields['total_amount'];
       // On New Refund form, there is no financial_trxn_id because we haven't created it yet.
       $financial_trxn_id = NULL;
     }
-
     CRM_Fpptaqb_Util::validateCreditMemoInPaymentForm($formName, $fields, $files, $form, $errors, $total_amount, $financial_trxn_id);
   }
 }
