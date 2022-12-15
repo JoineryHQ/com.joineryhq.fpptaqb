@@ -103,8 +103,8 @@ CRM.fpptaqbStepthru = {
     var text;
     var textClass = '';
     if (result.status == 500) {
-      appendToSyncLog('Fatal error: ' + result.responseText, 'crm-error', true);
-      appendToSyncLog("Fatal error in CiviCRM. Reload page to continue.", 'crm-error');
+      this.appendToSyncLog('Fatal error: ' + result.responseText, 'crm-error', true);
+      this.appendToSyncLog("Fatal error in CiviCRM. Reload page to continue.", 'crm-error');
       CRM.$('a.button.fpptaqb-sync-button').hide();
       unsetLoading();
       return;
@@ -185,7 +185,7 @@ CRM.fpptaqbStepthru = {
 
   appendToSyncLog: function appendToSyncLog(text, textClass, isDebug) {
     // If this is a debug message, and debugging is not enabled, just do nothing and return.
-    if (isDebug && (! debugEnabled )) {
+    if (isDebug && (! this.debugEnabled )) {
       return;
     }
     // Append the message with the given CSS class.
