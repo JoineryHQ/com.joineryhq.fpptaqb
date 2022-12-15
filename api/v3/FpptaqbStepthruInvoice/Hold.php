@@ -40,8 +40,8 @@ function civicrm_api3_fpptaqb_stepthru_invoice_Hold($params) {
     CRM_Fpptaqb_Utils_Invoice::hold($id);
   }
   catch (Exception $e) {
-    if ($e->getErrorCode()) {
-      $errorCode = 'fpptaqb-' . $e->getErrorCode();
+    if ($e->getCode()) {
+      $errorCode = 'fpptaqb-' . $e->getCode();
       $errorMessage = $e->getMessage();
     }
     else {

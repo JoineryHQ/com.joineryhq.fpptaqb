@@ -44,8 +44,8 @@ function civicrm_api3_fpptaqb_stepthru_invoice_Load($params) {
       $contribution = CRM_Fpptaqb_Utils_Invoice::getReadyToSync($id);
     }
     catch (Exception $e) {
-      if ($e->getErrorCode()) {
-        $errorCode = 'fpptaqb-' . $e->getErrorCode();
+      if ($e->getCode()) {
+        $errorCode = 'fpptaqb-' . $e->getCode();
         $errorMessage = $e->getMessage();
       }
       else {

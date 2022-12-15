@@ -27,7 +27,7 @@ function _civicrm_api3_fpptaqb_stepthru_creditmemo_Load_spec(&$spec) {
  * @see civicrm_api3_create_success
  *
  * @throws API_Exception if the getReadyToSync() operation catches an exception; error code 
- *   is "fppta-{$e->getErrorCode()}" if error code is available, else 'fppta-500'.
+ *   is "fppta-{$e->getCode()}" if error code is available, else 'fppta-500'.
  */
 function civicrm_api3_fpptaqb_stepthru_creditmemo_Load($params) {
   $id = ($params['id'] ?? CRM_Fpptaqb_Utils_Creditmemo::getReadyToSyncIdNext());
@@ -43,8 +43,8 @@ function civicrm_api3_fpptaqb_stepthru_creditmemo_Load($params) {
     }
     catch (CRM_Core_Exception $e) {
       $extraParams = ['values' => $params];
-      if ($e->getErrorCode()) {
-        throw new API_Exception($e->getMessage(), 'fpptaqb-' . $e->getErrorCode(), $extraParams);
+      if ($e->getCode()) {
+        throw new API_Exception($e->getMessage(), 'fpptaqb-' . $e->getCode(), $extraParams);
       }
       else {
         throw new API_Exception("Unknown error: " . $e->getMessage(), 'fpptaqb-500', $extraParams);

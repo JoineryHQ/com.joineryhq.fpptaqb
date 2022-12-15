@@ -52,8 +52,8 @@ function civicrm_api3_fpptaqb_stepthru_payment_Sync($params) {
     $qbPmtId = CRM_Fpptaqb_Utils_Payment::sync($id);
   }
   catch (CRM_Core_Exception $e) {
-    if ($e->getErrorCode()) {
-      $errorCode = 'fpptaqb-' . $e->getErrorCode();
+    if ($e->getCode()) {
+      $errorCode = 'fpptaqb-' . $e->getCode();
       $errorMessage = $e->getMessage();
     }
     else {

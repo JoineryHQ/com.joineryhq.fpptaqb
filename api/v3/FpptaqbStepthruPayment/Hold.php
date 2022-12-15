@@ -29,7 +29,7 @@ function _civicrm_api3_fpptaqb_stepthru_payment_Hold_spec(&$spec) {
  *
  * @throws API_Exception with code fpptaqb-404 if contribution payment can't be found.
  * @throws API_Exception if the hold() operation catches an exception; error code 
- *   is "fppta-{$e->getErrorCode()}" if error code is available, else 'fppta-500'.
+ *   is "fppta-{$e->getCode()}" if error code is available, else 'fppta-500'.
  */
 function civicrm_api3_fpptaqb_stepthru_payment_Hold($params) {
   $id = CRM_Fpptaqb_Utils_Payment::validateId($params['id']);
@@ -42,8 +42,8 @@ function civicrm_api3_fpptaqb_stepthru_payment_Hold($params) {
     CRM_Fpptaqb_Utils_Payment::hold($id);
   }
   catch (CRM_Core_Exception $e) {
-    if ($e->getErrorCode()) {
-      throw new API_Exception($e->getMessage(), 'fpptaqb-'. $e->getErrorCode());
+    if ($e->getCode()) {
+      throw new API_Exception($e->getMessage(), 'fpptaqb-'. $e->getCode());
     }
     else {
       throw new API_Exception("Unknown error: ". $e->getMessage(), 'fpptaqb-500');
