@@ -9,7 +9,6 @@ use CRM_Fpptaqb_ExtensionUtil as E;
 
 /**
  * Implements hook_civicrm_pageRun().
- * @param type $page
  */
 function fpptaqb_civicrm_pageRun(&$page) {
   $pageName = $page->getVar('_name');
@@ -105,7 +104,7 @@ function fpptaqb_civicrm_buildForm($formName, &$form) {
 
     if (
       ($trxnCreditmemoGet['count'] == 1)
-      || ($formValues['total_amount'] < 0 )
+      || ($formValues['total_amount'] < 0)
     ) {
       // If this payment is a refund (i.e., the amount is negative, OR it already
       // is marked for creditmemo processin) then add relevant creditmemo fields to the form.
@@ -153,7 +152,7 @@ function fpptaqb_civicrm_buildForm($formName, &$form) {
       }
     }
     CRM_Core_Resources::singleton()->addVars('fpptaqb', [
-      'syncMessage' => $syncMessage
+      'syncMessage' => $syncMessage,
     ]);
   }
   elseif ($formName == "CRM_Financial_Form_FinancialType") {
@@ -168,7 +167,7 @@ function fpptaqb_civicrm_buildForm($formName, &$form) {
       ['' => E::ts('- select -')] + $options,
       ['class' => 'crm-select2']
     );
-    // Set a default value for this field, if possbile.    
+    // Set a default value for this field, if possbile.
     $defaults = [];
     $financialTypeId = $form->_id;
     if ($financialTypeId) {
@@ -180,10 +179,10 @@ function fpptaqb_civicrm_buildForm($formName, &$form) {
       ]);
       if ($financialTypeItem['values']) {
         $defaults['fpptaqb_quickbooks_id'] = $financialTypeItem['values'][0]['quickbooks_id'];
-      }    
+      }
       $form->setDefaults($defaults);
     }
-      
+
     // Add the field to bhfe fields and add JS to move it int othe right place in the DOM.
     $bhfe = $form->get_template_vars('beginHookFormElements');
     if (!$bhfe) {
@@ -217,7 +216,7 @@ function fpptaqb_civicrm_buildForm($formName, &$form) {
         CRM_Core_Resources::singleton()->addVars('fpptaqb', $jsVars);
         CRM_Core_Resources::singleton()->addScriptFile('com.joineryhq.fpptaqb', 'js/alterContactRef.js');
       }
-    }  
+    }
   }
 }
 
@@ -231,7 +230,7 @@ function fpptaqb_civicrm_postProcess($formName, $form) {
     // Get existing link if any;
     $financialTypeItemId = NULL;
     $financialTypeItem = _fpptaqb_civicrmapi('FpptaquickbooksFinancialTypeItem', 'get', [
-      'financial_type_id' => $financialTypeId
+      'financial_type_id' => $financialTypeId,
     ]);
     if ($financialTypeItem['id']) {
       $financialTypeItemId = $financialTypeItem['id'];
@@ -245,7 +244,7 @@ function fpptaqb_civicrm_postProcess($formName, $form) {
         'quickbooks_id' => $form->_submitValues['fpptaqb_quickbooks_id'],
       ]);
     }
-    elseif($financialTypeItemId) {
+    elseif ($financialTypeItemId) {
       // A QB item is NOT selected, but a financialTypeItem record exists;
       // delete the link record.
       _fpptaqb_civicrmapi('FpptaquickbooksFinancialTypeItem', 'delete', [
@@ -260,7 +259,7 @@ function fpptaqb_civicrm_postProcess($formName, $form) {
     // Get any creditmemo filed on this payment.
     $trxnCreditmemoGet = _fpptaqb_civicrmapi('FpptaquickbooksTrxnCreditmemo', 'get', [
       'sequential' => 1,
-      'financial_trxn_id' => $trxnId
+      'financial_trxn_id' => $trxnId,
     ]);
     if ($trxnCreditmemoGet['count']) {
       // Store any existing values in this creditmemo, before we delete it.
@@ -275,12 +274,12 @@ function fpptaqb_civicrm_postProcess($formName, $form) {
         // so just return.
         return;
       }
-      else  {
+      else {
         // If not yet synced, we'll save appropriate values. But rather than trying to
         // update the credimemo and any creditmemolines individually, we'll just
         // delete the creditmemo (which will cascade delete any creditmemolines) and
         // then re-create them below.
-        $trxnCreditmemoDelete= _fpptaqb_civicrmapi('FpptaquickbooksTrxnCreditmemo', 'delete', [
+        $trxnCreditmemoDelete = _fpptaqb_civicrmapi('FpptaquickbooksTrxnCreditmemo', 'delete', [
           'id' => $trxnCreditmemoGet['id'],
         ]);
       }
@@ -326,7 +325,7 @@ function fpptaqb_civicrm_apiWrappers(&$wrappers, $apiRequest) {
     && strtolower($apiRequest['action']) == 'get'
     && (($apiRequest['params']['isFpptaqbContactRef'] ?? 0) == 1)
   ) {
-    // On contact.get where isFpptaqbContactRef, add wrappers to limit the 
+    // On contact.get where isFpptaqbContactRef, add wrappers to limit the
     // contacts returned (see comments in wrapper class).
     $wrappers[] = new CRM_Fpptaqb_APIWrappers_Contact_IsFpptaqbContactRef();
   }
@@ -372,12 +371,16 @@ function fpptaqb_civicrm_apiWrappers(&$wrappers, $apiRequest) {
  */
 function fpptaqb_civicrm_permission(&$permissions) {
   $permissions['fpptaqb_administer_quickbooks_configuration'] = [
-    ts('FPPTA QuickBooks: administer configuration'),                     // label
-    null,  // description
+    // Label:
+    ts('FPPTA QuickBooks: administer configuration'),
+    // Description:
+    NULL,
   ];
   $permissions['fpptaqb_sync_to_quickbooks'] = [
-    ts('FPPTA QuickBooks: sync data to QuickBooks'),                     // label
-    null,  // description
+    // Label:
+    ts('FPPTA QuickBooks: sync data to QuickBooks'),
+    // Description:
+    NULL,
   ];
 }
 
@@ -471,6 +474,7 @@ function fpptaqb_civicrm_entityTypes(&$entityTypes) {
  *
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_navigationMenu
  */
+
 /**
  * Implements hook_civicrm_navigationMenu().
  *
