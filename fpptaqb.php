@@ -532,3 +532,22 @@ function _fpptaqb_civicrmapi(string $entity, string $action, array $params, bool
 
   return $result;
 }
+
+function fpptaqb_civicrm_merge($type, &$data, $mainId = NULL, $otherId = NULL, $tables = NULL) {
+  if ($type == 'sqls') {
+    // For the list of SQL queries that will be used to merge these contacts, prepend
+    // a couple of queries to rectify unique-indexed columns having FK to contact.id.
+    // Without this, we'll get mysql errors like this one:
+    // Duplicate entry '1877' for key 'UI_fpptaquickbooks_contact_customer_contact_id'
+    // similar to what's reported at https://lab.civicrm.org/dev/core/-/issues/1998
+    $mainId = (int) $mainId;
+    $otherId = (int) $otherId;
+    $prependSqls = [
+      "UPDATE IGNORE civicrm_fpptaquickbooks_contact_customer SET contact_id = $mainId WHERE contact_id = $otherId",
+      "DELETE FROM civicrm_fpptaquickbooks_contact_customer WHERE contact_id = $otherId",
+      "UPDATE IGNORE civicrm_fpptaquickbooks_log SET contact_id = $mainId WHERE contact_id = $otherId",
+      "DELETE FROM civicrm_fpptaquickbooks_log WHERE contact_id = $otherId",
+    ];
+    $data = $prependSqls + $data;
+  }
+}
