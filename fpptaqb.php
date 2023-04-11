@@ -552,6 +552,6 @@ function fpptaqb_civicrm_merge($type, &$data, $mainId = NULL, $otherId = NULL, $
       "UPDATE IGNORE civicrm_fpptaquickbooks_log SET contact_id = $mainId WHERE contact_id = $otherId",
       "DELETE FROM civicrm_fpptaquickbooks_log WHERE contact_id = $otherId",
     ];
-    $data = $prependSqls + $data;
+    $data = array_merge($prependSqls, $data);
   }
 }
