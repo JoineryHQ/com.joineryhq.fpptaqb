@@ -31,6 +31,11 @@ function _civicrm_api3_fpptaqb_stepthru_payment_Load_spec(&$spec) {
  */
 function civicrm_api3_fpptaqb_stepthru_payment_Load($params) {
   $id = ($params['id'] ?? CRM_Fpptaqb_Utils_Payment::getReadyToSyncIdNext());
+  // Add 'id' to $params so that the returned values can be meaningful to the consumer
+  // (which is probably our ajax-driven stepthru interface). If the consumer
+  // doesn't know the id of the returned entity, it can't do anything with it,
+  // such as 'skip/hold' it.
+  $params['id'] = $id;
   if (!$id) {
     // No "next" payment id was found; there must be none ready.
     // This is not an error; just inform the user.

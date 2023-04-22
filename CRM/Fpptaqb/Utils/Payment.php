@@ -101,6 +101,15 @@ class CRM_Fpptaqb_Utils_Payment {
       $contribution = _fpptaqb_civicrmapi('Contribution', 'getSingle', ['id' => $contributionId]);
 
       $organizationCid = CRM_Fpptaqb_Utils_Invoice::getAttributedContactId($contributionId);
+      if (!$organizationCid) {
+        // It's odd that we would not have a known organization on a Payment, because
+        // this payment will only be ready-to-sync if the related Contribution was synced,
+        // and that would have required a known organization. If we're in this situation,
+        // it must be that the contribution/participant records was changed somenow --
+        // perhaps the related organization was deleted instead of duplicate-merged,
+        // or something else. In any case, this is an oddity that the user should address.
+        throw new CRM_Fpptaqb_Exception(E::ts('Could not identify an attributed organization for contribution id=%1', ['%1' => $contributionId]), 500);
+      }
       $qbCustomerId = CRM_Fpptaqb_Utils_Quickbooks::getCustomerIdForContact($organizationCid);
       $qbCustomerDetails = CRM_Fpptaqb_Utils_Quickbooks::getCustomerDetails($qbCustomerId);
 
@@ -215,12 +224,24 @@ class CRM_Fpptaqb_Utils_Payment {
       ]);
 
       $organizationCid = CRM_Fpptaqb_Utils_Invoice::getAttributedContactId($contributionId);
-
-      $financialTrxn += [
-        'organizationName' => _fpptaqb_civicrmapi('Contact', 'getValue', [
+      if ($organizationCid) {
+        $organizationName = _fpptaqb_civicrmapi('Contact', 'getValue', [
           'id' => $organizationCid,
           'return' => 'display_name',
-        ]),
+        ]);
+      }
+      else {
+        // It's odd that we would not have a known organization on a Payment, because
+        // this payment will only be ready-to-sync if the related Contribution was synced,
+        // and that would have required a known organization. If we're in this situation,
+        // it must be that the contribution/participant records was changed somenow --
+        // perhaps the related organization was deleted instead of duplicate-merged,
+        // or something else. In any case, this is an oddity that the user should address.
+        $organizationName = E::ts('ERROR: NONE FOUND');
+      }
+
+      $financialTrxn += [
+        'organizationName' => $organizationName,
         'organizationCid' => $organizationCid,
         'contributionId' => $contributionId,
         'paymentInstrumentLabel' => CRM_Core_PseudoConstant::getLabel('CRM_Core_BAO_FinancialTrxn', 'payment_instrument_id', $financialTrxn['payment_instrument_id']),

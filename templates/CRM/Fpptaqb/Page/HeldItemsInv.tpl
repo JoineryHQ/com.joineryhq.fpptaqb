@@ -17,7 +17,7 @@
       <td>{$row.receive_date}</td>
       <td>
         {if $row.organizationCid}
-          <a target="_blank" href="{crmURL fb=1 p="civicrm/contact/view" q="reset=1&cid=`$row.organizationCid`"}">{$row.organizationName}</a></td>
+          <a target="_blank" href="{crmURL fb=1 p="civicrm/contact/view" q="reset=1&cid=`$row.organizationCid`"}">{$row.organizationName}</a>
         {else}
           {$row.organizationName}
         {/if}

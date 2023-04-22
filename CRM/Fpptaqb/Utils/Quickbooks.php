@@ -57,6 +57,11 @@ class CRM_Fpptaqb_Utils_Quickbooks {
   }
 
   public static function getCustomerIdForContact($contactId) {
+    if (!$contactId) {
+      // If somehow a NULL value was passed in, there is no valid return value.
+      // Throw an exception.
+      throw new CRM_Fpptaqb_Exception(E::ts('Attempted to get QB Customer ID for contact, but no contact ID was provided.'), 503);
+    }
     $qbCustomer = _fpptaqb_civicrmapi('FpptaquickbooksContactCustomer', 'get', [
       'sequential' => 1,
       'contact_id' => $contactId,
