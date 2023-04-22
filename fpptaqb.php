@@ -28,14 +28,15 @@ function fpptaqb_civicrm_pageRun(&$page) {
  * Implements hook_civicrm_links().
  */
 function fpptaqb_civicrm_links($op, $objectName, $objectId, &$links, &$mask, &$values) {
-  if ($objectName == 'Contribution' && $op = 'contribution.selector.row') {
+  if ($objectName == 'Contribution'
+    && ($op == 'contribution.selector.row' || $op == 'contribution.edit.action')
+  ) {
     $links[] = [
       'name' => E::ts('QB Status'),
       'url' => 'civicrm/fpptaqb/syncstatus',
-      'qs' => 'id=%%myObjId%%',
+      'qs' => 'id=' . $objectId,
       'title' => E::ts('QB Sync Status'),
     ];
-    $values['myObjId'] = $objectId;
   }
 }
 
