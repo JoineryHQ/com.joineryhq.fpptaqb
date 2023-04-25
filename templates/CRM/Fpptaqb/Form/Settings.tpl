@@ -1,14 +1,4 @@
-{* HEADER *}
-{if $moreSettingsLinks}
-<div class="help">
-  More settings:
-  <ul>
-    {foreach from=$moreSettingsLinks item=moreSettingsLink}
-    <li><a href="{$moreSettingsLink.url}">{$moreSettingsLink.label}</a></li>
-    {/foreach}
-  </ul>
-</div>
-{/if}
+{include file="CRM/Fpptaqb/common/settingsLocalNav.tpl"}
 
 {* FIELDS (AUTOMATIC LAYOUT) *}
 

@@ -1,3 +1,4 @@
+{include file="CRM/Fpptaqb/common/settingsLocalNav.tpl"}
 <table id="fpptaqbFinancialType" class="row-highlight">
   <thead>
   <tr>

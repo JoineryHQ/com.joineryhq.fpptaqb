@@ -31,6 +31,8 @@ class CRM_Fpptaqb_Page_FinancialType extends CRM_Core_Page {
     }
     $this->assign('rows', $rows);
 
+    CRM_Fpptaqb_Util::assignSettingsLocalNavigationItems($this);
+
     parent::run();
   }
 

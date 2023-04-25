@@ -1,3 +1,4 @@
+{include file="CRM/Fpptaqb/common/settingsLocalNav.tpl"}
 <div class="help">
 <p>{ts}Configure rules to determine the correct QuickBooks Payment Method when syncing payments.{/ts}</p>
 <p>{ts}Rules are processed in order from top to bottom, as configured here. The first matching rule will be used.{/ts}</p>

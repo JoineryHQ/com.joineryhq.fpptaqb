@@ -100,6 +100,11 @@ class CRM_Fpptaqb_Form_QbPaymentMethodRules extends CRM_Core_Form {
     parent::postProcess();
   }
 
+  public function preProcess() {
+    CRM_Fpptaqb_Util::assignSettingsLocalNavigationItems($this);
+    parent::preProcess();
+  }
+
   /**
    * Set defaults for form.
    *

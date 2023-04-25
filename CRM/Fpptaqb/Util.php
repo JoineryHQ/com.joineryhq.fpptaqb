@@ -58,6 +58,7 @@ class CRM_Fpptaqb_Util {
         'permission' => 'administer CiviCRM',
         'operator' => 'AND',
         'separator' => NULL,
+        '#shortLabel' => 'Settings',
       ]
     ];
     $items[] = [
@@ -69,6 +70,7 @@ class CRM_Fpptaqb_Util {
         'permission' => 'fpptaqb_administer_quickbooks_configuration',
         'operator' => 'AND',
         'separator' => NULL,
+        '#shortLabel' => 'FT Linkage',
       ]
     ];
     $items[] = [
@@ -80,6 +82,7 @@ class CRM_Fpptaqb_Util {
         'permission' => 'fpptaqb_administer_quickbooks_configuration',
         'operator' => 'AND',
         'separator' => NULL,
+        '#shortLabel' => 'Payment Method Rules',
       ]
     ];
     return $items;
@@ -327,5 +330,29 @@ class CRM_Fpptaqb_Util {
         }
       }
     }
+  }
+
+  /**
+   * Create an array of local navigation tabs and assign them to the template.
+   * This array will be used by templates/common/settingsLocalNav.tpl.
+   *
+   * @param type $smartyContentObject
+   */
+  public static function assignSettingsLocalNavigationItems($smartyContentObject) {
+    $items = CRM_Fpptaqb_Util::getNavigationMenuItems();
+    $moreSettingsLinks = [];
+    $contentObjectPath = implode('/', $smartyContentObject->urlPath);
+    foreach ($items as $key => $item) {
+      if (strpos($item['properties']['url'], 'civicrm/admin/fpptaqb/') === 0) {
+        $itemPath = parse_url($item['properties']['url'], PHP_URL_PATH);
+        $moreSettingsLinks[] = [
+          'url' => CRM_Utils_System::url($item['properties']['url']),
+          'label' => ($item['properties']['#shortLabel'] ?? $item['properties']['label']),
+          'active' => ($itemPath == $contentObjectPath),
+          'id' => 'local-nav-' . $key,
+        ];
+      }
+    }
+    $smartyContentObject->assign('moreSettingsLinks', $moreSettingsLinks);
   }
 }

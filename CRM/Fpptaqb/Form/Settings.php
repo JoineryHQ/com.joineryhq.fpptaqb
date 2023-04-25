@@ -178,17 +178,7 @@ class CRM_Fpptaqb_Form_Settings extends CRM_Core_Form {
   }
 
   public function preProcess() {
-    $items = CRM_Fpptaqb_Util::getNavigationMenuItems();
-    $moreSettingsLinks = [];
-    foreach ($items as $item) {
-      if ($item['parent'] == 'Administer/CiviContribute/FPPTA QuickBooks Settings') {
-        $moreSettingsLinks[] = [
-          'url' => CRM_Utils_System::url($item['properties']['url']),
-          'label' => $item['properties']['label'],
-        ];
-      }
-    }
-    $this->assign('moreSettingsLinks', $moreSettingsLinks);
+    CRM_Fpptaqb_Util::assignSettingsLocalNavigationItems($this);
     parent::preProcess();
   }
 
