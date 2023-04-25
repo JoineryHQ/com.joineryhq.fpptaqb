@@ -180,24 +180,14 @@ class CRM_Fpptaqb_APIHelper {
    * @return array
    */
   public static function getQuickBooksCredentials() {
-    $fpptaqbSettings = civicrm_api3('Setting', 'get', array('group' => "fpptaqb"));
-    $fpptaqbSettings = $fpptaqbSettings['values'][$fpptaqbSettings['id']];
-    $clientID = $fpptaqbSettings["fpptaqb_quickbooks_consumer_key"];
-    $clientSecret = $fpptaqbSettings["fpptaqb_quickbooks_shared_secret"];
-    $accessToken = $fpptaqbSettings["fpptaqb_quickbooks_access_token"];
-    $refreshToken = $fpptaqbSettings["fpptaqb_quickbooks_refresh_token"];
-    $realMId = $fpptaqbSettings["fpptaqb_quickbooks_realmId"];
-    $tokenExpiryDate = $fpptaqbSettings["fpptaqb_quickbooks_access_token_expiryDate"];
-    $refreshTokenExpiryDate = $fpptaqbSettings["fpptaqb_quickbooks_refresh_token_expiryDate"];
-
     return array(
-      'clientID' => $clientID,
-      'clientSecret' => $clientSecret,
-      'accessToken' => $accessToken,
-      'refreshToken' => $refreshToken,
-      'realMId' => $realMId,
-      'accessTokenExpiryDate' => $tokenExpiryDate,
-      'refreshTokenExpiryDate' => $refreshTokenExpiryDate,
+      'clientID' => Civi::settings()->get('fpptaqb_quickbooks_consumer_key'),
+      'clientSecret' => Civi::settings()->get('fpptaqb_quickbooks_shared_secret'),
+      'accessToken' => Civi::settings()->get('fpptaqb_quickbooks_access_token'),
+      'refreshToken' => Civi::settings()->get('fpptaqb_quickbooks_refresh_token'),
+      'realMId' => Civi::settings()->get('fpptaqb_quickbooks_realmId'),
+      'tokenExpiryDate' => Civi::settings()->get('fpptaqb_quickbooks_access_token_expiryDate'),
+      'refreshTokenExpiryDate' => Civi::settings()->get('fpptaqb_quickbooks_refresh_token_expiryDate'),
     );
   }
 
