@@ -20,7 +20,8 @@ return array(
       'class' => 'crm-select2',
       'style' => "width:auto;",
     ),
-    'X_options_callback' => 'CRM_Fpptaqb_Form_Settings::getCustomFieldsContribution',
+    'X_options_callback' => 'CRM_Fpptaqb_Form_Settings_Basic::getCustomFieldsContribution',
+    'X_form' => 'CRM_Fpptaqb_Form_Settings_Basic',
   ),
   'fpptaqb_cf_id_participant' => array(
     'group_name' => 'FPPTA QuickBooks Helper Settings',
@@ -39,7 +40,8 @@ return array(
       'class' => 'crm-select2',
       'style' => "width:auto;",
     ),
-    'X_options_callback' => 'CRM_Fpptaqb_Form_Settings::getCustomFieldsParticipant',
+    'X_options_callback' => 'CRM_Fpptaqb_Form_Settings_Basic::getCustomFieldsParticipant',
+    'X_form' => 'CRM_Fpptaqb_Form_Settings_Basic',
   ),
   'fpptaqb_use_sync_class' => array(
     'group_name' => 'Fpptaqb Settings',
@@ -59,6 +61,7 @@ return array(
       'style' => "width:auto;",
     ),
     'X_options_callback' => 'CRM_Fpptaqb_Util::getSyncClassOptions',
+    'X_form' => 'CRM_Fpptaqb_Form_Settings_Basic',
   ),
   'fpptaqb_pmt_deposit_to_account_id' => array(
     'group_name' => 'Fpptaqb Settings',
@@ -77,7 +80,8 @@ return array(
       'class' => 'crm-select2',
       'style' => "width:auto;",
     ),
-    'X_options_callback' => 'CRM_Fpptaqb_Form_Settings::getSettingsAccountOptions',
+    'X_options_callback' => 'CRM_Fpptaqb_Form_Settings_Basic::getSettingsAccountOptions',
+    'X_form' => 'CRM_Fpptaqb_Form_Settings_Basic',
   ),
   'fpptaqb_sync_wait_days' => array(
     'group_name' => 'Fpptaqb Settings',
@@ -95,6 +99,7 @@ return array(
     'X_form_rules_args' => [
       [E::ts('The field "Days to wait before syncing an invoice or payment" is required. Set to 0 for no delay.'), 'required'],
     ],
+    'X_form' => 'CRM_Fpptaqb_Form_Settings_Basic',
   ),
   'fpptaqb_minimum_date' => array(
     'group_name' => 'Fpptaqb Settings',
@@ -112,6 +117,7 @@ return array(
     'X_form_rules_args' => [
       [E::ts('The field "Minimum invoice/payment date" is required.'), 'required'],
     ],
+    'X_form' => 'CRM_Fpptaqb_Form_Settings_Basic',
   ),
   'fpptaqb_quickbooks_consumer_key' => array(
     'group_name' => E::ts('QuickBooks Online Settings'),
@@ -130,6 +136,7 @@ return array(
       'size' => 50,
     ),
     'quick_form_type' => 'Element',
+    'X_form' => 'CRM_Fpptaqb_Form_Settings_QbLinkage',
   ),
   'fpptaqb_quickbooks_shared_secret' => array(
     'group_name' => E::ts('QuickBooks Online Settings'),
@@ -148,9 +155,8 @@ return array(
       'size' => 50,
     ),
     'quick_form_type' => 'Element',
+    'X_form' => 'CRM_Fpptaqb_Form_Settings_QbLinkage',
   ),
-
-  
   'fpptaqb_quickbooks_access_token_expiryDate' => array(
     'group_name' => E::ts('QuickBooks Online Settings'),
     'group' => 'fpptaqb',
@@ -169,6 +175,7 @@ return array(
       'readonly' => 'true',
     ),
     'quick_form_type' => 'Element',
+    'X_form' => 'CRM_Fpptaqb_Form_Settings_QbLinkage',
   ),
   'fpptaqb_quickbooks_refresh_token_expiryDate' => array(
     'group_name' => E::ts('QuickBooks Online Settings'),
@@ -188,6 +195,7 @@ return array(
       'readonly' => 'true',
     ),
     'quick_form_type' => 'Element',
+    'X_form' => 'CRM_Fpptaqb_Form_Settings_QbLinkage',
   ),
   'fpptaqb_quickbooks_realmId' => array(
     'group_name' => E::ts('QuickBooks Online Settings'),

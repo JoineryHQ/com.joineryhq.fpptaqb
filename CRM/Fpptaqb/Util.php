@@ -85,6 +85,18 @@ class CRM_Fpptaqb_Util {
         '#shortLabel' => 'Payment Method Rules',
       ]
     ];
+    $items[] = [
+      'parent' => 'Administer/CiviContribute/' . E::ts('FPPTA QuickBooks Settings'),
+      'properties' => [
+        'label' => E::ts('QuickBooks Linkage'),
+        'name' => 'QuickBooks Linkage',
+        'url' => 'civicrm/admin/fpptaqb/qbLinkage?reset=1',
+        'permission' => 'fpptaqb_administer_quickbooks_configuration',
+        'operator' => 'AND',
+        'separator' => NULL,
+        '#shortLabel' => 'QB Linkage',
+      ]
+    ];
     return $items;
   }
 

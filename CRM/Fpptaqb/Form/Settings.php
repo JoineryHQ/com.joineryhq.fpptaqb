@@ -15,8 +15,8 @@ class CRM_Fpptaqb_Form_Settings extends CRM_Core_Form {
   // Group must be the same as the group in your Extension.setting.php
   public static $settingFilter = array('group' => 'fpptaqb');
   public static $extensionName = 'com.joineryhq.fpptaqb';
-  private $_submittedValues = array();
-  private $_settings = array();
+  protected $_submittedValues = array();
+  protected $_settings = array();
 
   public function __construct(
     $state = NULL,
@@ -126,26 +126,6 @@ class CRM_Fpptaqb_Form_Settings extends CRM_Core_Form {
     // export form elements
     $this->assign('elementNames', $this->getRenderableElementNames());
 
-    $session = CRM_Core_Session::singleton();
-
-    $QBCredentials = CRM_Fpptaqb_APIHelper::getQuickBooksCredentials();
-    $isRefreshTokenExpired = CRM_Fpptaqb_APIHelper::isTokenExpired($QBCredentials, TRUE);
-
-    if ((!empty($QBCredentials['clientID']) && !empty($QBCredentials['clientSecret']) && empty($QBCredentials['accessToken']) && empty($QBCredentials['refreshToken']) && empty($QBCredentials['realMId'])) || $isRefreshTokenExpired) {
-      $url = str_replace("&amp;", "&", CRM_Utils_System::url("civicrm/fpptaqb/OAuth", NULL, TRUE, NULL));
-      $this->assign('redirect_url', $url);
-    }
-
-    $this->assign('isRefreshTokenExpired', $isRefreshTokenExpired);
-
-    $showClientKeysMessage = TRUE;
-    if (!empty($QBCredentials['clientID']) && !empty($QBCredentials['clientSecret'])) {
-      $showClientKeysMessage = FALSE;
-    }
-
-    $this->assign('showClientKeysMessage', $showClientKeysMessage);
-    
-
     parent::buildQuickForm();
   }
 
@@ -212,8 +192,15 @@ class CRM_Fpptaqb_Form_Settings extends CRM_Core_Form {
     }
   }
   public static function getSettings() {
+    $formSettings = [];
     $settings = _fpptaqb_civicrmapi('setting', 'getfields', array('filters' => self::$settingFilter));
-    return $settings['values'];
+    $calledClass = get_called_class();
+    foreach ($settings['values'] as $key => $value) {
+      if (($value['X_form'] ?? NULL) == $calledClass) {
+        $formSettings[$key] = $value;
+      }
+    }
+    return $formSettings;
   }
 
   /**
@@ -224,27 +211,8 @@ class CRM_Fpptaqb_Form_Settings extends CRM_Core_Form {
     $settings = $this->_settings;
     $values = array_intersect_key($this->_submittedValues, $settings);
 
-    // Compare new values to saved values for clientID and clientSecret, and note
-    // whether either one has changed.
-    $previousCredentials = CRM_Fpptaqb_APIHelper::getQuickBooksCredentials();
-    $clientIDChanged = $previousCredentials['clientID'] != $values['fpptaqb_quickbooks_consumer_key'];
-    $clientSecretChanged = $previousCredentials['clientSecret'] != $values['fpptaqb_quickbooks_shared_secret'];
-
     // Save all settings as given.
     _fpptaqb_civicrmapi('setting', 'create', $values);
-
-    // If clientID or clientSecret chaned, invalidate anything that depended on the old Client ID or Shared Secret
-    if ($clientIDChanged || $clientSecretChanged) {
-      civicrm_api3(
-        'setting', 'create', array(
-          "fpptaqb_quickbooks_access_token" => '',
-          "fpptaqb_quickbooks_refresh_token" => '',
-          "fpptaqb_quickbooks_realmId" => '',
-          "fpptaqb_quickbooks_access_token_expiryDate" => '',
-          "fpptaqb_quickbooks_refresh_token_expiryDate" => '',
-        )
-      );
-    }
 
     // Save any that are not submitted, as well (e.g., checkboxes that aren't checked).
     $settingsEditable = $this->filterEditableSettings();
@@ -291,80 +259,6 @@ class CRM_Fpptaqb_Form_Settings extends CRM_Core_Form {
     }
     else {
       return CRM_Utils_Array::value('X_options', $setting, array());
-    }
-  }
-
-  /**
-   * X_options_callback for fpptaqb_cf_id_contribution setting.
-   *
-   */
-  public function getCustomFieldsContribution() {
-    // Select placeholder
-    $options = [
-      '' => '-' . E::ts('none') . '-',
-    ];
-    
-    $customFields = \Civi\Api4\CustomField::get()
-      ->setCheckPermissions(FALSE)
-      ->addWhere("data_type", '=', "ContactReference")
-      ->addChain('custom_group', \Civi\Api4\CustomGroup::get()
-        ->addWhere('id', '=', '$custom_group_id'),
-      0)
-      ->execute();
-    foreach ($customFields as $customField) {
-      $groupExtends = $customField['custom_group']['extends'];
-      // Only add this field as an option if it meets certain criteria:
-      if (
-        // Field Group extends contribution.
-        $groupExtends == 'Contribution'
-        // Fields is filtered to organiztion
-        && (stristr($customField['filter'], 'contact_type=organization') !== FALSE)
-      ) {
-        $options[$customField['id']] = $customField['custom_group']['title'] . ' :: ' . $customField['label'];
-      }
-    }
-    return $options;
-  }
-  
-  /**
-   * X_options_callback for fpptaqb_cf_id_participant setting.
-   *
-   */
-  public function getCustomFieldsParticipant() {
-    // Select placeholder
-    $options = [
-      '' => '-' . E::ts('none') . '-',
-    ];
-    
-    $customFields = \Civi\Api4\CustomField::get()
-      ->setCheckPermissions(FALSE)
-      ->addWhere("data_type", '=', "ContactReference")
-      ->addChain('custom_group', \Civi\Api4\CustomGroup::get()
-        ->addWhere('id', '=', '$custom_group_id'),
-      0)
-      ->execute();
-    foreach ($customFields as $customField) {
-      $groupExtends = $customField['custom_group']['extends'];
-      // Only add this field as an option if it meets certain criteria:
-      if (
-        // Field Group extends participant.
-        $groupExtends == 'Participant'
-        // Fields is filtered to organiztion
-        && (stristr($customField['filter'], 'contact_type=organization') !== FALSE)
-      ) {
-        $options[$customField['id']] = $customField['custom_group']['title'] . ' :: ' . $customField['label'];
-      }
-    }
-    return $options;
-  }
-
-  public static function getSettingsAccountOptions() {
-    try {
-      return CRM_Fpptaqb_Utils_Quickbooks::getAccountOptions();
-    }
-    catch (Exception $e) {
-      CRM_Core_Session::setStatus('Error getting Account options for '. E::ts('QuickBook account for Payments') . ' field: ' . $e->getMessage(), E::ts('Error'), 'error');
-      return [];
     }
   }
 

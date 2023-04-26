@@ -55,29 +55,35 @@
     <access_arguments>fpptaqb_sync_to_quickbooks</access_arguments>
   </item>
   <item>
-      <path>civicrm/fpptaqb/OAuth</path>
-      <page_callback>CRM_Fpptaqb_Page_OAuthQBO</page_callback>
-      <title>QuickBooks Online Authentication</title>
-      <!-- The access permission type should be for just administrators, as they need to login first to access to the form page.
+    <path>civicrm/fpptaqb/OAuth</path>
+    <page_callback>CRM_Fpptaqb_Page_OAuthQBO</page_callback>
+    <title>QuickBooks Online Authentication</title>
+    <!-- The access permission type should be for just administrators, as they need to login first to access to the form page.
        On that page they could have redirect button to the OAuth page, so they have already logged in. So we do not need the public accessing token anymore. -->
-      <access_arguments>access CiviCRM</access_arguments>
+    <access_arguments>access CiviCRM</access_arguments>
   </item>
   <item>
     <path>civicrm/admin/fpptaqb/settings</path>
-    <page_callback>CRM_Fpptaqb_Form_Settings</page_callback>
+    <page_callback>CRM_Fpptaqb_Form_Settings_Basic</page_callback>
     <title>FPPTA QuickBooks Sync: Settings</title>
     <access_arguments>administer CiviCRM</access_arguments>
   </item>
   <item>
     <path>civicrm/admin/fpptaqb/financialType</path>
     <page_callback>CRM_Fpptaqb_Page_FinancialType</page_callback>
-    <title>Financial Types: Linked to QuickBooks Items</title>
+    <title>FPPTA QuickBooks Sync: Financial Types Linked to QuickBooks Items</title>
     <access_arguments>fpptaqb_administer_quickbooks_configuration</access_arguments>
   </item>
   <item>
     <path>civicrm/admin/fpptaqb/qbPaymentMethodRules</path>
     <page_callback>CRM_Fpptaqb_Form_QbPaymentMethodRules</page_callback>
-    <title>QuickBooks Payment Method: Rules</title>
+    <title>FPPTA QuickBooks Sync: Payment Method Rules</title>
+    <access_arguments>fpptaqb_administer_quickbooks_configuration</access_arguments>
+  </item>
+  <item>
+    <path>civicrm/admin/fpptaqb/qbLinkage</path>
+    <page_callback>CRM_Fpptaqb_Form_Settings_QbLinkage</page_callback>
+    <title>FPPTA QuickBooks Sync: QuickBooks Linkage</title>
     <access_arguments>fpptaqb_administer_quickbooks_configuration</access_arguments>
   </item>
 </menu>
