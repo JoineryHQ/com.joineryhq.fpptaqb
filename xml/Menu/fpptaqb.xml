@@ -71,7 +71,7 @@
   <item>
     <path>civicrm/admin/fpptaqb/financialType</path>
     <page_callback>CRM_Fpptaqb_Page_FinancialType</page_callback>
-    <title>FPPTA QuickBooks Sync: Financial Types Linked to QuickBooks Items</title>
+    <title>FPPTA QuickBooks Sync: Financial Types Mapped to QuickBooks Items</title>
     <access_arguments>fpptaqb_administer_quickbooks_configuration</access_arguments>
   </item>
   <item>

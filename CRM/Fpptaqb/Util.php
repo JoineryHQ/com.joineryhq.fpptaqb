@@ -65,12 +65,12 @@ class CRM_Fpptaqb_Util {
       'parent' => 'Administer/CiviContribute/' . E::ts('FPPTA QuickBooks Settings'),
       'properties' => [
         'label' => E::ts('Financial Types: Linked to QuickBooks Items'),
-        'name' => 'Financial Types: Linked to QuickBooks Items',
+        'name' => 'Financial Types: Mapped to QuickBooks Items',
         'url' => 'civicrm/admin/fpptaqb/financialType?reset=1',
         'permission' => 'fpptaqb_administer_quickbooks_configuration',
         'operator' => 'AND',
         'separator' => NULL,
-        '#shortLabel' => 'FT Linkage',
+        '#shortLabel' => 'FT Mapping',
       ]
     ];
     $items[] = [
