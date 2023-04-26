@@ -100,7 +100,7 @@ class CRM_Fpptaqb_Page_OAuthQBO extends CRM_Core_Page {
           // Successfully tokens and Company details stored in database.
           $this->output = array(
             'message' => "Access token info retrieved and stored successfully!",
-            'redirect_url' => '<a href="' . str_replace("&amp;", "&", CRM_Utils_System::url("civicrm/admin/fpptaqb/settings", 'reset=1', TRUE, NULL)) . '">Click here to go back to FPPTA Quickbooks settings page to see the new expiry date of your new access token and key</a>',
+            'redirect_url' => '<a href="' . str_replace("&amp;", "&", CRM_Utils_System::url("civicrm/admin/fpptaqb/settings", 'reset=1', TRUE, NULL)) . '">Click here to go back to FPPTA Quickbooks settings page.</a>',
           );
 
         } catch (\QuickBooksOnline\API\Exception\IdsException $e) {

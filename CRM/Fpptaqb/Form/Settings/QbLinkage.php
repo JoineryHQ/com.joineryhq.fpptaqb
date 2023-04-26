@@ -16,10 +16,19 @@ class CRM_Fpptaqb_Form_Settings_QbLinkage extends CRM_Fpptaqb_Form_Settings {
     $isRefreshTokenExpired = CRM_Fpptaqb_APIHelper::isTokenExpired($QBCredentials, TRUE);
     $this->assign('isRefreshTokenExpired', $isRefreshTokenExpired);
 
-    $redirectUrl = '';
-    if ((!empty($QBCredentials['clientID']) && !empty($QBCredentials['clientSecret']) && empty($QBCredentials['accessToken']) && empty($QBCredentials['refreshToken']) && empty($QBCredentials['realMId'])) || $isRefreshTokenExpired) {
-      $redirectUrl = str_replace("&amp;", "&", CRM_Utils_System::url("civicrm/fpptaqb/OAuth", NULL, TRUE, NULL));
+    $isNotYetAuthorized = FALSE;
+    if (
+      !empty($QBCredentials['clientID'])
+      && !empty($QBCredentials['clientSecret'])
+      && empty($QBCredentials['accessToken'])
+      && empty($QBCredentials['refreshToken'])
+      && empty($QBCredentials['realMId'])
+    ) {
+      $isNotYetAuthorized = TRUE;
     }
+    $this->assign('isNotYetAuthorized', $isNotYetAuthorized);
+
+    $redirectUrl = str_replace("&amp;", "&", CRM_Utils_System::url("civicrm/fpptaqb/OAuth", NULL, TRUE, NULL));
     $this->assign('redirect_url', $redirectUrl);
 
     $showClientKeysMessage = TRUE;
