@@ -21,7 +21,7 @@
         <div class="content messages status no-popup crm-error">
           Your QuickBooks Refresh Token has expired. You must
           <a class="redirect_url" href="{$redirect_url}" title="Authorize Quickbooks Application">Reauthorize</a>
-          the QuickBooks application. Otherwise, contacts and contributions updates cannot be synced to QuickBooks.
+          the QuickBooks application. Otherwise, contacts and contributions updates cannot be synced to QuickBooks. (Application authorization requires QBO credentials for an "Admin" User Type.)
         </div>
       {else}
         <div class="content messages status no-popup crm-not-you-message">
@@ -35,7 +35,7 @@
           {if $isNotYetAuthorized}
             Once a Consumer Key and Shared Secret have been configured, you will need to
             <a class="redirect_url" href="{$redirect_url}" title="Authorize Quickbooks Application">Authorize</a>
-            the QuickBooks application.
+            the QuickBooks application. (Application authorization requires QBO credentials for an "Admin" User Type.)
             <br>
             <br>
             You must add this Redirect URI to your application:
@@ -44,7 +44,7 @@
           {else}
             At any time, you may
             <a class="redirect_url" href="{$redirect_url}" title="Authorize Quickbooks Application">Reauthorize</a>
-            the QuickBooks application.
+            the QuickBooks application. (Application authorization requires QBO credentials for an "Admin" User Type.)
           {/if}
         </div>
       {/if}
