@@ -151,7 +151,6 @@ class CRM_Fpptaqb_APIHelper {
         else {
           $refreshedAccessTokenObj = $OAuth2LoginHelper->refreshToken();
         }
-
         $tokenExpiresIn = new DateTime();
         $tokenExpiresIn->modify("+" . $refreshedAccessTokenObj->getAccessTokenValidationPeriodInSeconds() . "seconds");
 
@@ -186,7 +185,7 @@ class CRM_Fpptaqb_APIHelper {
       'accessToken' => Civi::settings()->get('fpptaqb_quickbooks_access_token'),
       'refreshToken' => Civi::settings()->get('fpptaqb_quickbooks_refresh_token'),
       'realMId' => Civi::settings()->get('fpptaqb_quickbooks_realmId'),
-      'tokenExpiryDate' => Civi::settings()->get('fpptaqb_quickbooks_access_token_expiryDate'),
+      'accessTokenExpiryDate' => Civi::settings()->get('fpptaqb_quickbooks_access_token_expiryDate'),
       'refreshTokenExpiryDate' => Civi::settings()->get('fpptaqb_quickbooks_refresh_token_expiryDate'),
     );
   }
@@ -213,7 +212,6 @@ class CRM_Fpptaqb_APIHelper {
         $isTokenExpired = TRUE;
       }
     }
-
     return $isTokenExpired;
   }
 
