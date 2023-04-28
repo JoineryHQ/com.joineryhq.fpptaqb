@@ -133,8 +133,6 @@ class CRM_Fpptaqb_APIHelper {
    */
   private static function refreshAccessTokenIfRequired() {
     $QBCredentials = self::getQuickBooksCredentials();
-    $now = new DateTime();
-    $now->modify("-5 minutes");
 
     $isAccessTokenExpired = self::isTokenExpired($QBCredentials);
     $isRefreshTokenExpired = self::isTokenExpired($QBCredentials, TRUE);
@@ -204,11 +202,13 @@ class CRM_Fpptaqb_APIHelper {
     }
     $isTokenExpired = FALSE;
     if (isset($QBCredentials[$tokenKey]) && !empty($QBCredentials[$tokenKey]) && $QBCredentials[$tokenKey] != 1) {
+      // Calculate "current time" as "five minutes from now".
       $currentDateTime = new DateTime();
-      $currentDateTime->modify("-5 minutes");
+      $currentDateTime->modify("+5 minutes");
       $tokenExpiryDate = DateTime::createFromFormat("Y-m-d H:i:s", $QBCredentials[$tokenKey]);
 
-      if ($currentDateTime > $tokenExpiryDate) {
+      // If token expiry is anything less than "5 minutes from now", consider it expired.
+      if ($tokenExpiryDate < $currentDateTime) {
         $isTokenExpired = TRUE;
       }
     }
