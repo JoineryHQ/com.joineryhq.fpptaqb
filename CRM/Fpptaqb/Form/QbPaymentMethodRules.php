@@ -19,6 +19,15 @@ class CRM_Fpptaqb_Form_QbPaymentMethodRules extends CRM_Core_Form {
     // Ensure redirection to self after submit.
     $this->controller->_destination = $this->controller->_entryURL;
 
+    try {
+      $qbPaymentMethodOptions = CRM_Fpptaqb_Utils_Quickbooks::getPaymentMethodOptions();
+    }
+    catch (CRM_Fpptaqb_Exception $e) {
+      CRM_Core_Session::setStatus('Error fetching QuickBooks payment methods. QuickBooks error: ' . $e->getMessage(), E::ts('Error'), 'no-popup');
+      $this->assign('isQbError', TRUE);
+      return;
+    }
+
     $this->add('hidden', 'fpptaqb_qb_payment_method_rules', ts('fpptaqb_qb_payment_method_rules'), ['id' => 'fpptaqb_qb_payment_method_rules']);
 
     // Template fields for payment method rule
@@ -58,7 +67,7 @@ class CRM_Fpptaqb_Form_QbPaymentMethodRules extends CRM_Core_Form {
       // field label
       E::ts('Use QB Payment Method'),
       // Options
-      CRM_Fpptaqb_Utils_Quickbooks::getPaymentMethodOptions()
+      $qbPaymentMethodOptions
     );
 
     $this->addButtons(array(

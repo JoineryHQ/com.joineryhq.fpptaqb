@@ -21,7 +21,13 @@ class CRM_Fpptaqb_Page_FinancialType extends CRM_Core_Page {
     ]);
     $rows = [];
     foreach ($financialTypeGet['values'] as $financialTypeValue) {
-      $qbItemDetails = CRM_Fpptaqb_Utils_Quickbooks::getItemDetails($financialTypeValue['id']);
+      try {
+        $qbItemDetails = CRM_Fpptaqb_Utils_Quickbooks::getItemDetails($financialTypeValue['id']);
+      }
+      catch (CRM_Fpptaqb_Exception $e) {
+        CRM_Core_Session::setStatus('Error fetching QuickBooks item. QuickBooks error: ' . $e->getMessage(), E::ts('Error'), 'no-popup');
+        break;
+      }
       $rows[] = [
         'id' => $financialTypeValue['id'],
         'name' => $financialTypeValue['name'],
