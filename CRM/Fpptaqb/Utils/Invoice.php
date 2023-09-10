@@ -174,10 +174,14 @@ class CRM_Fpptaqb_Utils_Invoice {
           INNER JOIN civicrm_fpptaquickbooks_contribution_invoice fci ON fci.contribution_id = ctrb.id
         WHERE
           fci.quickbooks_id IS NULL
+          AND ctrb.receive_date >= %1
         ORDER BY
           ctrb.receive_date, ctrb.id
       ";
-      $dao = CRM_Core_DAO::executeQuery($query);
+      $queryParams = [
+        '1' => [CRM_Utils_Date::isoToMysql(Civi::settings()->get('fpptaqb_minimum_date')), 'Int'],
+      ];
+      $dao = CRM_Core_DAO::executeQuery($query, $queryParams);
       $ids = CRM_Utils_Array::collect('id', $dao->fetchAll());
     }
     return $ids;

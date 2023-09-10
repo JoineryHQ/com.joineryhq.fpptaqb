@@ -266,10 +266,14 @@ class CRM_Fpptaqb_Utils_Payment {
           INNER JOIN civicrm_fpptaquickbooks_trxn_payment tp ON tp.financial_trxn_id = ft.id
         WHERE
           tp.quickbooks_id IS NULL
+          AND ft.trxn_date >= %1
         ORDER BY
           ft.trxn_date, ft.id
       ";
-      $dao = CRM_Core_DAO::executeQuery($query);
+      $queryParams = [
+        '1' => [CRM_Utils_Date::isoToMysql(Civi::settings()->get('fpptaqb_minimum_date')), 'Int'],
+      ];
+      $dao = CRM_Core_DAO::executeQuery($query, $queryParams);
       $ids = CRM_Utils_Array::collect('id', $dao->fetchAll());
     }
     return $ids;
