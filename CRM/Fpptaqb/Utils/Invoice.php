@@ -265,7 +265,17 @@ class CRM_Fpptaqb_Utils_Invoice {
       'contribution_id' => $contributionId,
       'api.Participant.get' => [],
     ]);
-    $participantOrgCid = ($participantPaymentGet['values'][0]['api.Participant.get']['values'][0]['custom_' . $participantOrgCustomFieldId . '_id'] ?? NULL);
+    // This participant payment may cover several participant records, which will
+    // be contained as separate elements in $participantPaymentGet['values'] (e.g.
+    // $participantPaymentGet['values'][0], $participantPaymentGet['values'][1], etc.
+    // Cycle through all of those values until we get an org name in the custom field.
+    foreach ($participantPaymentGet['values'] as $participantPaymentValue) {
+      if ($participantOrgCid = ($participantPaymentValue['api.Participant.get']['values'][0]['custom_' . $participantOrgCustomFieldId . '_id'] ?? NULL)) {
+        // If we've found an organization (i.e. we've found a participant record
+        // with a value in the "participant org custom field", then we can stop looking.
+        break;
+      }
+    }
     if ($participantOrgCid) {
       return $participantOrgCid;
     }
