@@ -158,15 +158,16 @@ class CRM_Fpptaqb_APIHelper {
         $accessToken = $refreshedAccessTokenObj->getAccessToken();
         $refreshToken = $refreshedAccessTokenObj->getRefreshToken();
 
-        civicrm_api3('Setting', 'create', array(
+        $settingParams = array(
           'fpptaqb_quickbooks_access_token' => $accessToken,
           'fpptaqb_quickbooks_refresh_token' => $refreshToken,
           'fpptaqb_quickbooks_access_token_expiryDate' => $tokenExpiresIn->format("Y-m-d H:i:s"),
           'fpptaqb_quickbooks_refresh_token_expiryDate' => $refreshTokenExpiresIn->format("Y-m-d H:i:s"),
-        ));
+        );
+        civicrm_api3('Setting', 'create', $settingParams);
 
       } catch (\QuickBooksOnline\API\Exception\IdsException $e) {
-
+        CRM_Core_Error::debug_var('fpptaqb: Fatal exception attempting to refresh access/refresh token: ', $e->getMessage(), FALSE);
       }
     }
   }
