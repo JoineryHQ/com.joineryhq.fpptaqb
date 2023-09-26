@@ -230,8 +230,8 @@ CRM.fpptaqbStepthru = {
   },
 
   clearDialog: function clearDialog() {
-    // Append the message with the given CSS class.
     if (CRM.$('div#fpptaqb-sync-dialog').dialog("instance")) {
+      CRM.$('div#fpptaqb-sync-dialog').dialog("close");
       CRM.$('div#fpptaqb-sync-dialog').dialog("destroy");
     }
     CRM.$('div#fpptaqb-sync-dialog').remove();
