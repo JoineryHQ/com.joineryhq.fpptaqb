@@ -52,7 +52,7 @@ function civicrm_api3_fpptaqb_stepthru_invoice_Load($params) {
         $errorCode = 'fpptaqb-500';
         $errorMessage = "Unknown error: " . $e->getMessage();
       }
-      return CRM_Fpptaqb_Util::composeApiError($errorMessage, $errorCode, $extraParams);
+      return CRM_Fpptaqb_Util::composeApiError("Inv. $id: " . $errorMessage, $errorCode, $extraParams);
     }
 
     $smarty = CRM_Core_Smarty::singleton();

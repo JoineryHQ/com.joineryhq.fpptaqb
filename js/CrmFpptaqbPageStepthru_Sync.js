@@ -22,7 +22,7 @@ CRM.fpptaqbStepthru = {
     var actionButtonOptions = this.showButtonOptions[action];
 
     if (result.is_error) {
-      if (actionButtonOptions.error[result.error_code]) {
+      if (result.error_code && actionButtonOptions.error[result.error_code]) {
         extraButtonIds = actionButtonOptions.error[result.error_code];
       }
       else if (actionButtonOptions.error.default) {
@@ -30,7 +30,7 @@ CRM.fpptaqbStepthru = {
       }
     }
     else {
-      if (actionButtonOptions.status[result.values.statusCode]) {
+      if (result.values && result.values.statusCode && actionButtonOptions.status[result.values.statusCode]) {
         extraButtonIds = actionButtonOptions.status[result.values.statusCode];
       }
       else if (actionButtonOptions.status.default) {
@@ -75,7 +75,7 @@ CRM.fpptaqbStepthru = {
   },
 
   updateStatistics: function updateStatistics(result) {
-    if (result.values.statistics) {
+    if (result.values && result.values.statistics) {
       if (result.values.statistics.countReady != undefined) {
         CRM.$('#fpptaqb-statistics-countItemsToSync').html(result.values.statistics.countReady);
       }
@@ -97,14 +97,21 @@ CRM.fpptaqbStepthru = {
     }
   },
 
-  processResult: function processResult(result, action) {
-    this.logDebug('processResult', 'result', result, 'action', action);
+  processResult: function processResult(result, action, viewer) {
+    this.logDebug('processResult', 'result', result, 'action', action, 'viewer', viewer);
 
+    if (viewer == 'dialog') {
+      this.clearDialog();
+      displayFunc = this.appendToDialog;
+    }
+    else {
+      displayFunc = this.appendToSyncLog;
+    }
     var text;
     var textClass = '';
     if (result.status == 500) {
-      this.appendToSyncLog('Fatal error: ' + result.responseText, 'crm-error', true);
-      this.appendToSyncLog("Fatal error in CiviCRM. Reload page to continue.", 'crm-error');
+      displayFunc('Fatal error: ' + result.responseText, 'crm-error', true);
+      displayFunc("Fatal error in CiviCRM. Reload page to continue.", 'crm-error');
       CRM.$('a.button.fpptaqb-sync-button').hide();
       unsetLoading();
       return;
@@ -125,7 +132,7 @@ CRM.fpptaqbStepthru = {
         textClass = 'status';
       }
     }
-    this.appendToSyncLog(text, textClass);
+    displayFunc(text, textClass);
 
     // remove "isLoading" lock and show appropriate buttons
     this.unsetLoading();
@@ -151,6 +158,8 @@ CRM.fpptaqbStepthru = {
     CRM.fpptaqbStepthru.logDebug('previous result: ', CRM.fpptaqbStepthru.lastResult);
     var action = CRM.$(e.currentTarget).prop('action');
     var lastResultApiParams = CRM.$(e.currentTarget).prop('lastResultApiParams');
+    var myApiParams = CRM.$(e.currentTarget).prop('myApiParams');
+    var viewer = CRM.$(e.currentTarget).prop('viewer');
     var apiParams = {};
 
     if (lastResultApiParams != undefined) {
@@ -158,7 +167,14 @@ CRM.fpptaqbStepthru = {
         apiParams[i] = CRM.fpptaqbStepthru.lastResult['values'][lastResultApiParams[i]];
       }
     }
+    else if (myApiParams != undefined) {
+      for (i in myApiParams) {
+        apiParams[i] = myApiParams[i];
+      }
+    }
     CRM.fpptaqbStepthru.logDebug('clicked action', action)
+    // If any dialog exists, clear it.
+    CRM.fpptaqbStepthru.clearDialog();
     if (!action) {
       // no action; use default behavior.
       CRM.fpptaqbStepthru.logDebug('still loading previous action; skip');
@@ -173,9 +189,9 @@ CRM.fpptaqbStepthru = {
 
     CRM.fpptaqbStepthru.logDebug('calling api', action, 'params', apiParams);
     CRM.api3(CRM.fpptaqbStepthru.apiEntity, action, apiParams).then(function (result) {
-      CRM.fpptaqbStepthru.processResult(result, action);
+      CRM.fpptaqbStepthru.processResult(result, action, viewer);
     }, function (error) {
-      CRM.fpptaqbStepthru.processResult(error, action);
+      CRM.fpptaqbStepthru.processResult(error, action, viewer);
     });
 
 
@@ -196,6 +212,36 @@ CRM.fpptaqbStepthru = {
         + (CRM.$('div.action-link').height() * 2)
         - CRM.$(window).height()
     }, 50);
+  },
+
+  appendToDialog: function appendToDialog(text, textClass, isDebug) {
+    // If this is a debug message, and debugging is not enabled, just do nothing and return.
+    if (isDebug && (! this.debugEnabled )) {
+      return;
+    }
+    // Append the message with the given CSS class.
+    CRM.$('div#fpptaqb-sync-dialog').append('<div class="' + textClass + '">' + text + '</div>');
+    CRM.$('div#fpptaqb-sync-dialog').dialog({
+      'height': 100,
+      'maxHeight': 500,
+      'width': '70%',
+      'modal': true
+    });
+  },
+
+  clearDialog: function clearDialog() {
+    // Append the message with the given CSS class.
+    if (CRM.$('div#fpptaqb-sync-dialog').dialog("instance")) {
+      CRM.$('div#fpptaqb-sync-dialog').dialog("destroy");
+    }
+    CRM.$('div#fpptaqb-sync-dialog').remove();
+    // Create a div for the dialog.
+    CRM.$('body').append('<div id="fpptaqb-sync-dialog" style="display: none"></div>');
+    // Populate that div with a tabbable link that does nothing and displays off
+    // the page. This is a workaround to defeat ui-dialog's unstoppable desire
+    // to place focus on the first link (which will cause the dialog to scroll,
+    // thus obscuring the top of the content).
+    CRM.$('div#fpptaqb-sync-dialog').append('<a href="#"  style="position: relative; top: -500px; display: block; height: 10px; margin-bottom: -10px;">&nbsp;</a>');
   }
 };
 
