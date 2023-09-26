@@ -172,7 +172,7 @@ CRM.fpptaqbStepthru = {
         apiParams[i] = myApiParams[i];
       }
     }
-    CRM.fpptaqbStepthru.logDebug('clicked action', action)
+    CRM.fpptaqbStepthru.logDebug('clicked action', action);
     // If any dialog exists, clear it.
     CRM.fpptaqbStepthru.clearDialog();
     if (!action) {
@@ -208,9 +208,7 @@ CRM.fpptaqbStepthru = {
     CRM.$('div#fpptaqb-sync-log-loading-wrapper').before('<hr><div class="' + textClass + '">' + text + '</div>');
     // Scroll buttons to bottom of viewport.
     CRM.$('html').animate({
-      scrollTop: CRM.$('div.action-link').offset().top
-        + (CRM.$('div.action-link').height() * 2)
-        - CRM.$(window).height()
+      scrollTop: CRM.$('div.action-link').offset().top + (CRM.$('div.action-link').height() * 2) - CRM.$(window).height()
     }, 50);
   },
 
@@ -220,32 +218,48 @@ CRM.fpptaqbStepthru = {
       return;
     }
     // Append the message with the given CSS class.
-    CRM.$('div#fpptaqb-sync-dialog').append('<div class="' + textClass + '">' + text + '</div>');
-    CRM.$('div#fpptaqb-sync-dialog').dialog({
-      'height': 100,
-      'maxHeight': 500,
-      'width': '70%',
-      'modal': true
-    });
+    CRM.$('div#fpptaqb-sync-dialog-content').append('<div class="' + textClass + '">' + text + '</div>');
+    // Open the dialog for display.
+    CRM.$('div#fpptaqb-sync-dialog').dialog("open");
   },
 
   clearDialog: function clearDialog() {
-    if (CRM.$('div#fpptaqb-sync-dialog').dialog("instance")) {
-      CRM.$('div#fpptaqb-sync-dialog').dialog("close");
-      CRM.$('div#fpptaqb-sync-dialog').dialog("destroy");
-    }
-    CRM.$('div#fpptaqb-sync-dialog').remove();
-    // Create a div for the dialog.
-    CRM.$('body').append('<div id="fpptaqb-sync-dialog" style="display: none"></div>');
-    // Populate that div with a tabbable link that does nothing and displays off
-    // the page. This is a workaround to defeat ui-dialog's unstoppable desire
-    // to place focus on the first link (which will cause the dialog to scroll,
-    // thus obscuring the top of the content).
-    CRM.$('div#fpptaqb-sync-dialog').append('<a href="#"  style="position: relative; top: -500px; display: block; height: 10px; margin-bottom: -10px;">&nbsp;</a>');
+    CRM.$('div#fpptaqb-sync-dialog').dialog("close");
+    CRM.$('div#fpptaqb-sync-dialog-content').empty();
   }
 };
 
 /*global CRM, ts */
 CRM.$(function ($) {
   $('a.button.fpptaqb-sync-button').click(CRM.fpptaqbStepthru.handleActionButtonClick);
+
+  // Create a div for the dialog viewer, in case it's needed.
+  /*jshint multistr: true */
+  CRM.$('body').append('\
+    <div id="fpptaqb-sync-dialog-wrapper" style="position: fixed">\n\
+      <div id="fpptaqb-sync-dialog" style="display: none">\n\
+        <div id="fpptaqb-sync-dialog-content">\n\
+        </div>\n\
+      </div>\n\
+    </div>\n\
+  ');
+  // Prepend to the dialog a tabbable link that does nothing and displays off
+  // the page. This is a workaround to defeat ui-dialog's unstoppable desire
+  // to place focus on the first link (which will cause the dialog to scroll,
+  // thus obscuring the top of the content).
+  CRM.$('div#fpptaqb-sync-dialog').prepend('<a href="#"  style="position: relative; top: -500px; display: block; height: 10px; margin-bottom: -10px;">&nbsp;</a>');  
+  // Initialize the dialog.
+  CRM.$('div#fpptaqb-sync-dialog').dialog({
+    'height': 100,
+    'maxHeight': 500,
+    'width': '70%',
+    'modal': true,
+    'autoOpen': false,
+    // Specify create event handler, to set dialog parent position fixed, as a
+    // remedy to drifting dialog position as the page undergoes changes in size 
+    // and scroll position. Reference: https://stackoverflow.com/a/15178940/6476602
+    create: function (event) {
+      CRM.$(event.target).parent().css('position', 'fixed');
+    },
+  });
 });
