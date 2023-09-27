@@ -15,7 +15,7 @@
       <td>{$inv.id}</td>
       <td>{$inv.sort_name}</td>
       <td>{$inv.receive_date}</td>
-      <td>{$inv.total_amount}</td>
+      <td>{$inv.total_amount|crmMoney}</td>
       <td><a href="#{$inv.id}" id="list-load-{$inv.id}-{$uniqid}" onclick="CRM.fpptaqbStepthru.handleActionButtonClick(event);">Load</a></td>
     </tr>
   {/foreach}
