@@ -29,6 +29,13 @@ class CRM_Fpptaqb_Page_ItemAction extends CRM_Core_Page {
             ]);
             _fpptaqb_civicrmapi('FpptaquickbooksContributionInvoice', 'delete', [
               'id' => $contributionInvId,
+              // Usually, only 'id' is given for a 'delete' api action, but
+              // providing 'contribution_id' will help with logging in
+              // CRM_Fpptaqb_APIWrappers_Log.
+              'contribution_id' => $id,
+              // 'log_reason' is not a real api parameter, but it's used by
+              // CRM_Fpptaqb_APIWrappers_Log for logging.
+              'log_reason' => 'itemaction=unhold',
             ]);
             $msg = E::ts('Contribution %1 has been un-held.', [1 => $id]);
             CRM_Core_Session::setStatus($msg, 'Success', 'success');
@@ -122,6 +129,13 @@ class CRM_Fpptaqb_Page_ItemAction extends CRM_Core_Page {
             ]);
             _fpptaqb_civicrmapi('FpptaquickbooksTrxnPayment', 'delete', [
               'id' => $trxnPaymentId,
+              // Usually, only 'id' is given for a 'delete' api action, but
+              // providing 'financial_trxn_id' will help with logging in
+              // CRM_Fpptaqb_APIWrappers_Log.
+              'financial_trxn_id' => $id,
+              // 'log_reason' is not a real api parameter, but it's used by
+              // CRM_Fpptaqb_APIWrappers_Log for logging.
+              'log_reason' => 'itemaction=unhold',
             ]);
             $msg = E::ts('Payment %1 has been un-held.', [1 => $id]);
             CRM_Core_Session::setStatus($msg, 'Success', 'success');

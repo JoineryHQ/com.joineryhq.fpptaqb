@@ -341,12 +341,12 @@ function fpptaqb_civicrm_apiWrappers(&$wrappers, $apiRequest) {
     $wrappers[] = new CRM_Fpptaqb_APIWrappers_Payment_IsCreditmemo();
   }
 
-  // The APIWrapper is conditionally registered so that it runs only when appropriate
+  // The "log" APIWrapper is conditionally registered so that it runs only when appropriate
   $loggedApiEntities = [
     'fpptaquickbooksfinancialtypeitem' => ['create'],
     'fpptaquickbookscontactcustomer' => ['create'],
-    'fpptaquickbookscontributioninvoice' => ['create'],
-    'fpptaquickbookstrxnpayment' => ['create'],
+    'fpptaquickbookscontributioninvoice' => ['create', 'delete'],
+    'fpptaquickbookstrxnpayment' => ['create', 'delete'],
     'fpptaqbstepthruinvoice' => ['load', 'sync', 'hold'],
     'fpptaqbstepthrupayment' => ['load', 'sync', 'hold'],
     'fpptaqbstepthrucreditmemo' => ['load', 'sync', 'hold'],
