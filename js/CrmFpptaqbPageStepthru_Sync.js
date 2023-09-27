@@ -69,6 +69,7 @@ CRM.fpptaqbStepthru = {
   },
 
   unsetLoading: function unsetLoading() {
+    console.log('unsetLoading');
     this.logDebug('unsetLoading');
     this.isLoading = false;
     CRM.$('div#fpptaqb-sync-log-loading-wrapper').css('visibility', 'hidden');
@@ -100,6 +101,9 @@ CRM.fpptaqbStepthru = {
   processResult: function processResult(result, action, viewer) {
     this.logDebug('processResult', 'result', result, 'action', action, 'viewer', viewer);
 
+    var displayFunc;
+    var text;
+    var textClass = '';
     if (viewer == 'dialog') {
       this.clearDialog();
       displayFunc = this.appendToDialog;
@@ -107,13 +111,11 @@ CRM.fpptaqbStepthru = {
     else {
       displayFunc = this.appendToSyncLog;
     }
-    var text;
-    var textClass = '';
     if (result.status == 500) {
       displayFunc('Fatal error: ' + result.responseText, 'crm-error', true);
       displayFunc("Fatal error in CiviCRM. Reload page to continue.", 'crm-error');
       CRM.$('a.button.fpptaqb-sync-button').hide();
-      unsetLoading();
+      this.unsetLoading();
       return;
     }
 

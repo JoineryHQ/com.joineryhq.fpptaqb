@@ -10,51 +10,73 @@ CRM.$(function ($) {
     load: {
       error: {
         'fpptaqb-404': [
-          'fpptaqb-button-next'
+          'fpptaqb-button-next',
+          'fpptaqb-button-list'
         ],
-        'fpptaqb-500': [
+        default: [
           'fpptaqb-button-hold',
-          'fpptaqb-button-reload'
-        ],
-        default: []
+          'fpptaqb-button-reload',
+          'fpptaqb-button-list'
+        ]
       },
       'status': {
         204: [],
         default: [
           'fpptaqb-button-hold',
           'fpptaqb-button-reload',
-          'fpptaqb-button-sync'
+          'fpptaqb-button-sync',
+          'fpptaqb-button-list'
         ]
       }
     },
     sync: {
       error: {
         'fpptaqb-404': [
-          'fpptaqb-button-next'
+          'fpptaqb-button-next',
+          'fpptaqb-button-list'
         ],
         'fpptaqb-409': [
-          'fpptaqb-button-reload'
+          'fpptaqb-button-reload',
+          'fpptaqb-button-list'
         ],
         'fpptaqb-503': [
           'fpptaqb-button-hold',
           'fpptaqb-button-reload',
-          'fpptaqb-button-sync-retry'
+          'fpptaqb-button-sync-retry',
+          'fpptaqb-button-list'
         ],
         default: [
           'fpptaqb-button-hold',
-          'fpptaqb-button-reload',
+          'fpptaqb-button-reload',,
+          'fpptaqb-button-list'
         ]
       },
       'status': {
         default: [
-          'fpptaqb-button-next'
+          'fpptaqb-button-next',
+          'fpptaqb-button-list'
+        ]
+      }
+    },
+    list: {
+      error: {
+        default: [
+          'fpptaqb-button-next',
+          'fpptaqb-button-list'
+        ]
+      },
+      'status': {
+        default: [
+          'fpptaqb-button-next',
+          'fpptaqb-button-list'
         ]
       }
     },
     hold: {
       error: {
         default: [
-          'fpptaqb-button-next'
+          'fpptaqb-button-next',
+          'fpptaqb-button-list'
         ]
       },
       'status': {
@@ -83,6 +105,10 @@ CRM.$(function ($) {
   $('a.button.fpptaqb-sync-button#fpptaqb-button-sync-retry').prop({
     action: 'sync',
     lastResultApiParams: {id: 'id', hash: 'hash'}
+  });
+  $('a.button.fpptaqb-sync-button#fpptaqb-button-list').prop({
+    action: 'list',
+    viewer: 'dialog'
   });
   $('a.button.fpptaqb-sync-button#fpptaqb-button-next').prop({
     action: 'load'

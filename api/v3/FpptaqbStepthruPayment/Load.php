@@ -46,14 +46,16 @@ function civicrm_api3_fpptaqb_stepthru_payment_Load($params) {
     try {
       $payment = CRM_Fpptaqb_Utils_Payment::getReadyToSync($id);
     }
-    catch (CRM_Core_Exception $e) {
-      $extraParams = ['values' => $params];
+    catch (Exception $e) {
       if ($e->getCode()) {
-        throw new API_Exception($e->getMessage(), 'fpptaqb-' . $e->getCode(), $extraParams);
+        $errorCode = 'fpptaqb-' . $e->getCode();
+        $errorMessage = $e->getMessage();
       }
       else {
-        throw new API_Exception("Unknown error: " . $e->getMessage(), 'fpptaqb-500', $extraParams);
+        $errorCode = 'fpptaqb-500';
+        $errorMessage = "Unknown error: " . $e->getMessage();
       }
+      return CRM_Fpptaqb_Util::composeApiError("Pmt. $id: " . $errorMessage, $errorCode, $extraParams);
     }
 
     $smarty = CRM_Core_Smarty::singleton();
