@@ -2,7 +2,8 @@
 <table>
   <thead>
     <tr>
-      <th>ID</th>
+      <th>Inv. No.</th>
+      <th>Contrib. ID</th>
       <th>Payor</th>
       <th>Received Date</th>
       <th>Total</th>
@@ -12,6 +13,7 @@
   <tbody>
   {foreach from=$invoices item=inv}
     <tr class="{cycle values="odd-row,even-row"}">
+      <td><a target="_blank" href="{crmURL fb=1 p="civicrm/contact/view/contribution" q="reset=1&action=view&cid=`$inv.contact_id`&id=`$inv.id`"}">{if $inv.invoice_number}{$inv.invoice_number}{else}[none]{/if}</a></td>
       <td>{$inv.id}</td>
       <td>{$inv.sort_name}</td>
       <td>{$inv.receive_date}</td>

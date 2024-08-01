@@ -2,7 +2,8 @@
 <table id="fpptaqbHeldItems" class="row-highlight">
   <thead>
   <tr>
-    <th>{ts}ID{/ts}</th>
+    <th>{ts}Inv. No.{/ts}</th>
+    <th>{ts}Contrib. ID{/ts}</th>
     <th>{ts}Received Date{/ts}</th>
     <th>{ts}Attributed To{/ts}</th>
     <th>{ts}Payor{/ts}</th>
@@ -13,7 +14,8 @@
   <tbody>
   {foreach from=$rows item=row}
     <tr id="fpptaqbHeldItem-{$row.id}" class="crm-entity {cycle values="odd-row,even-row"}">
-      <td><a target="_blank" href="{crmURL fb=1 p="civicrm/contact/view/contribution" q="reset=1&action=view&cid=`$row.contact_id`&id=`$row.id`"}">{$row.id}</a></td>
+      <td><a target="_blank" href="{crmURL fb=1 p="civicrm/contact/view/contribution" q="reset=1&action=view&cid=`$row.contact_id`&id=`$row.id`"}">{if $row.invoice_number}{$row.invoice_number}{else}[none]{/if}</a></td>
+      <td>{$row.id}</td>
       <td>{$row.receive_date}</td>
       <td>
         {if $row.organizationCid}
