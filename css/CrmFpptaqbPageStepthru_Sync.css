@@ -8,7 +8,7 @@
 .crm-container a.button.fpptaqb-sync-button#fpptaqb-button-begin,
 .crm-container a.button.fpptaqb-sync-button#fpptaqb-button-list,
 .crm-container a.button.fpptaqb-sync-button#fpptaqb-button-exit {
-  display: block;
+  display: inline-block;
 }
 
 .crm-container div#fpptaqb-sync-log-loading-wrapper {
