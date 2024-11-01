@@ -324,7 +324,7 @@ class CRM_Fpptaqb_Sync_Quickbooks {
     try {
       $dataService = CRM_Fpptaqb_APIHelper::getAccountingDataServiceObject();
       $dataService->throwExceptionOnError(FALSE);
-      $items = $dataService->Query("select * from Item");
+      $items = $dataService->Query("select * from Item maxresults 1000");
     }
     catch (Exception $e) {
       throw new CRM_Fpptaqb_Exception('Could not get QuickBooks DataService Object: ' . $e->getMessage(), 503);
