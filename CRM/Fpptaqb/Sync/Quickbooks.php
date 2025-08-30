@@ -71,7 +71,7 @@ class CRM_Fpptaqb_Sync_Quickbooks {
       $errorMessage = CRM_Fpptaqb_APIHelper::parseErrorResponse($lastError);
       throw new Exception('QuickBooks error: "' . implode("\n", $errorMessage) . '"');
     }
-    if (count($customers) != 1) {
+    if (!is_array($customers) || count($customers) != 1) {
       throw new CRM_Fpptaqb_Exception('Could not find valid QuickBooks customer with name "'. $contactName .'".', 503);
     }
 
