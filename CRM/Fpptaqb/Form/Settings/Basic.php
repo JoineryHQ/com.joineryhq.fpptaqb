@@ -43,6 +43,8 @@ class CRM_Fpptaqb_Form_Settings_Basic extends CRM_Fpptaqb_Form_Settings {
       ->setCheckPermissions(FALSE)
       ->addWhere("data_type", '=', "ContactReference")
       ->addChain('custom_group', \Civi\Api4\CustomGroup::get()
+        ->setCheckPermissions(FALSE)
+        ->setUseCache(TRUE)
         ->addWhere('id', '=', '$custom_group_id'),
       0)
       ->execute();
@@ -75,6 +77,8 @@ class CRM_Fpptaqb_Form_Settings_Basic extends CRM_Fpptaqb_Form_Settings {
       ->setCheckPermissions(FALSE)
       ->addWhere("data_type", '=', "ContactReference")
       ->addChain('custom_group', \Civi\Api4\CustomGroup::get()
+        ->setCheckPermissions(FALSE)
+        ->setUseCache(TRUE)
         ->addWhere('id', '=', '$custom_group_id'),
       0)
       ->execute();
