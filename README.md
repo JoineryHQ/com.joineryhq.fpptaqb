@@ -40,19 +40,7 @@ same sync steps as in the step-thru manual sync, on a scheduled automated basis.
 
 
 ## Support
-![screenshot](/images/joinery-logo.png)
 
-Joinery provides services for CiviCRM including custom extension development,
-training, data migrations, and more. We aim to keep this extension in good
-working order, and will do our best to respond appropriately to issues reported
-on its [github issue queue](https://github.com/JoineryHQ/com.joineryhq.fpptaqb/issues).
-However, we place a priority on the needs of our clients, and we make no
-guarantees of support here. If you require urgent or highly customized
-improvements to this extension, we may suggest conducting a fee-based project
-under our standard commercial terms, based on availability.  In any case, the
-place to start is the [github issue queue](https://github.com/JoineryHQ/com.joineryhq.fpptaqb/issues) --
-let us hear what you need and we'll be glad to help where we can.
+Support for this package is handled under Joinery's ["As-Is Support" policy](https://joineryhq.com/software-support-levels#as-is-support).
 
-And, if you need help with any other aspect of CiviCRM -- from hosting to custom
-development to strategic consultation and more -- please contact us directly via
-https://joineryhq.com
+Public issue queue for this package: https://github.com/JoineryHQ/com.joineryhq.fpptaqb/issues
