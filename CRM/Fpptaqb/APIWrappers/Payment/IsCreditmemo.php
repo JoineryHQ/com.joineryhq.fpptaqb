@@ -1,5 +1,9 @@
 <?php
 
+// Some sites seem to have mysteriously refused to auto-include this civicrm
+// core file, so require it here just in case.
+require_once 'api/Wrapper.php';
+
 class CRM_Fpptaqb_APIWrappers_Payment_IsCreditmemo implements API_Wrapper {
 
   /**
