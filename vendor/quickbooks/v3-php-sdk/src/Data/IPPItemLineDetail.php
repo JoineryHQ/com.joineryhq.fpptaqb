@@ -84,6 +84,19 @@ class IPPItemLineDetail
 	/**
 	 * @Definition 
 							Product: ALL
+							Description: cost rate of the
+							service or item for the line of Project Estimate.
+						
+	 * @xmlType element
+	 * @xmlNamespace http://schema.intuit.com/finance/v3
+	 * @xmlMinOccurs 0
+	 * @xmlName UnitCostPrice
+	 * @var float
+	 */
+	public $UnitCostPrice;
+	/**
+	 * @Definition 
+							Product: ALL
 							Description: The amount is expressed
 							as a percent of charges already entered in the current
 							transaction. To enter a rate of 10% use 10.0, not 0.01.

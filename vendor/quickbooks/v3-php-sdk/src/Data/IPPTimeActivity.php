@@ -157,6 +157,31 @@ class IPPTimeActivity
 	 */
 	public $PayrollItemRef;
 	/**
+	 * @Definition 
+								Product: ALL
+								Description: Project identifier
+								References to the project this line
+								is associated with
+							
+	 * @xmlType element
+	 * @xmlNamespace http://schema.intuit.com/finance/v3
+	 * @xmlMinOccurs 0
+	 * @xmlName ProjectRef
+	 * @var com\intuit\schema\finance\v3\IPPReferenceType
+	 */
+	public $ProjectRef;
+	/**
+	 * @Definition 
+								The ID of the related TimeCharge transaction.
+							
+	 * @xmlType element
+	 * @xmlNamespace http://schema.intuit.com/finance/v3
+	 * @xmlMinOccurs 0
+	 * @xmlName TimeChargeId
+	 * @var integer
+	 */
+	public $TimeChargeId;
+	/**
 	 * @Definition Billable status of the time recorded
 							
 	 * @xmlType element
@@ -191,6 +216,17 @@ class IPPTimeActivity
 	 */
 	public $HourlyRate;
 	/**
+	 * @Definition Hourly cost rate of the employee or vendor for this
+								time activity.
+							
+	 * @xmlType element
+	 * @xmlNamespace http://schema.intuit.com/finance/v3
+	 * @xmlMinOccurs 0
+	 * @xmlName CostRate
+	 * @var float
+	 */
+	public $CostRate;
+	/**
 	 * @Definition Hours worked.
 	 * @xmlType element
 	 * @xmlNamespace http://schema.intuit.com/finance/v3
@@ -209,6 +245,16 @@ class IPPTimeActivity
 	 * @var integer
 	 */
 	public $Minutes;
+	/**
+	 * @Definition Seconds worked; valid values are 0 - 59.
+							
+	 * @xmlType element
+	 * @xmlNamespace http://schema.intuit.com/finance/v3
+	 * @xmlMinOccurs 0
+	 * @xmlName Seconds
+	 * @var integer
+	 */
+	public $Seconds;
 	/**
 	 * @Definition Hours of break taken between start time and end
 								time.
@@ -235,6 +281,17 @@ class IPPTimeActivity
 	 * @var integer
 	 */
 	public $BreakMinutes;
+	/**
+	 * @Definition Seconds of break taken between start time and
+								end time. Valid values are 0 - 59.
+							
+	 * @xmlType element
+	 * @xmlNamespace http://schema.intuit.com/finance/v3
+	 * @xmlMinOccurs 0
+	 * @xmlName BreakSeconds
+	 * @var integer
+	 */
+	public $BreakSeconds;
 	/**
 	 * @Definition Time work started.
 								[b]QuickBooks Notes[/b][br /]
@@ -282,7 +339,7 @@ class IPPTimeActivity
 	/**
 	 * @Definition True if the start, end hours are already with company/employee time zone offset.
 
-							Couple of TimeActivity API integrations are already submitting start, end hours with right company/employee time zone offsets. Such integrations will pass this attribute as true to avoid company time zone offsets by TimeActivity API.
+								Couple of TimeActivity API integrations are already submitting start, end hours with right company/employee time zone offsets. Such integrations will pass this attribute as true to avoid company time zone offsets by TimeActivity API.
 							
 	 * @xmlType element
 	 * @xmlNamespace http://schema.intuit.com/finance/v3

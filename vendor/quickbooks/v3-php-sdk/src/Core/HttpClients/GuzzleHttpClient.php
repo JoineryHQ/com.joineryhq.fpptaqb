@@ -35,9 +35,9 @@
 
      /**
       * Constructor for GuzzleHttpClient
-      * @param Client guzzleClient passed to the constructor
+      * @param Client|null guzzleClient passed to the constructor
       */
-     public function __construct(Client $guzzleClient = null){
+     public function __construct(?Client $guzzleClient = null){
         if(isset($guzzleClient)){
             $this->guzzleClient = $guzzleClient;
         }else{
@@ -57,7 +57,7 @@
             return $this->getLastResponse();
         } catch(RequestException $e){
             if($e->hasResponse()){
-                throw new SdkException("A networking error occurs during Guzzle client request:" . Psr7\str($e->getResponse()));
+                throw new SdkException("A networking error occurs during Guzzle client request:" . Psr7\Message::toString($e->getResponse()));
             }else{
                 throw new SdkException("Network Error:" . $e->getMessage());
             }

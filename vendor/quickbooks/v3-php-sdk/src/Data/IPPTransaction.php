@@ -101,6 +101,19 @@ class IPPTransaction
 	public $TxnDate;
 	/**
 	 * @Definition 
+								Product: ALL
+								Description: Sub-type of the
+								transaction. For information purposes only.
+							
+	 * @xmlType element
+	 * @xmlNamespace http://schema.intuit.com/finance/v3
+	 * @xmlMinOccurs 0
+	 * @xmlName TxnSubType
+	 * @var com\intuit\schema\finance\v3\IPPTxnSubTypeEnum
+	 */
+	public $TxnSubType;
+	/**
+	 * @Definition 
 								Product: QBO
 								Description: Location of the
 								transaction, as defined using location tracking in QuickBooks
@@ -314,8 +327,8 @@ class IPPTransaction
 	public $Tag;
 	/**
 	 * @Definition 
-                                    Product: QBO
-                                    Description: Details of the Approval Status for current transaction in QBO workflows.
+								Product: QBO
+								Description: Details of the Approval Status for current transaction in QBO workflows.
 							
 	 * @xmlType element
 	 * @xmlNamespace http://schema.intuit.com/finance/v3
@@ -350,6 +363,46 @@ class IPPTransaction
 	 * @var com\intuit\schema\finance\v3\IPPRecurringInfo
 	 */
 	public $RecurringInfo;
+	/**
+	 * @Definition 
+								Product: ALL
+								Description: Project identifier
+								References to the project this transaction
+								is associated with
+							
+	 * @xmlType element
+	 * @xmlNamespace http://schema.intuit.com/finance/v3
+	 * @xmlMinOccurs 0
+	 * @xmlName ProjectRef
+	 * @var com\intuit\schema\finance\v3\IPPReferenceType
+	 */
+	public $ProjectRef;
+	/**
+	 * @Definition 
+								Product: ALL
+								Description: Project Estimate identifier
+								The amount or equivalent paid or charged for a product/service
+							
+	 * @xmlType element
+	 * @xmlNamespace http://schema.intuit.com/finance/v3
+	 * @xmlMinOccurs 0
+	 * @xmlName TotalCostAmount
+	 * @var float
+	 */
+	public $TotalCostAmount;
+	/**
+	 * @Definition 
+								Product: ALL
+								Description: Project Estimate identifier
+								The amount or equivalent paid or charged for a product/service when using multi-currency
+							
+	 * @xmlType element
+	 * @xmlNamespace http://schema.intuit.com/finance/v3
+	 * @xmlMinOccurs 0
+	 * @xmlName HomeTotalCostAmount
+	 * @var float
+	 */
+	public $HomeTotalCostAmount;
 
 
 } // end class IPPTransaction

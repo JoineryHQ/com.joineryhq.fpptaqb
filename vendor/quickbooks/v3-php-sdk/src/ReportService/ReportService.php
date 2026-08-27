@@ -98,31 +98,35 @@ class ReportService
     private $subcol_pct_inc = null;
     private $subcol_pct_exp = null;
     private $adjusted_gain_loss = null;
+    private $showrows = null;
+    private $add_due_date = null;
+    private $attachmentType = null;
+    private $testing_migration = null;
 
     public function getAdjustedGainLoss(){
-       return $this->adjusted_gain_loss;
+        return $this->adjusted_gain_loss;
     }
 
     public function setAdjustedGainLoss($adjustedGainLoss){
-       return $this->adjusted_gain_loss = $adjustedGainLoss;
+        return $this->adjusted_gain_loss = $adjustedGainLoss;
     }
 
     public function getPercentIncome(){
-       return $this->subcol_pct_inc;
+        return $this->subcol_pct_inc;
     }
 
     public function getPercentExpense(){
-       return $this->subcol_pct_exp;
+        return $this->subcol_pct_exp;
     }
 
     public function setPercentIncome($percentIncome){
-       $this->subcol_pct_inc = $percentIncome;
-       return $this;
+        $this->subcol_pct_inc = $percentIncome;
+        return $this;
     }
 
     public function setPercentExpense($percentExpense){
-       $this->subcol_pct_exp = $percentExpense;
-       return $this;
+        $this->subcol_pct_exp = $percentExpense;
+        return $this;
     }
     /**
      * @return null
@@ -961,6 +965,81 @@ class ReportService
     }
 
     /**
+     * @return null
+     */
+    public function getShowRows()
+    {
+        return $this->showrows;
+    }
+
+    /**
+     * @param null $showrows
+     *
+     * @return $this
+     */
+    public function setShowRows($showrows)
+    {
+        $this->showrows = $showrows;
+        return $this;
+    }
+
+    /**
+     * @param null $add_due_date
+     *
+     * @return $this
+     */
+    public function setDueDate($add_due_date)
+    {
+        $this->add_due_date = $add_due_date;
+        return $this;
+    }
+
+    /**
+     * @return null
+     */
+    public function getDueDate()
+    {
+        return $this->add_due_date;
+    }
+
+    /**
+     * @param null $attachmentType
+     *
+     * @return $this
+     */
+    public function setAttachmentType($attachmentType)
+    {
+        $this->attachmentType = $attachmentType;
+        return $this;
+    }
+
+    /**
+     * @return null
+     */
+    public function getAttachmentType()
+    {
+        return $this->attachmentType;
+    }
+
+    /**
+     * @param bool $testing_migration
+     * @return $this
+     */
+    public function setTestingMigration($testing_migration)
+    {
+        $this->testing_migration = $testing_migration;
+        return $this;
+    }
+
+    /**
+     * @return null|bool
+     */
+    public function getTestingMigration()
+    {
+        return $this->testing_migration;
+    }
+
+    /**
      * Returns serializer for response objects
      * @return IEntitySerializer
      */
@@ -1173,13 +1252,13 @@ class ReportService
             array_push($uriParameterList, array("printed", $this->getPrinted()));
         }
         if (!is_null($this->both_amount)) {
-            array_push($uriParameterList, array("both_amount", $this->getBothAmount()));
+            array_push($uriParameterList, array("bothamount", $this->getBothAmount()));
         }
         if (!is_null($this->memo)) {
             array_push($uriParameterList, array("memo", $this->getMemo()));
         }
         if (!is_null($this->doc_num)) {
-            array_push($uriParameterList, array("doc_num", $this->getDocNum()));
+            array_push($uriParameterList, array("docnum", $this->getDocNum()));
         }
         if (!is_null($this->subcol_pct_inc)) {
             array_push($uriParameterList, array("subcol_pct_inc", $this->getPercentIncome()));
@@ -1193,6 +1272,17 @@ class ReportService
             array_push($uriParameterList, ["adjusted_gain_loss", $this->getAdjustedGainLoss()]);
         }
 
+        if (!is_null($this->showrows)) {
+            array_push($uriParameterList, ["showrows", $this->getShowRows()]);
+        }
+
+        if (!is_null($this->add_due_date)) {
+            array_push($uriParameterList, ["add_due_date", $this->getDueDate()]);
+        }
+
+        if (!is_null($this->attachmentType)) {
+            array_push($uriParameterList, ["attachmentType", $this->getAttachmentType()]);
+        }
 
         foreach ($uriParameterList as $uriParameter) {
             if (strlen($uriParameterString) > 0) {
@@ -1202,6 +1292,14 @@ class ReportService
             $uriParameterString .= "=";
             $uriParameterString .= $uriParameter[1];
         }
+
+        if ($this->testing_migration) {
+            if (strlen($uriParameterString) > 0) {
+                $uriParameterString .= "&";
+            }
+            $uriParameterString .= "testing_migration";
+        }
+
         return $uriParameterString;
     }
 
@@ -1218,12 +1316,11 @@ class ReportService
         $reportQueryParameters = $this->getReportQueryParameters();
 
         if (strlen($reportQueryParameters) > 0) {
-            $httpRequestUri = implode(CoreConstants::SLASH_CHAR, array('company', $this->serviceContext->realmId, $urlResource, $reportName, $querySeparator));
-            $httpRequestUri .=  $reportQueryParameters;
+            $httpRequestUri = implode(CoreConstants::SLASH_CHAR, array('company', $this->serviceContext->realmId, $urlResource, $reportName));
+            $httpRequestUri .= $querySeparator . $reportQueryParameters;
         } else {
             $httpRequestUri = implode(CoreConstants::SLASH_CHAR, array('company', $this->serviceContext->realmId, $urlResource, $reportName));
         }
-
 
         // Creates request parameters
         if ($this->serviceContext->IppConfiguration->Message->Request->SerializationFormat == SerializationFormat::Json) {

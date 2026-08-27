@@ -96,7 +96,7 @@ class IPPEmployee
 	public $OtherAddr;
 	/**
 	 * @Definition BillableTime should be true if this employee’s hours are typically billed to customers. QBO only.
-									QBD Unsupported field.
+								QBD Unsupported field.
 							
 	 * @xmlType element
 	 * @xmlNamespace http://schema.intuit.com/finance/v3
@@ -170,6 +170,29 @@ class IPPEmployee
 	 * @var com\intuit\schema\finance\v3\IPPIntuitAnyType
 	 */
 	public $EmployeeEx;
+	/**
+	 * @Definition Hourly cost rate of the Employee. QBO only. QBD Unsupporetd field.
+							
+	 * @xmlType element
+	 * @xmlNamespace http://schema.intuit.com/finance/v3
+	 * @xmlMinOccurs 0
+	 * @xmlName CostRate
+	 * @var float
+	 */
+	public $CostRate;
+	/**
+	 * @Definition 
+								Product: ALL
+								Description: Free form text describing the Employee.[br /]Max. length: 4000 characters.
+							
+	 * @xmlType element
+	 * @xmlNamespace http://schema.intuit.com/finance/v3
+	 * @xmlMinOccurs 0
+	 * @xmlMaxOccurs 1
+	 * @xmlName Notes
+	 * @var string
+	 */
+	public $Notes;
 
 
 } // end class IPPEmployee

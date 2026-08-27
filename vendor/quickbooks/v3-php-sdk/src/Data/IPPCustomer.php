@@ -463,9 +463,9 @@ class IPPCustomer
 	public $CustomerEx;
 	/**
 	 * @Definition 
-                                Product: QBO
-                                Description: Specifies secondary Tax ID of the Person or Organization. Applicable for IN companies for CST Registration No. and in future can be extended to other regions.
-                            
+								Product: QBO
+								Description: Specifies secondary Tax ID of the Person or Organization. Applicable for IN companies for CST Registration No. and in future can be extended to other regions.
+							
 	 * @xmlType element
 	 * @xmlNamespace http://schema.intuit.com/finance/v3
 	 * @xmlMinOccurs 0
@@ -475,9 +475,9 @@ class IPPCustomer
 	public $SecondaryTaxIdentifier;
 	/**
 	 * @Definition 
-                                Product: QBO
-                                Description: The A/R account ID for the customer. This is applicable only in FR where each customer needs to have his own AR account.
-                            
+								Product: QBO
+								Description: The A/R account ID for the customer. This is applicable only in FR where each customer needs to have his own AR account.
+							
 	 * @xmlType element
 	 * @xmlNamespace http://schema.intuit.com/finance/v3
 	 * @xmlMinOccurs 0
@@ -487,9 +487,9 @@ class IPPCustomer
 	public $ARAccountRef;
 	/**
 	 * @Definition 
-                                Product: QBO
-                                Description:  Specifies primary Tax ID of the Person or Organization.
-                            
+								Product: QBO
+								Description:  Specifies primary Tax ID of the Person or Organization.
+							
 	 * @xmlType element
 	 * @xmlNamespace http://schema.intuit.com/finance/v3
 	 * @xmlMinOccurs 0
@@ -593,6 +593,32 @@ class IPPCustomer
 	 * @var string
 	 */
 	public $ClientEntityId;
+	/**
+	 * @Definition 
+								Product: QBO
+								Description: Originating source of
+								the Customer. Valid values are defined in SourceTypeEnum
+							
+	 * @xmlType element
+	 * @xmlNamespace http://schema.intuit.com/finance/v3
+	 * @xmlMinOccurs 0
+	 * @xmlName Source
+	 * @var string
+	 */
+	public $Source;
+	/**
+	 * @Definition 
+								Product: QBO
+								Description: Tax regime of a customer which is required by CFDI4.0 in Mexico.
+								Visit http://omawww.sat.gob.mx/tramitesyservicios/Paginas/anexo_20_version3-3.htm and find the catalogues that contain the accepted values of TaxRegime.
+							
+	 * @xmlType element
+	 * @xmlNamespace http://schema.intuit.com/finance/v3
+	 * @xmlMinOccurs 0
+	 * @xmlName TaxRegime
+	 * @var string
+	 */
+	public $TaxRegime;
 
 
 } // end class IPPCustomer
