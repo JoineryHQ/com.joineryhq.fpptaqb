@@ -47,6 +47,8 @@ function fpptaqb_civicrm_validateForm($formName, &$fields, &$files, &$form, &$er
   if (
     $formName == 'CRM_Contribute_Form_AdditionalPayment'
     || $formName == 'CRM_Financial_Form_PaymentEdit'
+    || $formName == 'CRM_Mjwshared_Form_PaymentRefund'
+
   ) {
     // $total_amount might have a non-numeric characters, e.g. '$ 1,000.02', which
     // will screw up our math below. Therefore clean it up to a proper Float.
@@ -73,16 +75,20 @@ function fpptaqb_civicrm_validateForm($formName, &$fields, &$files, &$form, &$er
  * Implements hook_civicrm_buildForm().
  */
 function fpptaqb_civicrm_buildForm($formName, &$form) {
-  if ($formName == 'CRM_Contribute_Form_AdditionalPayment') {
-    $paymentType = $form->getVar('_paymentType');
-    if ($paymentType == 'refund') {
-      $contributionId = $form->_id;
-      CRM_Fpptaqb_Util::alterPaymentFormForCreditmemo($form, $contributionId);
-      // Set field default values.
-      $form->setDefaults(['fpptaqb_is_creditmemo' => 0]);
-      // Add js to place fields in the right location on the form.
-      CRM_Core_Resources::singleton()->addScriptFile('com.joineryhq.fpptaqb', 'js/CRM_Contribute_Form_AdditionalPayment.js');
-    }
+  if (
+    // MJWShared 'record refund'
+    $formName == 'CRM_Mjwshared_Form_PaymentRefund'
+    || (
+      // CiviCRM core 'record refund'
+      $formName == 'CRM_Contribute_Form_AdditionalPayment')
+      && ($form->getVar('_paymentType') == 'refund')
+    ) {
+    $contributionId = $form->_id;
+    CRM_Fpptaqb_Util::alterPaymentFormForCreditmemo($form, $contributionId);
+    // Set field default values.
+    $form->setDefaults(['fpptaqb_is_creditmemo' => 0]);
+    // Add js to place fields in the right location on the form.
+    CRM_Core_Resources::singleton()->addScriptFile('com.joineryhq.fpptaqb', 'js/recordRefund.js');
   }
   elseif ($formName == 'CRM_Financial_Form_PaymentEdit') {
     $trxnId = $form->getVar('_id');

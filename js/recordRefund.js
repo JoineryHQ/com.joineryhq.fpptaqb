@@ -12,9 +12,18 @@ CRM.$(function($) {
   // Give the bhfe elements table an id so we can handle it later.
   $('input#fpptaqb_is_creditmemo').closest('table').attr('id', 'bhfe_table');
 
-  // Move all our bhfe table rows into the main table after 'from_email_address'
+  // Move all our bhfe table rows into the main table after 'from_email_address' -- if there is such a table.
   var tr = $('input#total_amount').closest('table').find('tr:last-child');
-  $('table#bhfe_table .fpptaqb_creditmemo_field').closest('tr').insertAfter(tr);
+  console.log('tr', tr.length);
+  if (tr.length) {
+    $('table#bhfe_table .fpptaqb_creditmemo_field').closest('tr').insertAfter(tr);
+  }
+  
+  var mjwsharedCrmSection = $('form .crm-section').last();
+  console.log('mjwsharedCrmSection', mjwsharedCrmSection.length);
+  if (mjwsharedCrmSection.length) {
+    $('table#bhfe_table .fpptaqb_creditmemo_field').closest('tr').insertAfter(mjwsharedCrmSection);    
+  }
   
   // Append desriptions after fields.
   for (id in CRM.vars.fpptaqb.descriptions) {
