@@ -50,9 +50,15 @@ function fpptaqb_civicrm_validateForm($formName, &$fields, &$files, &$form, &$er
     || $formName == 'CRM_Mjwshared_Form_PaymentRefund'
 
   ) {
+    if ($formName == 'CRM_Mjwshared_Form_PaymentRefund') {
+      $total_amount = $fields['refund_amount'];
+    }
+    else {
+      $total_amount = $fields['total_amount'];
+    }
     // $total_amount might have a non-numeric characters, e.g. '$ 1,000.02', which
     // will screw up our math below. Therefore clean it up to a proper Float.
-    $total_amount = CRM_Utils_Rule::cleanMoney($fields['total_amount']);
+    $total_amount = CRM_Utils_Rule::cleanMoney($total_amount);
     // Creditmemo field validation for "New Refund" and "Edit Payment" forms.
     // Get appropriate comparison values, depending on the form.
     if ($formName == 'CRM_Financial_Form_PaymentEdit') {
@@ -339,12 +345,16 @@ function fpptaqb_civicrm_apiWrappers(&$wrappers, $apiRequest) {
   if (
     strtolower($apiRequest['entity']) == 'payment'
     && strtolower($apiRequest['action']) == 'create'
-    && (!$apiRequest['params']['id'])
-    && (($apiRequest['params']['fpptaqb_is_creditmemo'] ?? 0) == 1)
   ) {
-    // On payment.create where fpptaqb_is_creditmemo, and id=NULL (we're not updating a payment),
-    // add wrappers to create a creditmemo entry after payment creation.
-    $wrappers[] = new CRM_Fpptaqb_APIWrappers_Payment_IsCreditmemo();
+    $fpptaqb_is_creditmemo = CRM_Utils_Request::retrieveValue('fpptaqb_is_creditmemo', 'Boolean', FALSE, FALSE, 'POST');
+    if (
+      (!$apiRequest['params']['id'])
+      && (($apiRequest['params']['fpptaqb_is_creditmemo'] ?? 0) == 1)
+    ){
+      // On payment.create where fpptaqb_is_creditmemo, and id=NULL (we're not updating a payment),
+      // add wrappers to create a creditmemo entry after payment creation.
+      $wrappers[] = new CRM_Fpptaqb_APIWrappers_Payment_IsCreditmemo();
+    }
   }
 
   // The "log" APIWrapper is conditionally registered so that it runs only when appropriate

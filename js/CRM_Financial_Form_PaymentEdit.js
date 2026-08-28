@@ -40,6 +40,12 @@ CRM.$(function($) {
   
   // Go head and fire the on-change handler for is_credit_memo.
   $('input#fpptaqb_is_creditmemo').change();
+
+  // FIXME: creditmemo handling needs attention to work properly with mjwshared;
+  // for now, we just replace our 'creditmemo' controls with a warning.
+  $('table#fpptaqb_creditmemo_fields').hide();
+  $('table#fpptaqb_creditmemo_fields').after('<div class="alert alert-warning"><i role="img" aria-hidden="true" class="crm-i fa-info-circle"></i> QuickBooks credit-memo handling is not currently available; you can record this refund here, but it will not be synced to QuickBooks.</div>');
+
 });
 
 
